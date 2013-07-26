@@ -1,0 +1,10 @@
+/tests/.settings
+/tests/bin
+/tests/gen
+/tests/lint.xml
+/bin
+/gen
+/.settings
+/.idea
+lint.xml
+doxygen

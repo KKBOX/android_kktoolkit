@@ -1,0 +1,17 @@
+<resources>
+
+    <attr name="themeName" />
+    <attr name="KKActionBarStyle" />
+    <attr name="KKActionButtonStyle" />
+    <attr name="KKTitleTextStyle" />
+    <attr name="KKSubtitleTextStyle" />
+
+    <!-- tab fragment style -->
+    <attr name="KKTabFragmentStyle" />
+    <attr name="KKTabButtonBackgroundLeft" />
+    <attr name="KKTabButtonBackgroundMiddle" />
+    <attr name="KKTabButtonBackgroundRight" />
+    <attr name="KKTabBackground" />
+    <attr name="KKTabOverlay" />
+
+</resources>
