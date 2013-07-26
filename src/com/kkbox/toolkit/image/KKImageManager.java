@@ -256,6 +256,14 @@ public class KKImageManager {
 		}
 	}
 
+	public void removeCacheIfExists(String url) {
+		String cachePath = getTempImagePath(context, url);
+		final File cacheFile = new File(cachePath);
+		if (cacheFile.exists()) {
+			cacheFile.delete();
+		}
+	}
+
 	private void updateView(View view, String url, String localPath, int defaultResourceId, boolean updateBackground) {
 		KKImageRequest request = fetchList.get(view);
 		if (request != null) {
