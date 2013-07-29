@@ -59,12 +59,12 @@ public abstract class KKActivity extends FragmentActivity {
 		return menuInflater;
 	}
 
-	public void onCreateCompatOptionsMenu(KKMenuCompat menuCompat) {
-		this.menuCompat = menuCompat;
-		for (int i = 0; i < menuCompat.size(); i++) {
-			checkActionButtonCreated(this, menuCompat.getItem(i));
-		}
+	public void onCreateCompatOptionsMenu(KKMenuCompat menu) {
+		this.menuCompat = menu;
 		if (actionBar != null) {
+			for (int i = 0; i < menuCompat.size(); i++) {
+				checkActionButtonCreated(this, menuCompat.getItem(i));
+			}
 			actionBar.addActionMenu(menuCompat);
 		}
 	}
@@ -87,7 +87,7 @@ public abstract class KKActivity extends FragmentActivity {
 			super.invalidateOptionsMenu();
 		}
 	}
-	
+
 	public void finishAllKKActivity() {
 		for (KKActivity activity : activityList) {
 			activity.finish();
@@ -147,9 +147,9 @@ public abstract class KKActivity extends FragmentActivity {
 		menuInflater = new KKMenuInflaterCompat(this);
 		onCreateCompatOptionsMenu(new KKMenuCompat(this, this));
 	}
-	
+
 	@Override
-	protected void onDestroy () {
+	protected void onDestroy() {
 		super.onDestroy();
 		activityList.remove(this);
 	}
@@ -174,7 +174,7 @@ public abstract class KKActivity extends FragmentActivity {
 				item.setActionView(item.getCompatSearchView());
 				item.getCompatSearchView().setIconified(false);
 			} else {
-				actionBar.updateActionView(item, item.getCompatSearchView());
+				actionBar.showSearchView(item);
 			}
 		}
 	}
@@ -202,7 +202,7 @@ public abstract class KKActivity extends FragmentActivity {
 					} else {
 						((KKFragment)responseUI).onCompatOptionsItemSelected(menuItem);
 					}
-					
+
 				}
 			});
 			if (menuItem.getCompatSearchView() != null) {
@@ -212,7 +212,7 @@ public abstract class KKActivity extends FragmentActivity {
 						if (Build.VERSION.SDK_INT >= 11) {
 							menuItem.setActionView(button);
 						} else {
-							getKKActionBar().updateActionView(menuItem, button);
+							invalidateOptionsMenu();
 						}
 						return false;
 					}
@@ -238,7 +238,7 @@ public abstract class KKActivity extends FragmentActivity {
 					} else {
 						menuItemCompat.linkToMenuItem(menuItem);
 					}
-				} else if (menuCompat.isMenuItemRemoved(menuItem.getItemId())){
+				} else if (menuCompat.isMenuItemRemoved(menuItem.getItemId())) {
 					menu.removeItem(menuItem.getItemId());
 					removeCount++;
 				}

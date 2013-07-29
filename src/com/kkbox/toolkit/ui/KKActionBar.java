@@ -47,6 +47,8 @@ public class KKActionBar {
 	private LinearLayout viewTitle;
 	private ImageView viewIcon;
 	private ArrayList<KKMenuCompat> menuCompatList = new ArrayList<KKMenuCompat>();
+	private ArrayList<KKMenuItemCompat> actionMenuItemList = new ArrayList<KKMenuItemCompat>();
+	private int actionBarCompatSubViewCount = 0;
 
 	private final OnClickListener buttonBackClickListener = new OnClickListener() {
 		@Override
@@ -77,6 +79,7 @@ public class KKActionBar {
 				viewTitle = (LinearLayout)actionBarCompat.findViewById(R.id.view_title);
 				FrameLayout frameLayout = (FrameLayout)activity.getWindow().getDecorView().findViewById(android.R.id.content);
 				frameLayout.setForeground(null); // remove original windowContentOverlay, make it under actionbar
+				actionBarCompatSubViewCount = actionBarCompat.getChildCount();
 			}
 			array = activity.obtainStyledAttributes(styleResourceId, new int[] { android.R.attr.icon });
 			setIcon(array.getDrawable(0));
@@ -179,6 +182,7 @@ public class KKActionBar {
 						KKMenuItemCompat menuItem = menuCompatList.get(i).getItem(j);
 						if (menuItem.getShowAsActionFlags() != KKMenuItemCompat.SHOW_AS_ACTION_NEVER) {
 							actionBarCompat.removeView(menuItem.getActionView());
+							actionMenuItemList.remove(menuItem);
 						}
 					}
 					return;
@@ -187,16 +191,17 @@ public class KKActionBar {
 		}
 	}
 
-	void updateActionView(KKMenuItemCompat menuItemCompat, View newView) {
+	void showSearchView(KKMenuItemCompat menuItemCompat) {
 		if (Build.VERSION.SDK_INT < 11) {
 			actionBarCompat.removeView(menuItemCompat.getActionView());
-			menuItemCompat.setActionView(newView);
-			actionBarCompat.addView(newView);
-			if (newView instanceof ImageButton) {
-				viewTitle.setVisibility(View.VISIBLE);
-			} else {
-				viewTitle.setVisibility(View.GONE);
+			menuItemCompat.setActionView(menuItemCompat.getCompatSearchView());
+			actionBarCompat.addView(menuItemCompat.getCompatSearchView());
+			for (int i = 0; i < actionMenuItemList.size(); i++) {
+				if (!actionMenuItemList.get(i).equals(menuItemCompat)) {
+					actionMenuItemList.get(i).getActionView().setVisibility(View.GONE);
+				}
 			}
+			viewTitle.setVisibility(View.GONE);
 		}
 	}
 
@@ -207,7 +212,14 @@ public class KKActionBar {
 			for (int i = 0; i < menuCompat.size(); i++) {
 				KKMenuItemCompat menuItem = menuCompat.getItem(i);
 				if (menuItem.getShowAsActionFlags() != KKMenuItemCompat.SHOW_AS_ACTION_NEVER) {
-					actionBarCompat.addView(menuItem.getActionView());
+					int actionIndex = actionBarCompatSubViewCount;
+					for (int j = 0; j < actionMenuItemList.size(); j++) {
+						if (actionMenuItemList.get(j).getOrder() < menuItem.getOrder()) {
+							actionIndex++;
+						}
+					}
+					actionMenuItemList.add(menuItem);
+					actionBarCompat.addView(menuItem.getActionView(), actionIndex);
 				}
 			}
 			menuCompatList.add(menuCompat);

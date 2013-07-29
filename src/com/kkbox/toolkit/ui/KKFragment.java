@@ -129,10 +129,10 @@ public abstract class KKFragment extends Fragment {
 
 	public void onCreateCompatOptionsMenu(KKMenuCompat menu, KKMenuInflaterCompat inflater) {
 		this.menuCompat = menu;
-		for (int i = 0; i < menuCompat.size(); i++) {
-			getKKActivity().checkActionButtonCreated(this, menuCompat.getItem(i));
-		}
 		if (activity.getKKActionBar() != null) {
+			for (int i = 0; i < menuCompat.size(); i++) {
+				getKKActivity().checkActionButtonCreated(this, menuCompat.getItem(i));
+			}
 			activity.getKKActionBar().addActionMenu(menuCompat);
 		}
 	}

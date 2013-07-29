@@ -49,7 +49,6 @@ public class KKMenuInflaterCompat extends MenuInflater {
 
 	private void parseMenu(XmlPullParser parser, KKMenuCompat menuCompat) throws XmlPullParserException, IOException {
 		int eventType = parser.getEventType();
-		int currentIndex = 0;
 		String tagName;
 		do {
 			if (eventType == XmlPullParser.START_TAG) {
@@ -64,29 +63,36 @@ public class KKMenuInflaterCompat extends MenuInflater {
 		} while (eventType != XmlPullParser.END_DOCUMENT);
 
 		boolean reachedEndOfMenu = false;
+		KKMenuItemCompat currentMenuItem = null;
 		while (!reachedEndOfMenu) {
 			switch (eventType) {
 				case XmlPullParser.START_TAG:
 					tagName = parser.getName();
 					if (tagName.equals("item")) {
 						for (int i = 0; i < parser.getAttributeCount(); i++) {
-							if (parser.getAttributeName(i).toLowerCase().equals("showasaction")) {
-								if (parser.getAttributeValue(i).equals("0x2") || parser.getAttributeValue(i).toLowerCase().equals("always")) {
-									menuCompat.getItem(currentIndex).setShowAsActionFlags(KKMenuItemCompat.SHOW_AS_ACTION_ALWAYS);
-								} else if (parser.getAttributeValue(i).equals("0x1")
-										|| parser.getAttributeValue(i).toLowerCase().equals("ifroom")) {
-									menuCompat.getItem(currentIndex).setShowAsActionFlags(KKMenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
-								} else {
-									menuCompat.getItem(currentIndex).setShowAsActionFlags(KKMenuItemCompat.SHOW_AS_ACTION_NEVER);
+							//FIXME: what if id column is below showasaction or actionviewclass
+							if (parser.getAttributeName(i).toLowerCase().equals("id")) {
+								currentMenuItem = menuCompat.findItem(Integer.parseInt(parser.getAttributeValue(i).substring(1)));
+							}
+							if (currentMenuItem != null) {
+								if (parser.getAttributeName(i).toLowerCase().equals("showasaction")) {
+									if (parser.getAttributeValue(i).equals("0x2")
+											|| parser.getAttributeValue(i).toLowerCase().equals("always")) {
+										currentMenuItem.setShowAsActionFlags(KKMenuItemCompat.SHOW_AS_ACTION_ALWAYS);
+									} else if (parser.getAttributeValue(i).equals("0x1")
+											|| parser.getAttributeValue(i).toLowerCase().equals("ifroom")) {
+										currentMenuItem.setShowAsActionFlags(KKMenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+									} else {
+										currentMenuItem.setShowAsActionFlags(KKMenuItemCompat.SHOW_AS_ACTION_NEVER);
+									}
+								}
+								if (parser.getAttributeName(i).toLowerCase().equals("actionviewclass")
+										&& parser.getAttributeValue(i).toLowerCase().equals("com.kkbox.toolkit.ui.kksearchviewcompat")) {
+									currentMenuItem.setCompatSearchView(new KKSearchViewCompat(activity));
+									currentMenuItem.setActionView(null);
 								}
 							}
-							if (parser.getAttributeName(i).toLowerCase().equals("actionviewclass")
-									&& parser.getAttributeValue(i).toLowerCase().equals("com.kkbox.toolkit.ui.kksearchviewcompat")) {
-								menuCompat.getItem(currentIndex).setCompatSearchView(new KKSearchViewCompat(activity));
-								menuCompat.getItem(currentIndex).setActionView(null);
-							}
 						}
-						currentIndex++;
 					}
 					break;
 				case XmlPullParser.END_TAG:
