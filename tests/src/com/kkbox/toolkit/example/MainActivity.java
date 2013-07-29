@@ -36,12 +36,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
-import com.kkbox.toolkit.example.activities.ActivityEventQueue;
-import com.kkbox.toolkit.example.activities.ActivityFragment;
-import com.kkbox.toolkit.example.activities.ActivityImage;
-import com.kkbox.toolkit.example.activities.ActivityListFragment;
-import com.kkbox.toolkit.example.activities.ActivityNotification;
-import com.kkbox.toolkit.example.activities.ActivityTabFragment;
+import com.kkbox.toolkit.example.eventqueue.ActivityEventQueue;
+import com.kkbox.toolkit.example.fragment.ActivityFragment;
+import com.kkbox.toolkit.example.image.ActivityImage;
+import com.kkbox.toolkit.example.listfragment.ActivityListFragment;
+import com.kkbox.toolkit.example.notification.ActivityNotification;
+import com.kkbox.toolkit.example.tabfragment.ActivityTabFragment;
 import com.kkbox.toolkit.ui.KKActivity;
 import com.kkbox.toolkit.ui.KKListView;
 

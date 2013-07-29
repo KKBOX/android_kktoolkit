@@ -15,14 +15,13 @@
 /**
  * ActivityTabFragment.java: This activity demonstrates the usage of KKTabFragment.
  */
-package com.kkbox.toolkit.example.activities;
+package com.kkbox.toolkit.example.tabfragment;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.kkbox.toolkit.example.R;
-import com.kkbox.toolkit.example.fragments.ExampleTabFragment;
 import com.kkbox.toolkit.ui.KKActivity;
 
 public class ActivityTabFragment extends KKActivity {

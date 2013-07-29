@@ -15,12 +15,11 @@
 /**
  * ActivityFragment.java: This activity demonstrates the usage of KKFragment and KKAPIs.
  */
-package com.kkbox.toolkit.example.activities;
+package com.kkbox.toolkit.example.fragment;
 
 import android.os.Bundle;
 
 import com.kkbox.toolkit.example.R;
-import com.kkbox.toolkit.example.fragments.ExampleFragment;
 import com.kkbox.toolkit.ui.KKActivity;
 
 

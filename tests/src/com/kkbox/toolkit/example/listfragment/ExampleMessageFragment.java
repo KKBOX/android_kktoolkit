@@ -15,7 +15,7 @@
 /**
  * ExampleMessageFragment.java: 
  */
-package com.kkbox.toolkit.example.fragments;
+package com.kkbox.toolkit.example.listfragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

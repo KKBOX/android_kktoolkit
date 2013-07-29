@@ -15,12 +15,11 @@
 /**
  * ActivityListFragment.java: This activity demonstrates the usage of KKListFragment, KKListView, and KKMessageView.
  */
-package com.kkbox.toolkit.example.activities;
+package com.kkbox.toolkit.example.listfragment;
 
 import android.os.Bundle;
 
 import com.kkbox.toolkit.example.R;
-import com.kkbox.toolkit.example.fragments.ExampleListFragment;
 import com.kkbox.toolkit.ui.KKActivity;
 
 public class ActivityListFragment extends KKActivity {

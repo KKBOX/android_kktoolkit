@@ -15,7 +15,7 @@
 /**
  * ActivityEventQueue.java: This activity demonstrates the usage of KKEventQueue.
  */
-package com.kkbox.toolkit.example.activities;
+package com.kkbox.toolkit.example.eventqueue;
 
 import android.os.Bundle;
 import android.view.View;
@@ -31,6 +31,7 @@ import com.kkbox.toolkit.utils.KKEventQueueListener;
 public class ActivityEventQueue extends KKActivity {
 
 	private KKEventQueue eventQueue;
+	private Button btnAdd;
 	private Button btnStart;
 	private TextView resultContent;
 
@@ -49,11 +50,13 @@ public class ActivityEventQueue extends KKActivity {
 		eventQueue = new KKEventQueue();
 		eventQueue.setListener(eventQueuelistener);
 		resultContent = (TextView)findViewById(R.id.resultContent);
+		btnAdd = (Button)findViewById(R.id.btnAdd);
+		btnAdd.setOnClickListener(btnAddClickListener);
 		btnStart = (Button)findViewById(R.id.btnStart);
 		btnStart.setOnClickListener(btnStartClickListener);
-	};
+	}
 
-	private final OnClickListener btnStartClickListener = new OnClickListener() {
+	private final OnClickListener btnAddClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			eventQueue.add(new Runnable() {
@@ -67,6 +70,13 @@ public class ActivityEventQueue extends KKActivity {
 					}
 				}
 			}, KKEventQueue.ThreadType.NEW_THREAD);
+
+		}
+	};
+	
+	private final OnClickListener btnStartClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
 			resultContent.setText("Running...");
 			eventQueue.start();
 		}
