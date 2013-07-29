@@ -15,7 +15,7 @@
 /**
  * ActivityImage.java: This activity demonstrates the usage of KKImageManager.
  */
-package com.kkbox.toolkit.example.activities;
+package com.kkbox.toolkit.example.image;
 
 import android.os.Bundle;
 import android.view.View;

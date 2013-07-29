@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>android_kktoolkit_tests</name>
-	<comment>This is a example poject of how KKToolkit works.</comment>
+	<name>android_kktoolkit</name>
+	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>

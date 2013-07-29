@@ -15,7 +15,7 @@
 /**
  * ActivityNotification.java: This activity demonstrates the usage of KKDialogs (com.kkbox.toolkit.notification).
  */
-package com.kkbox.toolkit.example.activities;
+package com.kkbox.toolkit.example.notification;
 
 import android.os.Bundle;
 import android.view.View;

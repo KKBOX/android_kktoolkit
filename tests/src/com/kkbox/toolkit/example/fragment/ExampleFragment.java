@@ -15,7 +15,7 @@
 /**
  * ExampleListFragment.java: 
  */
-package com.kkbox.toolkit.example.fragments;
+package com.kkbox.toolkit.example.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
