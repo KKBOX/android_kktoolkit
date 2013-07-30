@@ -26,7 +26,6 @@ import android.os.Build;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -68,6 +67,10 @@ public class KKActionBar {
 				labelTitle = (TextView)activity.findViewById(Resources.getSystem().getIdentifier("action_bar_title", "id", "android"));
 				labelSubTitle = (TextView)activity
 						.findViewById(Resources.getSystem().getIdentifier("action_bar_subtitle", "id", "android"));
+				if (Build.VERSION.SDK_INT < 14) {
+					viewIcon = (ImageView)activity
+							.findViewById(Resources.getSystem().getIdentifier("home", "id", "android"));
+				}
 			} else {
 				actionBarCompat = (LinearLayout)activity.findViewById(R.id.action_bar);
 				viewIcon = (ImageView)actionBarCompat.findViewById(R.id.view_icon);
@@ -99,7 +102,9 @@ public class KKActionBar {
 	public void setDisplayHomeAsUpEnabled(boolean showHomeAsUp) {
 		if (Build.VERSION.SDK_INT >= 11) {
 			actionBar.setDisplayHomeAsUpEnabled(showHomeAsUp);
-			actionBar.setHomeButtonEnabled(showHomeAsUp);
+			if (Build.VERSION.SDK_INT >= 14) {
+				actionBar.setHomeButtonEnabled(showHomeAsUp);
+			}
 		} else {
 			if (showHomeAsUp) {
 				viewHomeUp.setVisibility(View.VISIBLE);
@@ -140,7 +145,7 @@ public class KKActionBar {
 	}
 
 	public void setLogo(Drawable logo) {
-		if (Build.VERSION.SDK_INT >= 11) {
+		if (Build.VERSION.SDK_INT >= 14) {
 			actionBar.setLogo(logo);
 		} else {
 			viewIcon.setImageDrawable(logo);
@@ -148,7 +153,7 @@ public class KKActionBar {
 	}
 
 	public void setIcon(Drawable icon) {
-		if (Build.VERSION.SDK_INT >= 11) {
+		if (Build.VERSION.SDK_INT >= 14) {
 			actionBar.setIcon(icon);
 		} else {
 			viewIcon.setImageDrawable(icon);

@@ -270,6 +270,7 @@ public class KKMenuItemCompat implements MenuItem {
 
 	@Override
 	public void setShowAsAction(int actionEnum) {
+		showAsActionFlags = actionEnum;
 		if (Build.VERSION.SDK_INT >= 11) {
 			menuItem.setShowAsAction(actionEnum);
 		}
@@ -278,11 +279,10 @@ public class KKMenuItemCompat implements MenuItem {
 	@Override
 	public MenuItem setShowAsActionFlags(int actionEnum) {
 		showAsActionFlags = actionEnum;
-		if (Build.VERSION.SDK_INT < 11) {
-			return menuItem;
-		} else {
-			return menuItem.setShowAsActionFlags(actionEnum);
+		if (Build.VERSION.SDK_INT >= 11) {
+			menuItem.setShowAsAction(actionEnum);
 		}
+		return menuItem;
 	}
 
 	@Override
