@@ -98,6 +98,7 @@ public abstract class KKActivity extends FragmentActivity {
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		onPrepareCompatOptionsMenu(menuCompat);
+		prepareOptionsMenu(menuCompat, menu);
 		return true;
 	}
 
@@ -242,6 +243,17 @@ public abstract class KKActivity extends FragmentActivity {
 					menu.removeItem(menuItem.getItemId());
 					removeCount++;
 				}
+			}
+		}
+	}
+
+	void prepareOptionsMenu(KKMenuCompat menuCompat, Menu menu) {
+		for (int i = 0; i < menu.size(); i++) {
+			MenuItem menuItem = menu.getItem(i);
+			KKMenuItemCompat menuItemCompat = menuCompat.findItem(menuItem.getItemId());
+			if (menuItemCompat != null && Build.VERSION.SDK_INT < 11
+					&& menuItemCompat.getShowAsActionFlags() == KKMenuItemCompat.SHOW_AS_ACTION_NEVER) {
+				menuItemCompat.linkToMenuItem(menuItem);
 			}
 		}
 	}

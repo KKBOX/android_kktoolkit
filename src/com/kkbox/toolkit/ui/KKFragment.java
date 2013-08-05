@@ -157,6 +157,7 @@ public abstract class KKFragment extends Fragment {
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		onPrepareCompatOptionsMenu(menuCompat);
+		activity.prepareOptionsMenu(menuCompat, menu);
 	}
 
 	@Override

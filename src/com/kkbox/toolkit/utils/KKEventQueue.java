@@ -40,6 +40,18 @@ public class KKEventQueue {
 		newEvent.threadType = threadType;
 		queue.add(newEvent);
 	}
+	
+	public void addNewThreadEvent(Runnable newThreadRunable, Runnable postEventRunnable) {
+		//TODO:
+	}
+	
+	public void addCallerThreadEventWithLock(Runnable callerThreadRunnable, int lockId) {
+		//TODO:
+	}
+	
+	public void unlockEvent(int lockId) {
+		//TODO:
+	}
 
 	public void clearPendingEvents() {
 		if (!isRunning) {
