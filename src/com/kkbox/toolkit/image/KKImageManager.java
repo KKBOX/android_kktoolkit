@@ -108,27 +108,6 @@ public class KKImageManager {
 		return context.getCacheDir().getAbsolutePath() + File.separator + "image" + File.separator + StringUtils.getMd5Hash(url);
 	}
 
-	public static Bitmap createMirrorBitmap(Bitmap bitmap) {
-		final int w = bitmap.getWidth();
-		final int h = bitmap.getHeight();
-		final int mirrorBitmapHeight = h / 2;
-		final Matrix matrix = new Matrix();
-		matrix.preScale(1, -1);
-		Runtime.getRuntime().gc();
-		final Bitmap newBitmap = Bitmap.createBitmap(w, mirrorBitmapHeight, Bitmap.Config.ARGB_8888);
-		final Bitmap reflectBitmap = Bitmap.createBitmap(bitmap, 0, h - mirrorBitmapHeight, w, mirrorBitmapHeight, matrix, true);
-		final Canvas canvas = new Canvas(newBitmap);
-		final Paint paint = new Paint();
-		final LinearGradient shader = new LinearGradient(0, 0, 0, mirrorBitmapHeight, 0x80ffffff, 0x00ffffff, TileMode.CLAMP);
-		paint.setShader(shader);
-		paint.setDither(true);
-		paint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
-		canvas.drawBitmap(reflectBitmap, 0, 0, null);
-		canvas.drawRect(0, 0, w, mirrorBitmapHeight, paint);
-		reflectBitmap.recycle();
-		return newBitmap;
-	}
-
 	public KKImageManager(Context context, Cipher localCipher) {
 		this.context = context;
 		this.cipher = localCipher;
@@ -156,7 +135,6 @@ public class KKImageManager {
 						bitmap = null;
 					}
 					iterator.remove();
-					break;
 				}
 			}
 			Drawable drawable = view.getBackground();
@@ -180,7 +158,6 @@ public class KKImageManager {
 						bitmap = null;
 					}
 					iterator.remove();
-					break;
 				}
 			}
 			Drawable drawable = view.getDrawable();
