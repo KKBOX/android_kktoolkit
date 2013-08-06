@@ -99,9 +99,7 @@ public class KKDebug {
 		try {
 			if (logStream == null) {
 				final Calendar calendar = Calendar.getInstance();
-				final String dateTime = debugLogPath
-						+ File.separator
-						+ String.format("%04d%02d%02d_%02d%02d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1,
+				final String dateTime = String.format("%04d%02d%02d_%02d%02d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1,
 								calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
 				final String logTimeFolderPath = debugLogPath + File.separator + dateTime;
 				final File logTimeFolder = new File(logTimeFolderPath);
