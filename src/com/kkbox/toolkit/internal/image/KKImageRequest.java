@@ -173,6 +173,9 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 						bitmap = BitmapFactory.decodeFile(cachePath);
 						if (bitmap != null) {
 							return bitmap;
+						} else {
+							cacheFile = new File(cachePath);
+							cacheFile.delete();
 						}
 					}
 				}
