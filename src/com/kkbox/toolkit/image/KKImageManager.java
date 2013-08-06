@@ -115,14 +115,14 @@ public class KKImageManager {
 		final Matrix matrix = new Matrix();
 		matrix.preScale(1, -1);
 		Runtime.getRuntime().gc();
-		final Bitmap newBitmap = Bitmap.createBitmap(w, mirrorBitmapHeight, Bitmap.Config.RGB_565);
+		final Bitmap newBitmap = Bitmap.createBitmap(w, mirrorBitmapHeight, Bitmap.Config.ARGB_8888);
 		final Bitmap reflectBitmap = Bitmap.createBitmap(bitmap, 0, h - mirrorBitmapHeight, w, mirrorBitmapHeight, matrix, true);
 		final Canvas canvas = new Canvas(newBitmap);
 		final Paint paint = new Paint();
-		final LinearGradient shader = new LinearGradient(0, 0, 0, mirrorBitmapHeight, 0x80ffffff, 0x00ffffff, TileMode.MIRROR);
+		final LinearGradient shader = new LinearGradient(0, 0, 0, mirrorBitmapHeight, 0x80ffffff, 0x00ffffff, TileMode.CLAMP);
 		paint.setShader(shader);
 		paint.setDither(true);
-		paint.setXfermode(new PorterDuffXfermode(Mode.LIGHTEN));
+		paint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
 		canvas.drawBitmap(reflectBitmap, 0, 0, null);
 		canvas.drawRect(0, 0, w, mirrorBitmapHeight, paint);
 		reflectBitmap.recycle();

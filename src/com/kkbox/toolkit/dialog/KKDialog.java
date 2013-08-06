@@ -66,12 +66,6 @@ public class KKDialog extends DialogFragment {
 	}
 
 	@Override
-	public void onDismiss(DialogInterface dialog) {
-		super.onDismiss(dialog);
-		KKService.getDialogNotificationManager().dismissCurrentDialog();
-	}
-
-	@Override
 	public void onCancel(DialogInterface dialog) {
 		super.onCancel(dialog);
 		if (listener != null) {
@@ -86,6 +80,7 @@ public class KKDialog extends DialogFragment {
 				if (listener != null) {
 					listener.onPositive();
 				}
+				KKService.getDialogNotificationManager().dismissCurrentDialog();
 			}
 		};
 
@@ -94,6 +89,7 @@ public class KKDialog extends DialogFragment {
 				if (listener != null) {
 					listener.onNeutral();
 				}
+				KKService.getDialogNotificationManager().dismissCurrentDialog();
 			}
 		};
 
@@ -102,6 +98,7 @@ public class KKDialog extends DialogFragment {
 				if (listener != null) {
 					listener.onNegative();
 				}
+				KKService.getDialogNotificationManager().dismissCurrentDialog();
 			}
 		};
 
