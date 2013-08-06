@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
@@ -119,7 +120,7 @@ public class KKActionBar {
 		if (Build.VERSION.SDK_INT >= 11) {
 			actionBar.setSubtitle(subTitle);
 		} else {
-			if (subTitle.equals("") || subTitle == null) {
+			if (TextUtils.isEmpty(subTitle)) {
 				labelSubTitle.setVisibility(View.GONE);
 			} else {
 				labelSubTitle.setVisibility(View.VISIBLE);
