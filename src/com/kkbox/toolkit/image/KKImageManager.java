@@ -233,19 +233,25 @@ public class KKImageManager {
 	}
 
 	public void updateViewSource(ImageView view, String url, String localPath, int defaultResourceId) {
-		updateView(view, url, localPath, defaultResourceId, false);
+		updateView(view, url, localPath, defaultResourceId, false, false);
+	}
+
+	public void updateViewSourceAndSave(ImageView view, String url, String localPath, int defaultResourceId) {
+		updateView(view, url, localPath, defaultResourceId, false, true);
 	}
 
 	public void updateViewBackground(View view, String url, String localPath, int defaultResourceId) {
-		updateView(view, url, localPath, defaultResourceId, true);
+		updateView(view, url, localPath, defaultResourceId, true, false);
+	}
+
+	public void updateViewBackgroundAndSave(View view, String url, String localPath, int defaultResourceId) {
+		updateView(view, url, localPath, defaultResourceId, true, true);
 	}
 
 	public Bitmap loadCache(String url, String localPath) {
 		String cachePath = getTempImagePath(context, url);
 		final File cacheFile = new File(cachePath);
-		if (cacheFile.exists()) {
-			return BitmapFactory.decodeFile(cachePath);
-		}
+		if (cacheFile.exists()) { return BitmapFactory.decodeFile(cachePath); }
 		return null;
 	}
 
@@ -261,7 +267,7 @@ public class KKImageManager {
 		cacheFile.delete();
 	}
 
-	private void updateView(View view, String url, String localPath, int defaultResourceId, boolean updateBackground) {
+	private void updateView(View view, String url, String localPath, int defaultResourceId, boolean updateBackground, boolean saveToLocal) {
 		KKImageRequest request = fetchList.get(view);
 		if (request != null) {
 			if (request.getUrl().equals(url)) {
@@ -294,7 +300,7 @@ public class KKImageManager {
 				imageView.setImageResource(defaultResourceId);
 			}
 		}
-		request = new KKImageRequest(context, url, localPath, view, updateBackground, cipher);
+		request = new KKImageRequest(context, url, localPath, view, updateBackground, cipher, saveToLocal);
 		workingList.add(request);
 		fetchList.put(view, request);
 		startFetch();

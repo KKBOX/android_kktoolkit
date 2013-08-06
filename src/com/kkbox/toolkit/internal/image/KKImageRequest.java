@@ -28,6 +28,7 @@ import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.UserTask;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -42,7 +43,7 @@ import java.io.RandomAccessFile;
 
 import javax.crypto.Cipher;
 
-public class KKImageRequest extends UserTask<Object, Integer, Bitmap> {
+public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private HttpClient httpclient;
 	private KKImageRequestListener listener;
 	private HttpResponse response;
@@ -54,9 +55,11 @@ public class KKImageRequest extends UserTask<Object, Integer, Bitmap> {
 	private int actionType;
 	private boolean isNetworkError = false;
 	private Cipher cipher = null;
+	private boolean saveToLocal = false;
 
-	public KKImageRequest(Context context, String url, String localPath, View view, boolean updateBackground, Cipher cipher) {
+	public KKImageRequest(Context context, String url, String localPath, View view, boolean updateBackground, Cipher cipher, boolean saveToLocal) {
 		this.view = view;
+		this.saveToLocal = saveToLocal;
 		if (updateBackground) {
 			actionType = KKImageManager.ActionType.UPDATE_VIEW_BACKGROUND;
 		} else {
@@ -177,6 +180,7 @@ public class KKImageRequest extends UserTask<Object, Integer, Bitmap> {
 			final HttpGet httpget = new HttpGet(url);
 			response = httpclient.execute(httpget);
 			final InputStream is = response.getEntity().getContent();
+			publishProgress(response.getAllHeaders());
 			if (actionType == KKImageManager.ActionType.DOWNLOAD) {
 				localRandomAccessFile = new RandomAccessFile(localPath, "rw");
 				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
@@ -213,6 +217,13 @@ public class KKImageRequest extends UserTask<Object, Integer, Bitmap> {
 		return null;
 	}
 
+	@Override
+	public void onProgressUpdate(Header[]... data) {
+		if (imageCacheListener != null) {
+			imageCacheListener.onReceiveHttpHeader(data[0]);
+		}
+	}
+	
 	@Override
 	public void onPostExecute(Bitmap bitmap) {
 		if (listener == null) { return; }

@@ -17,6 +17,8 @@
  */
 package com.kkbox.toolkit.example.image;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,35 +27,63 @@ import android.widget.ImageView;
 
 import com.kkbox.toolkit.example.FakeData;
 import com.kkbox.toolkit.example.R;
+import com.kkbox.toolkit.image.KKImageListener;
 import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.ui.KKActivity;
+import com.kkbox.toolkit.utils.KKDebug;
+
+import org.apache.http.Header;
 
 import java.util.Random;
 
 public class ActivityImage extends KKActivity {
-	ImageView image;
-	Button button;
+	ImageView imageView;
+	KKImageManager imageManager;
+
+	private final KKImageListener imageListener = new KKImageListener() {
+		@Override
+		public void onReceiveBitmap(Bitmap bitmap) {
+			imageView.setBackgroundDrawable(new BitmapDrawable(bitmap));
+			imageManager.autoRecycleViewBackgroundBitmap(imageView);
+		}
+
+		@Override
+		public void onReceiveHttpHeader(Header[] headers) {
+			// if your server sends extra info in the http header
+			for (Header header : headers) {
+				KKDebug.i(header.getName() + " " + header.getValue());
+			}
+		}
+	};
+
+	private final OnClickListener buttonAutoUpdateImageClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Random ran = new Random();
+			imageManager.updateViewBackground(imageView, FakeData.pic_url[ran.nextInt(6)], null, R.drawable.ic_launcher);
+		}
+	};
+
+	private final OnClickListener buttonManualUpdateImageClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Random ran = new Random();
+			imageManager.loadBitmap(imageListener, FakeData.pic_url[ran.nextInt(6)], null);
+		}
+	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.image_example);
 		getKKActionBar().setTitle("KKImageManager Example");
-		
-		image = (ImageView) findViewById(R.id.imageview);
-		button = (Button) findViewById(R.id.btnChangeImage);
-		KKImageManager imageManager = new KKImageManager(this, null);
-		imageManager.updateViewBackground(image, FakeData.pic_url[0], null, R.drawable.ic_launcher);
-		
-		button.setOnClickListener(new OnClickListener() {	 
-			@Override
-			public void onClick(View arg0) {
-				KKImageManager imageManager = new KKImageManager(ActivityImage.this, null);
-		        Random ran = new Random();
-				imageManager.updateViewBackground(image, FakeData.pic_url[ran.nextInt(6)], null, R.drawable.ic_launcher);				
-			}
-		});
-	}
-	
+		imageManager = new KKImageManager(this, null);
+		imageView = (ImageView)findViewById(R.id.imageview);
+		Button button = (Button)findViewById(R.id.button_auto_update_image);
+		button.setOnClickListener(buttonAutoUpdateImageClickListener);
 
+		button = (Button)findViewById(R.id.button_manual_update_image);
+		button.setOnClickListener(buttonManualUpdateImageClickListener);
+		imageManager.updateViewBackground(imageView, FakeData.pic_url[0], null, R.drawable.ic_launcher);
+	}
 }

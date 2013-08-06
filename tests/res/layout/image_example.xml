@@ -33,9 +33,15 @@
         android:contentDescription="@string/imageview" />
 
     <Button
-        android:id="@+id/btnChangeImage"
+        android:id="@+id/button_auto_update_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/change_image" />
+        android:text="@string/auto_update_image" />
+
+    <Button
+        android:id="@+id/button_manual_update_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/manual_update_image" />
 
 </LinearLayout>
