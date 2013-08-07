@@ -124,8 +124,8 @@ public class KKActionBar {
 				labelSubTitle.setVisibility(View.GONE);
 			} else {
 				labelSubTitle.setVisibility(View.VISIBLE);
+				labelSubTitle.setText(subTitle);
 			}
-			labelSubTitle.setText(subTitle);
 		}
 	}
 
