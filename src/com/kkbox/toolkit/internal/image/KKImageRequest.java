@@ -146,7 +146,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 							}
 							return bitmap;
 						} else {
-							cacheFile.delete();
+							removeCacheFile();
 						}
 					}
 				}
@@ -159,7 +159,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 						if (bitmap != null) {
 							return bitmap;
 						} else {
-							removeInvalidImageFiles();
+							removeCacheFile();
 						}
 					}
 				}
@@ -193,8 +193,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 						cacheRandomAccessFile.write(buffer, 0, readLength);
 					} catch (IOException e) {
 						cacheRandomAccessFile.close();
-						cacheFile = new File(cachePath);
-						cacheFile.delete();
+						removeCacheFile();
 						return null;
 					}
 				}
@@ -206,12 +205,10 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 					}
 					return bitmap;
 				} else {
-					cacheFile = new File(cachePath);
-					cacheFile.delete();
+					removeCacheFile();
 				}
 			}
 		} catch (final Exception e) {
-			KKDebug.w("connetion to " + url + " failed! " + Log.getStackTraceString(e));
 			isNetworkError = true;
 			removeInvalidImageFiles();
 		}
@@ -236,12 +233,16 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	}
 
 	private void removeInvalidImageFiles() {
-		File cacheFile = new File(cachePath);
-		cacheFile.delete();
+		removeCacheFile();
 		if (localPath != null) {
 			File localFile = new File(localPath);
 			localFile.delete();
 		}
+	}
+	
+	private void removeCacheFile() {
+		File cacheFile = new File(cachePath);
+		cacheFile.delete();
 	}
 	
 	private void cryptToFile(String sourceFilePath, String targetFilePath) throws Exception {
