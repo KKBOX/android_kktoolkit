@@ -17,7 +17,9 @@
  */
 package com.kkbox.toolkit.ui;
 
+import android.app.SearchManager;
 import android.app.SearchableInfo;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -68,9 +70,9 @@ public class KKSearchViewCompat extends LinearLayout {
 		}
 	}
 
-	public void setSearchableInfo(SearchableInfo searchable) {
+	public void setSearchableInfoCompat(SearchManager searchManager, ComponentName componentName) {
 		if (Build.VERSION.SDK_INT >= 11) {
-			searchView.setSearchableInfo(searchable);
+			searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
 		} else {
 			buttonVoiceSearch.setOnClickListener(new OnClickListener() {
 				@Override
