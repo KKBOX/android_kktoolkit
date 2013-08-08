@@ -1,6 +1,3 @@
-/**
- * UserTask: This is a third-party component.
- */
 /*
 
  * Copyright (C) 2008 The Android Open Source Project, Romain Guy

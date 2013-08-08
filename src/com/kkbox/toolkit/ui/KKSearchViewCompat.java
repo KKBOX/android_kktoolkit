@@ -18,7 +18,6 @@
 package com.kkbox.toolkit.ui;
 
 import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;

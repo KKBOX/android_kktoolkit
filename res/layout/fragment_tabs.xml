@@ -30,8 +30,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:padding="8dp"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:padding="8dp" >
         </RadioGroup>
     </FrameLayout>
 
@@ -41,11 +41,12 @@
         android:layout_height="fill_parent"
         android:layout_below="@id/layout_radio_bar"
         android:orientation="vertical" >
-	    <com.kkbox.toolkit.ui.KKMessageView
-			android:id="@+id/view_message"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
-			android:visibility="gone" />
+
+        <com.kkbox.toolkit.ui.KKMessageView
+            android:id="@+id/view_message"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:visibility="gone" />
     </LinearLayout>
 
     <ImageView

@@ -19,42 +19,36 @@ package com.kkbox.toolkit.ui;
 
 import android.view.View;
 
-import com.kkbox.toolkit.R;
+import com.kkbox.toolkit.internal.ui.KKListFragmentDelegate;
 
 public abstract class KKListFragment extends KKFragment {
-	private KKListView listView;
-
-	private int scrollIndex = 0;
-	private int scrollPositionToTop = 0;
+	private KKListFragmentDelegate delegate = new KKListFragmentDelegate();
 
 	public KKListFragment() {}
 
 	public KKListView getKKListView() {
-		return listView;
+		return (KKListView)delegate.getListView();
 	}
 
 	@Override
 	protected void onLoadUI() {
 		super.onLoadUI();
-		listView.setSelectionFromTop(scrollIndex, scrollPositionToTop);
+		delegate.onLoadUI();
 	}
 
 	@Override
 	protected void initView(View view) {
 		super.initView(view);
-		listView = (KKListView)view.findViewById(R.id.listview);
+		delegate.initView(view);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		saveListViewPosition();
+		delegate.onPause();
 	}
 	
 	public void saveListViewPosition() {
-		if (listView.getChildCount() > 0) {
-			scrollIndex = listView.getFirstVisiblePosition();
-			scrollPositionToTop = listView.getChildAt(0).getTop();
-		}
+		delegate.saveListViewPosition();
 	}
 }
