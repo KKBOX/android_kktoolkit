@@ -100,22 +100,13 @@ public class KKImageManager {
 		}
 		return context.getCacheDir().getAbsolutePath() + File.separator + "image" + File.separator + StringUtils.getMd5Hash(url);
 	}
-
-	public KKImageManager(Context context, Cipher localCipher) {
-		this.context = context;
-		this.cipher = localCipher;
-		if (Build.VERSION.SDK_INT >= 9 && context.getCacheDir().getFreeSpace() < FATAL_STORAGE_SIZE) {
-			File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "image");
-			if (cacheDir.exists()) {
-				for (File file : cacheDir.listFiles()) {
-					file.delete();
-				}
-			}
-		}
-		gc();
+	
+	public static void removeCacheIfExists(Context context, String url) {
+		final File cacheFile = new File(getTempImagePath(context, url));
+		cacheFile.delete();
 	}
 
-	public void autoRecycleViewBackgroundBitmap(View view) {
+	public static void autoRecycleViewBackgroundBitmap(View view) {
 		if (Build.VERSION.SDK_INT < 11) {
 			Iterator iterator = viewBackgroundBitmapReference.entrySet().iterator();
 			while (iterator.hasNext()) {
@@ -138,7 +129,7 @@ public class KKImageManager {
 		}
 	}
 
-	public void autoRecycleViewSourceBitmap(ImageView view) {
+	public static void autoRecycleViewSourceBitmap(ImageView view) {
 		if (Build.VERSION.SDK_INT < 11) {
 			Iterator iterator = imageViewSourceBitmapReference.entrySet().iterator();
 			while (iterator.hasNext()) {
@@ -161,7 +152,7 @@ public class KKImageManager {
 		}
 	}
 
-	public void gc() {
+	public static void gc() {
 		if (Build.VERSION.SDK_INT < 11) {
 			Iterator iterator = viewBackgroundBitmapReference.entrySet().iterator();
 			while (iterator.hasNext()) {
@@ -188,6 +179,20 @@ public class KKImageManager {
 				}
 			}
 		}
+	}
+	
+	public KKImageManager(Context context, Cipher localCipher) {
+		this.context = context;
+		this.cipher = localCipher;
+		if (Build.VERSION.SDK_INT >= 9 && context.getCacheDir().getFreeSpace() < FATAL_STORAGE_SIZE) {
+			File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "image");
+			if (cacheDir.exists()) {
+				for (File file : cacheDir.listFiles()) {
+					file.delete();
+				}
+			}
+		}
+		gc();
 	}
 
 	public void downloadBitmap(String url, String localPath) {
@@ -230,11 +235,6 @@ public class KKImageManager {
 		for (KKImageRequest request : workingList) {
 			request.cancel();
 		}
-	}
-
-	public void removeCacheIfExists(String url) {
-		final File cacheFile = new File(getTempImagePath(context, url));
-		cacheFile.delete();
 	}
 
 	private void updateView(View view, String url, String localPath, int defaultResourceId, boolean updateBackground, boolean saveToLocal) {
