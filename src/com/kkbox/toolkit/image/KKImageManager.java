@@ -201,10 +201,11 @@ public class KKImageManager {
 		startFetch();
 	}
 
-	public void loadBitmap(KKImageListener listener, String url, String localPath) {
+	public KKImageRequest loadBitmap(KKImageListener listener, String url, String localPath) {
 		KKImageRequest request = new KKImageRequest(context, url, localPath, listener, cipher);
 		workingList.add(request);
 		startFetch();
+		return request;
 	}
 
 	public void updateViewSource(ImageView view, String url, String localPath, int defaultResourceId) {
