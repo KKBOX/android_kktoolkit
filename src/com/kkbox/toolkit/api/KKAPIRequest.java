@@ -1,17 +1,17 @@
 /* Copyright (C) 2013 KKBOX Inc.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* ​http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * ​http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /**
  * KKAPIRequest
  */
@@ -35,7 +35,7 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -99,9 +99,11 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		postParams.add((new BasicNameValuePair(key, value)));
 	}
 
-	public void addMultiPartPostParam(String key, String mimeType, byte[] data) {
-		multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-		multipartEntity.addPart(key, new ByteArrayBody(data, mimeType, "filename"));
+	public void addMultiPartPostParam(String key, ContentBody contentBody) {
+		if (multipartEntity == null) {
+			multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+		}
+		multipartEntity.addPart(key, contentBody);
 	}
 
 	public void addStringPostParam(String data) {
@@ -113,7 +115,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	public void addFilePostParam(String path) {
 		fileEntity = new FileEntity(new File(path), URLEncodedUtils.CONTENT_TYPE + HTTP.CHARSET_PARAM + HTTP.UTF_8);
 	}
-	
+
 	public void addByteArrayPostParam(byte[] data) {
 		byteArrayEntity = new ByteArrayEntity(data);
 		byteArrayEntity.setContentType("application/octet-stream");
@@ -204,7 +206,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		if (listener == null) { return; }
 		if (isHttpStatusError) {
 			listener.onHttpStatusError(httpStatusCode);
-		} else if (isNetworkError){
+		} else if (isNetworkError) {
 			listener.onNetworkError();
 		} else {
 			listener.onComplete();
