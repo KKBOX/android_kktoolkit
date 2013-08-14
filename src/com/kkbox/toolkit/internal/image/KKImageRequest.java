@@ -24,6 +24,7 @@ import android.view.View;
 
 import com.kkbox.toolkit.image.KKImageListener;
 import com.kkbox.toolkit.image.KKImageManager;
+import com.kkbox.toolkit.image.KKImageOnReceiveHttpHeaderListener;
 import com.kkbox.toolkit.utils.UserTask;
 
 import org.apache.http.Header;
@@ -49,7 +50,8 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private HttpResponse response;
 	private Context context;
 	private View view;
-	private KKImageListener imageCacheListener;
+	private KKImageListener imageListener;
+	private KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener;
 	private String url = "";
 	private String localPath;
 	private String cachePath;
@@ -58,8 +60,8 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private Cipher cipher = null;
 	private boolean saveToLocal = false;
 
-	public KKImageRequest(Context context, String url, String localPath, View view, boolean updateBackground, Cipher cipher,
-			boolean saveToLocal) {
+	public KKImageRequest(Context context, String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener,
+			View view, boolean updateBackground, Cipher cipher, boolean saveToLocal) {
 		this.view = view;
 		this.saveToLocal = saveToLocal;
 		if (updateBackground) {
@@ -67,16 +69,19 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		} else {
 			actionType = KKImageManager.ActionType.UPDATE_VIEW_SOURCE;
 		}
+		this.onReceiveHttpHeaderListener = onReceiveHttpHeaderListener;
 		init(context, url, localPath, cipher);
 	}
 
-	public KKImageRequest(Context context, String url, String localPath, Cipher cipher) {
+	public KKImageRequest(Context context, String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener,
+			Cipher cipher) {
 		actionType = KKImageManager.ActionType.DOWNLOAD;
+		this.onReceiveHttpHeaderListener = onReceiveHttpHeaderListener;
 		init(context, url, localPath, cipher);
 	}
 
-	public KKImageRequest(Context context, String url, String localPath, KKImageListener imageCacheListener, Cipher cipher) {
-		this.imageCacheListener = imageCacheListener;
+	public KKImageRequest(Context context, String url, String localPath, KKImageListener imageListener, Cipher cipher) {
+		this.imageListener = imageListener;
 		actionType = KKImageManager.ActionType.CALL_LISTENER;
 		init(context, url, localPath, cipher);
 	}
@@ -106,7 +111,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	}
 
 	public KKImageListener getImageCacheListener() {
-		return imageCacheListener;
+		return imageListener;
 	}
 
 	public int getActionType() {
@@ -215,8 +220,8 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 
 	@Override
 	public void onProgressUpdate(Header[]... data) {
-		if (imageCacheListener != null) {
-			imageCacheListener.onReceiveHttpHeader(data[0]);
+		if (onReceiveHttpHeaderListener != null) {
+			onReceiveHttpHeaderListener.onReceiveHttpHeader(data[0]);
 		}
 	}
 
@@ -237,12 +242,12 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			localFile.delete();
 		}
 	}
-	
+
 	private void removeCacheFile() {
 		File cacheFile = new File(cachePath);
 		cacheFile.delete();
 	}
-	
+
 	private void cryptToFile(String sourceFilePath, String targetFilePath) throws Exception {
 		// FIXME: should have two functions: decyptToFile and encryptToFile
 		RandomAccessFile sourceFile = new RandomAccessFile(sourceFilePath, "r");

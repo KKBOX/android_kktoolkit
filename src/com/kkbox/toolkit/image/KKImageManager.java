@@ -100,7 +100,7 @@ public class KKImageManager {
 		}
 		return context.getCacheDir().getAbsolutePath() + File.separator + "image" + File.separator + StringUtils.getMd5Hash(url);
 	}
-	
+
 	public static void removeCacheIfExists(Context context, String url) {
 		final File cacheFile = new File(getTempImagePath(context, url));
 		cacheFile.delete();
@@ -180,7 +180,7 @@ public class KKImageManager {
 			}
 		}
 	}
-	
+
 	public KKImageManager(Context context, Cipher localCipher) {
 		this.context = context;
 		this.cipher = localCipher;
@@ -195,8 +195,8 @@ public class KKImageManager {
 		gc();
 	}
 
-	public void downloadBitmap(String url, String localPath) {
-		KKImageRequest request = new KKImageRequest(context, url, localPath, cipher);
+	public void downloadBitmap(String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener) {
+		KKImageRequest request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, cipher);
 		workingList.add(request);
 		startFetch();
 	}
@@ -208,19 +208,21 @@ public class KKImageManager {
 	}
 
 	public void updateViewSource(ImageView view, String url, String localPath, int defaultResourceId) {
-		updateView(view, url, localPath, defaultResourceId, false, false);
+		updateView(view, url, localPath, defaultResourceId, false, false, null);
 	}
 
-	public void updateViewSourceAndSave(ImageView view, String url, String localPath, int defaultResourceId) {
-		updateView(view, url, localPath, defaultResourceId, false, true);
+	public void updateViewSourceAndSave(ImageView view, String url, String localPath, int defaultResourceId,
+			KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener) {
+		updateView(view, url, localPath, defaultResourceId, false, true, onReceiveHttpHeaderListener);
 	}
 
 	public void updateViewBackground(View view, String url, String localPath, int defaultResourceId) {
-		updateView(view, url, localPath, defaultResourceId, true, false);
+		updateView(view, url, localPath, defaultResourceId, true, false, null);
 	}
 
-	public void updateViewBackgroundAndSave(View view, String url, String localPath, int defaultResourceId) {
-		updateView(view, url, localPath, defaultResourceId, true, true);
+	public void updateViewBackgroundAndSave(View view, String url, String localPath, int defaultResourceId,
+			KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener) {
+		updateView(view, url, localPath, defaultResourceId, true, true, onReceiveHttpHeaderListener);
 	}
 
 	public Bitmap loadCache(String url, String localPath) {
@@ -237,7 +239,8 @@ public class KKImageManager {
 		}
 	}
 
-	private void updateView(View view, String url, String localPath, int defaultResourceId, boolean updateBackground, boolean saveToLocal) {
+	private void updateView(View view, String url, String localPath, int defaultResourceId, boolean updateBackground, boolean saveToLocal,
+			KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener) {
 		KKImageRequest request = fetchList.get(view);
 		if (request != null) {
 			if (request.getUrl().equals(url)) {
@@ -270,7 +273,7 @@ public class KKImageManager {
 				imageView.setImageResource(defaultResourceId);
 			}
 		}
-		request = new KKImageRequest(context, url, localPath, view, updateBackground, cipher, saveToLocal);
+		request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, view, updateBackground, cipher, saveToLocal);
 		workingList.add(request);
 		fetchList.put(view, request);
 		startFetch();

@@ -17,8 +17,8 @@
  */
 package com.kkbox.toolkit.image;
 
-import android.graphics.Bitmap;
+import org.apache.http.Header;
 
-public abstract class KKImageListener {
-	public void onReceiveBitmap(Bitmap bitmap) {}
+public abstract class KKImageOnReceiveHttpHeaderListener {
+	public void onReceiveHttpHeader(Header[] headers) {}
 }
