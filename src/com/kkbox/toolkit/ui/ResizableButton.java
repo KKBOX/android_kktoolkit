@@ -35,12 +35,12 @@ public class ResizableButton extends Button {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		if (getBackground() == null) {
-			setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
+			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		} else {
 			int width = MeasureSpec.getSize(widthMeasureSpec);
 			int height = width * getBackground().getIntrinsicHeight() / getBackground().getIntrinsicWidth();
 
-			setMeasuredDimension(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+			super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
 					MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
 		}
 	}
