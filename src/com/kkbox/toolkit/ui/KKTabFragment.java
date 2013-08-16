@@ -57,11 +57,9 @@ public abstract class KKTabFragment extends KKFragment {
 				if (fragment == null) { return; }
 				fragment.setArguments(arguments);
 				fragmentTransaction.replace(R.id.sub_fragment, fragment, String.valueOf(currentIndex));
-
 			} else {
 				fragmentTransaction.attach(fragment);
 			}
-
 			if (currentFragment != null) {
 				KKFragment.setAnimation(KKFragment.AnimationType.NONE);
 			} else if (showSubFragmentAnimation) {
@@ -69,11 +67,28 @@ public abstract class KKTabFragment extends KKFragment {
 			}
 			fragmentTransaction.commit();
 			currentFragment = fragment;
-
 		}
 	};
 
 	public KKTabFragment() {}
+
+	public void invalidateCurrentTabFragment() {
+		FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+		if (currentFragment != null) {
+			fragmentTransaction.detach(currentFragment);
+		} else {
+			return;
+		}
+		Bundle arguments = new Bundle();
+		arguments.putBoolean("nested_in_tab", true);
+		KKFragment fragment = onRequestTabFragment(currentIndex, arguments);
+		if (fragment == null) { return; }
+		fragment.setArguments(arguments);
+		fragmentTransaction.replace(R.id.sub_fragment, fragment, String.valueOf(currentIndex));
+		KKFragment.setAnimation(KKFragment.AnimationType.NONE);
+		fragmentTransaction.commit();
+		currentFragment = fragment;
+	}
 
 	protected void initView(View view, int[] buttonTextResourcetId, boolean showSubFragmentAnimation, int currentIndex) {
 		initView(view);
@@ -98,7 +113,7 @@ public abstract class KKTabFragment extends KKFragment {
 			layoutRadioBar.setBackgroundResource(backgroundResourceId);
 		}
 		array.recycle();
-		
+
 		array = getKKActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { R.attr.KKTabOverlay });
 		int overlayResourceId = array.getResourceId(0, -1);
 		ImageView viewOverlay = (ImageView)view.findViewById(R.id.view_overlay);
@@ -106,7 +121,7 @@ public abstract class KKTabFragment extends KKFragment {
 			viewOverlay.setBackgroundResource(overlayResourceId);
 		}
 		array.recycle();
-		
+
 		array = getKKActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { android.R.attr.textSize });
 		int textSize = array.getDimensionPixelSize(0, -1);
 		array.recycle();
