@@ -30,9 +30,6 @@ import com.kkbox.toolkit.example.R;
 import com.kkbox.toolkit.image.KKImageListener;
 import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.ui.KKActivity;
-import com.kkbox.toolkit.utils.KKDebug;
-
-import org.apache.http.Header;
 
 import java.util.Random;
 
@@ -45,14 +42,6 @@ public class ActivityImage extends KKActivity {
 		public void onReceiveBitmap(Bitmap bitmap) {
 			imageView.setBackgroundDrawable(new BitmapDrawable(bitmap));
 			imageManager.autoRecycleViewBackgroundBitmap(imageView);
-		}
-
-		@Override
-		public void onReceiveHttpHeader(Header[] headers) {
-			// if your server sends extra info in the http header
-			for (Header header : headers) {
-				KKDebug.i(header.getName() + " " + header.getValue());
-			}
 		}
 	};
 
