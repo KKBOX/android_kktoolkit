@@ -56,6 +56,9 @@ public abstract class KKActivity extends FragmentActivity {
 
 	@Override
 	public KKMenuInflaterCompat getMenuInflater() {
+		if (menuInflater == null) {
+			menuInflater = new KKMenuInflaterCompat(this);
+		}
 		return menuInflater;
 	}
 
