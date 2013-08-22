@@ -43,6 +43,7 @@ public abstract class KKActivity extends FragmentActivity {
 	private KKActionBar actionBar;
 	private KKMenuInflaterCompat menuInflater;
 	private KKMenuCompat menuCompat;
+	private Menu menu;
 
 	public KKActionBar getKKActionBar() {
 		return actionBar;
@@ -88,6 +89,12 @@ public abstract class KKActivity extends FragmentActivity {
 		onCreateCompatOptionsMenu(new KKMenuCompat(this, this));
 		if (Build.VERSION.SDK_INT >= 11) {
 			super.invalidateOptionsMenu();
+		} else if (menu != null) {
+			menu.clear();
+			createOptionsMenu(this.menuCompat, menu);
+			for (KKFragment fragment : activeSubFragments) {
+				fragment.onCreateOptionsMenu(menu, menuInflater);
+			}
 		}
 	}
 
@@ -102,7 +109,11 @@ public abstract class KKActivity extends FragmentActivity {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		onPrepareCompatOptionsMenu(menuCompat);
 		prepareOptionsMenu(menuCompat, menu);
-		return true;
+		if (menu.size() > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -120,6 +131,7 @@ public abstract class KKActivity extends FragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
 		createOptionsMenu(this.menuCompat, menu);
 		return true;
 	}

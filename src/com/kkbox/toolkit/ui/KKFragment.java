@@ -55,7 +55,6 @@ public abstract class KKFragment extends Fragment {
 	private boolean uiLoaded = false;
 	private boolean animationEnded = false;
 	private boolean autoDataLoading = true;
-	private boolean hasOptionsMenu = false;
 	private KKMenuCompat menuCompat;
 
 	public KKFragment() {}
@@ -123,8 +122,18 @@ public abstract class KKFragment extends Fragment {
 
 	@Override
 	public void setHasOptionsMenu(boolean hasMenu) {
-		hasOptionsMenu = hasMenu;
-		super.setHasOptionsMenu(hasMenu);
+		if (hasMenu && Build.VERSION.SDK_INT < 11) {
+			boolean foundMenu = false;
+			for (int i = 0; i < menuCompat.size(); i++) {
+				if (menuCompat.getItem(i).getShowAsActionFlags() == KKMenuItemCompat.SHOW_AS_ACTION_NEVER) {
+					foundMenu = true;
+					break;
+				}
+			}
+			super.setHasOptionsMenu(foundMenu);
+		} else {
+			super.setHasOptionsMenu(hasMenu);
+		}
 	}
 
 	public void onCreateCompatOptionsMenu(KKMenuCompat menu, KKMenuInflaterCompat inflater) {
@@ -158,6 +167,7 @@ public abstract class KKFragment extends Fragment {
 	public void onPrepareOptionsMenu(Menu menu) {
 		onPrepareCompatOptionsMenu(menuCompat);
 		activity.prepareOptionsMenu(menuCompat, menu);
+		super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
@@ -173,9 +183,7 @@ public abstract class KKFragment extends Fragment {
 		onCreateCompatOptionsMenu(new KKMenuCompat(activity, this), activity.getMenuInflater());
 	}
 
-	public void onReceiveMessage(Bundle arguments) {
-
-	}
+	public void onReceiveMessage(Bundle arguments) {}
 
 	protected void initView(View view) {
 		viewMessage = (KKMessageView)view.findViewById(R.id.view_message);
