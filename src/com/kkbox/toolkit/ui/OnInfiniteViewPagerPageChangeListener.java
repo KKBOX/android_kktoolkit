@@ -30,8 +30,10 @@ public abstract class OnInfiniteViewPagerPageChangeListener implements ViewPager
 				viewPager.setCurrentItem(1, false);
 				return;
 			}
+			onLoopPageSelected(position - 1);
+		} else {
+			onLoopPageSelected(position);
 		}
-		onLoopPageSelected(position - 1);
 	}
 
 	public abstract void onLoopPageSelected(int position);
