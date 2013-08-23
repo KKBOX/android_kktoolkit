@@ -1,17 +1,17 @@
 /* Copyright (C) 2013 KKBOX Inc.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* ​http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * ​http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /**
  * KKDragAndDropListView
  */
@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.listview.adapter.ReorderListAdapter;
 
 public class KKDragAndDropListView extends ListView {
@@ -111,11 +112,26 @@ public class KKDragAndDropListView extends ListView {
 							dragViewParams.y = y + dragPoint;
 							viewDrag = new ImageView(getContext());
 							viewDrag.setImageBitmap(bitmap);
+							KKImageManager.autoRecycleViewSourceBitmap(viewDrag);
 							windowManager.addView(viewDrag, dragViewParams);
 							ListAdapter adapter = getAdapter();
 							movingObject = ((ReorderListAdapter)adapter).removeAtPosition(itemIndex);
 							upperBound = Math.min(y, height / 3);
 							lowerBound = Math.max(y, height * 2 / 3);
+
+							if (itemIndex == ((ReorderListAdapter)adapter).getCount()) {
+								itemIndex--;
+								isLastItem = true;
+							} else {
+								layoutExpanded = (LinearLayout)getChildAt(itemIndex - getFirstVisiblePosition());
+								layoutExpanded.setGravity(Gravity.BOTTOM);
+								isLastItem = false;
+								ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
+								viewParams.height = listViewItemHeight * 2;
+								layoutExpanded.setLayoutParams(viewParams);
+							}
+							expandedViewIndex = itemIndex;
+							return true;
 						} else {
 							break;
 						}
@@ -161,16 +177,15 @@ public class KKDragAndDropListView extends ListView {
 						}
 						layoutExpanded = (LinearLayout)getChildAt(itemIndex - getFirstVisiblePosition());
 						if (layoutExpanded == null) {
-							layoutExpanded = (LinearLayout)getChildAt(--itemIndex - getFirstVisiblePosition());
-							layoutExpanded.setGravity(Gravity.TOP);
+							itemIndex--;
 							isLastItem = true;
 						} else {
 							layoutExpanded.setGravity(Gravity.BOTTOM);
 							isLastItem = false;
+							ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
+							viewParams.height = listViewItemHeight * 2;
+							layoutExpanded.setLayoutParams(viewParams);
 						}
-						ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
-						viewParams.height = listViewItemHeight * 2;
-						layoutExpanded.setLayoutParams(viewParams);
 						expandedViewIndex = itemIndex;
 					}
 					dragViewParams.y = y + dragPoint;
@@ -182,10 +197,12 @@ public class KKDragAndDropListView extends ListView {
 	}
 
 	private void unexpandView() {
-		ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
-		viewParams.height = listViewItemHeight;
-		layoutExpanded.setLayoutParams(viewParams);
-		layoutExpanded = null;
+		if (layoutExpanded != null) {
+			ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
+			viewParams.height = listViewItemHeight;
+			layoutExpanded.setLayoutParams(viewParams);
+			layoutExpanded = null;
+		}
 		expandedViewIndex = -1;
 	}
 }
