@@ -66,14 +66,18 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	private Cipher cipher = null;
 
 	public KKAPIRequest(String url, Cipher cipher) {
+		this(url, cipher, 10000);
+	}
+
+	public KKAPIRequest(String url, Cipher cipher, int socketTimeout) {
 		BasicHttpParams params = new BasicHttpParams();
 		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
-		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 10000);
+		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, socketTimeout);
 		httpclient = new DefaultHttpClient(params);
 		this.url = url;
 		this.cipher = cipher;
 	}
-
+	
 	public void addGetParam(String key, String value) {
 		if (getParams == "") {
 			getParams = "?";
