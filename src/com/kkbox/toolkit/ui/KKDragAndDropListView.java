@@ -33,7 +33,6 @@ import android.widget.ListView;
 
 import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.listview.adapter.ReorderListAdapter;
-import com.kkbox.toolkit.utils.KKDebug;
 
 public class KKDragAndDropListView extends ListView {
 	private Object movingObject;

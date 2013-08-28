@@ -166,9 +166,8 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 						}
 					}
 				}
-			} catch (Exception e) {
-				removeInvalidImageFiles();
-			}
+			} catch (Exception e) {}
+			removeInvalidImageFiles();
 			// Do fetch server resource if either cache nor local file is not valid to read
 			final HttpGet httpget = new HttpGet(url);
 			response = httpclient.execute(httpget);
