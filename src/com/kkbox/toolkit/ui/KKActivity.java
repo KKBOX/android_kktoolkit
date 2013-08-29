@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView.ScaleType;
 
 import com.kkbox.toolkit.R;
 import com.kkbox.toolkit.utils.KKDebug;
@@ -198,6 +199,7 @@ public abstract class KKActivity extends FragmentActivity {
 	void checkActionButtonCreated(final Object responseUI, final KKMenuItemCompat menuItem) {
 		if (menuItem.getShowAsActionFlags() != KKMenuItemCompat.SHOW_AS_ACTION_NEVER && menuItem.getActionView() == null) {
 			final ImageButton button = new ImageButton(this);
+			button.setScaleType(ScaleType.CENTER_INSIDE);
 			TypedValue typedValue = new TypedValue();
 			getTheme().resolveAttribute(R.attr.KKActionButtonStyle, typedValue, true);
 			button.setImageDrawable(menuItem.getIcon());
