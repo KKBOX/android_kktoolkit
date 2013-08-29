@@ -25,6 +25,7 @@ import android.view.View;
 import com.kkbox.toolkit.image.KKImageListener;
 import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.image.KKImageOnReceiveHttpHeaderListener;
+import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.UserTask;
 
 import org.apache.http.Header;
@@ -36,6 +37,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -142,7 +144,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 						}
 						return null;
 					} else {
-						bitmap = BitmapFactory.decodeFile(cachePath);
+						bitmap = decodeBitmap(cachePath);
 						if (bitmap != null) {
 							if (localPath != null && saveToLocal && (localFile == null || !localFile.exists())) {
 								cryptToFile(cachePath, localPath);
@@ -158,7 +160,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 						return null;
 					} else {
 						cryptToFile(localPath, cachePath);
-						bitmap = BitmapFactory.decodeFile(cachePath);
+						bitmap = decodeBitmap(cachePath);
 						if (bitmap != null) {
 							return bitmap;
 						} else {
@@ -167,12 +169,12 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 					}
 				}
 			} catch (Exception e) {}
-			removeInvalidImageFiles();
 			// Do fetch server resource if either cache nor local file is not valid to read
 			final HttpGet httpget = new HttpGet(url);
 			response = httpclient.execute(httpget);
 			final InputStream is = response.getEntity().getContent();
 			publishProgress(response.getAllHeaders());
+			removeInvalidImageFiles();
 			if (actionType == KKImageManager.ActionType.DOWNLOAD) {
 				localRandomAccessFile = new RandomAccessFile(localPath, "rw");
 				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
@@ -200,7 +202,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 					}
 				}
 				cacheRandomAccessFile.close();
-				bitmap = BitmapFactory.decodeFile(cachePath);
+				bitmap = decodeBitmap(cachePath);
 				if (bitmap != null) {
 					if (saveToLocal && localPath != null) {
 						cryptToFile(cachePath, localPath);
@@ -245,6 +247,15 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private void removeCacheFile() {
 		File cacheFile = new File(cachePath);
 		cacheFile.delete();
+	}
+
+	private Bitmap decodeBitmap(String path) {
+		try {
+			File file = new File(path);
+			return BitmapFactory.decodeStream(new FileInputStream(file));
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	private void cryptToFile(String sourceFilePath, String targetFilePath) throws Exception {
