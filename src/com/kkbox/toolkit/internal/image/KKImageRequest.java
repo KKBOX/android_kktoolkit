@@ -122,7 +122,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 
 	@Override
 	public Bitmap doInBackground(Object... params) {
-		listener = (KKImageRequestListener)params[0];
+		listener = (KKImageRequestListener) params[0];
 		Bitmap bitmap;
 
 		try {
@@ -228,7 +228,9 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 
 	@Override
 	public void onPostExecute(Bitmap bitmap) {
-		if (listener == null) { return; }
+		if (listener == null) {
+			return;
+		}
 		if (isNetworkError || (actionType != KKImageManager.ActionType.DOWNLOAD && bitmap == null)) {
 			listener.onNetworkError(this);
 		} else {

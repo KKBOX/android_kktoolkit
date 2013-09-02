@@ -48,7 +48,7 @@ public class KKImageManager {
 		public static final int UPDATE_VIEW_SOURCE = 3;
 	}
 
-	private static final int MAX_WORKING_COUNT = 10;
+	private static final int MAX_WORKING_COUNT = 1;
 	private static final long FATAL_STORAGE_SIZE = 30 * 1024 * 1024;
 	private static final HashMap<WeakReference<View>, Bitmap> viewBackgroundBitmapReference = new HashMap<WeakReference<View>, Bitmap>();
 	private static final HashMap<WeakReference<ImageView>, Bitmap> imageViewSourceBitmapReference = new HashMap<WeakReference<ImageView>, Bitmap>();
