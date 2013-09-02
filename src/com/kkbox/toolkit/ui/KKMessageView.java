@@ -18,7 +18,10 @@
 package com.kkbox.toolkit.ui;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -61,6 +64,16 @@ public class KKMessageView extends RelativeLayout {
 		labelText.setText(text);
 		setCustomView(view);
 	}
+
+    public void setSingleBoldTextView(String text) {
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_empty_single_text, null);
+        TextView labelText = (TextView)view.findViewById(R.id.label_text);
+        labelText.setTextColor(Color.parseColor("#00aed8"));
+        labelText.setTextSize(TypedValue.COMPLEX_UNIT_DIP,22);
+        labelText.setInputType(Typeface.BOLD);
+        labelText.setText(text);
+        setCustomView(view);
+    }
 
 	public void setMultiTextView(String text, String description) {
 		View view = LayoutInflater.from(context).inflate(R.layout.layout_empty_multi_text, null);
