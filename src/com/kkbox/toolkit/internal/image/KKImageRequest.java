@@ -25,7 +25,6 @@ import android.view.View;
 import com.kkbox.toolkit.image.KKImageListener;
 import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.image.KKImageOnReceiveHttpHeaderListener;
-import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.UserTask;
 
 import org.apache.http.Header;
