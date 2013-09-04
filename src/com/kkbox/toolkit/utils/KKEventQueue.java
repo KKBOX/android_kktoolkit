@@ -45,9 +45,9 @@ public class KKEventQueue {
 		queue.add(newEvent);
 	}
 
-	public void addNewThreadEvent(Runnable newThreadRunable, Runnable postEventRunnable) {
+	public void addNewThreadEvent(Runnable newThreadRunnable, Runnable postEventRunnable) {
 		final KKEvent newEvent = new KKEvent();
-		newEvent.runnable = newThreadRunable;
+		newEvent.runnable = newThreadRunnable;
 		newEvent.threadType = ThreadType.NEW_THREAD;
 		newEvent.postEventRunnable = postEventRunnable;
 		queue.add(newEvent);
