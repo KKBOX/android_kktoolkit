@@ -25,6 +25,7 @@ import android.view.View;
 import com.kkbox.toolkit.image.KKImageListener;
 import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.image.KKImageOnReceiveHttpHeaderListener;
+import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.UserTask;
 
 import org.apache.http.Header;
@@ -169,48 +170,52 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 				}
 			} catch (Exception e) {}
 			// Do fetch server resource if either cache nor local file is not valid to read
-			final HttpGet httpget = new HttpGet(url);
-			response = httpclient.execute(httpget);
-			final InputStream is = response.getEntity().getContent();
-			publishProgress(response.getAllHeaders());
-			removeInvalidImageFiles();
-			if (actionType == KKImageManager.ActionType.DOWNLOAD) {
-				localRandomAccessFile = new RandomAccessFile(localPath, "rw");
-				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
-					if (cipher != null) {
-						buffer = cipher.doFinal(buffer);
+			int failedCount = 0;
+			do {
+				final HttpGet httpget = new HttpGet(url);
+				response = httpclient.execute(httpget);
+				final InputStream is = response.getEntity().getContent();
+				publishProgress(response.getAllHeaders());
+				removeInvalidImageFiles();
+				if (actionType == KKImageManager.ActionType.DOWNLOAD) {
+					localRandomAccessFile = new RandomAccessFile(localPath, "rw");
+					while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+						if (cipher != null) {
+							buffer = cipher.doFinal(buffer);
+						}
+						localRandomAccessFile.write(buffer, 0, readLength);
 					}
-					localRandomAccessFile.write(buffer, 0, readLength);
-				}
-				localRandomAccessFile.close();
-				return null;
-			} else {
-				try {
-					cacheRandomAccessFile = new RandomAccessFile(cachePath, "rw");
-				} catch (IOException e) {
-					// we don't save to SD card if cache is full
-					return BitmapFactory.decodeStream(is);
-				}
-				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
-					try {
-						cacheRandomAccessFile.write(buffer, 0, readLength);
-					} catch (IOException e) {
-						cacheRandomAccessFile.close();
-						removeCacheFile();
-						return null;
-					}
-				}
-				cacheRandomAccessFile.close();
-				bitmap = decodeBitmap(cachePath);
-				if (bitmap != null) {
-					if (saveToLocal && localPath != null) {
-						cryptToFile(cachePath, localPath);
-					}
-					return bitmap;
+					localRandomAccessFile.close();
+					return null;
 				} else {
-					removeCacheFile();
+					try {
+						cacheRandomAccessFile = new RandomAccessFile(cachePath, "rw");
+					} catch (IOException e) {
+						// we don't save to SD card if cache is full
+						return BitmapFactory.decodeStream(is);
+					}
+					while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+						try {
+							cacheRandomAccessFile.write(buffer, 0, readLength);
+						} catch (IOException e) {
+							cacheRandomAccessFile.close();
+							removeCacheFile();
+							return null;
+						}
+					}
+					cacheRandomAccessFile.close();
+					bitmap = decodeBitmap(cachePath);
+					if (bitmap != null) {
+						if (saveToLocal && localPath != null) {
+							cryptToFile(cachePath, localPath);
+						}
+						return bitmap;
+					} else {
+						File file = new File(cachePath);
+						failedCount++;
+					}
 				}
-			}
+			} while (failedCount < 5);
 		} catch (final Exception e) {
 			isNetworkError = true;
 			removeInvalidImageFiles();
