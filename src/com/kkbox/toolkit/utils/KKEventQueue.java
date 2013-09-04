@@ -1,17 +1,17 @@
 /* Copyright (C) 2013 KKBOX Inc.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* ​http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * ​http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /**
  * KKEventQueue
  */
@@ -28,11 +28,15 @@ public class KKEventQueue {
 	private class KKEvent {
 		public Runnable runnable;
 		public int threadType;
+		public Runnable postEventRunnable;
 	}
 
 	private final ArrayList<KKEvent> queue = new ArrayList<KKEvent>();
 	private KKEventQueueListener listener;
-	private boolean isRunning = false;;
+	private boolean isRunning = false;
+	private int threadUnlockId = -1;
+	private boolean threadUnlockFlag = false;
+	private final Object threadLock = new Object();
 
 	public void add(Runnable runnable, int threadType) {
 		final KKEvent newEvent = new KKEvent();
@@ -40,17 +44,44 @@ public class KKEventQueue {
 		newEvent.threadType = threadType;
 		queue.add(newEvent);
 	}
-	
+
 	public void addNewThreadEvent(Runnable newThreadRunable, Runnable postEventRunnable) {
-		//TODO:
+		final KKEvent newEvent = new KKEvent();
+		newEvent.runnable = newThreadRunable;
+		newEvent.threadType = ThreadType.NEW_THREAD;
+		newEvent.postEventRunnable = postEventRunnable;
+		queue.add(newEvent);
 	}
-	
-	public void addCallerThreadEventWithLock(Runnable callerThreadRunnable, int lockId) {
-		//TODO:
+
+	public void addCallerThreadEventWithLock(Runnable callerThreadRunnable, final int lockId) {
+		add(callerThreadRunnable, ThreadType.CALLER_THREAD);
+		add(new Runnable() {
+			@Override
+			public void run() {
+				while (threadUnlockId != lockId && !threadUnlockFlag) {
+					try {
+						synchronized (threadLock) {
+							threadLock.wait();
+						}
+					} catch (final InterruptedException e) {}
+				}
+				threadUnlockId = -1;
+			}
+		}, ThreadType.NEW_THREAD);
 	}
-	
+
 	public void unlockEvent(int lockId) {
-		//TODO:
+		synchronized (threadLock) {
+			threadUnlockId = lockId;
+			threadLock.notifyAll();
+		}
+	}
+
+	public void unlockAllEvents() {
+		synchronized (threadLock) {
+			threadUnlockFlag = true;
+			threadLock.notifyAll();
+		}
 	}
 
 	public void clearPendingEvents() {
@@ -80,6 +111,8 @@ public class KKEventQueue {
 	private void run() {
 		if (queue.size() == 0) {
 			isRunning = false;
+			threadUnlockFlag = false;
+			threadUnlockId = -1;
 			if (listener != null) {
 				listener.onQueueCompleted();
 			}
@@ -97,6 +130,9 @@ public class KKEventQueue {
 
 				@Override
 				public void onPostExecute(Void v) {
+					if (event.postEventRunnable != null) {
+						event.postEventRunnable.run();
+					}
 					queue.remove(0);
 					run();
 				}
