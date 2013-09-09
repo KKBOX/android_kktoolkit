@@ -18,6 +18,6 @@
  */
 package com.kkbox.toolkit;
 
-public abstract interface KKServiceListener {
-	public abstract void onStarted();
+public abstract class KKServiceListener {
+	public void onStarted() {};
 }
