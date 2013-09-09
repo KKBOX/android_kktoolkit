@@ -21,7 +21,7 @@
     android:background="#FFFFFF"
     android:gravity="center"
     android:orientation="vertical"
-	android:clickable="true">
+    android:clickable="true">
 
     <TextView
         android:id="@+id/label_text"
