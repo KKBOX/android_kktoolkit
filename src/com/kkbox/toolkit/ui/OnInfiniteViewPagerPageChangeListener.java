@@ -16,8 +16,10 @@ public abstract class OnInfiniteViewPagerPageChangeListener implements ViewPager
 
 	@Override
 	public void onPageScrollStateChanged(int state) {
-		if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+		if (state == ViewPager.SCROLL_STATE_SETTLING) {
 			scrolled = true;
+		} else if (state == ViewPager.SCROLL_STATE_IDLE) {
+			scrolled = false;
 		}
 	}
 
