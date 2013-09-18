@@ -27,7 +27,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../kkbox_android_toolkit/libs/httpmime-4.2.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/libs/httpmime-4.2.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
