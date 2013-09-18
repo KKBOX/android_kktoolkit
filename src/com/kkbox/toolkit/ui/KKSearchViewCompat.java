@@ -19,7 +19,6 @@ package com.kkbox.toolkit.ui;
 
 import android.app.SearchManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -51,17 +50,25 @@ public class KKSearchViewCompat extends LinearLayout {
 
 	KKActivity activity;
 
-	public KKSearchViewCompat(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public KKSearchViewCompat(KKActivity activity, AttributeSet attrs) {
+		super(activity, attrs);
+		this.activity = activity;
+		init();
 	}
 
-	public KKSearchViewCompat(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+	public KKSearchViewCompat(KKActivity activity, AttributeSet attrs, int defStyle) {
+		super(activity, attrs, defStyle);
+		this.activity = activity;
+		init();
 	}
 
 	public KKSearchViewCompat(KKActivity activity) {
 		super(activity);
 		this.activity = activity;
+		init();
+	}
+
+	private void init() {
 		if (Build.VERSION.SDK_INT >= 11) {
 			searchView = new SearchView(activity);
 			addView(searchView);
