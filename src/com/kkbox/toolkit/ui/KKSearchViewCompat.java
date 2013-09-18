@@ -19,6 +19,7 @@ package com.kkbox.toolkit.ui;
 
 import android.app.SearchManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -26,6 +27,7 @@ import android.speech.RecognizerIntent;
 import android.support.v4.widget.SearchViewCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +50,14 @@ public class KKSearchViewCompat extends LinearLayout {
 	ImageView buttonVoiceSearch;
 
 	KKActivity activity;
+
+	public KKSearchViewCompat(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
+
+	public KKSearchViewCompat(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+	}
 
 	public KKSearchViewCompat(KKActivity activity) {
 		super(activity);
