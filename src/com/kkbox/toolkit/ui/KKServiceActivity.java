@@ -25,7 +25,6 @@ import com.kkbox.toolkit.KKServiceListener;
 import com.kkbox.toolkit.R;
 import com.kkbox.toolkit.dialog.KKDialog;
 import com.kkbox.toolkit.internal.notification.KKDialogManagerListener;
-import com.kkbox.toolkit.utils.KKDebug;
 
 public abstract class KKServiceActivity extends KKActivity {
 	private ProgressDialog serviceLoadingDialog;
@@ -113,7 +112,6 @@ public abstract class KKServiceActivity extends KKActivity {
 			serviceLoadingDialog.setCanceledOnTouchOutside(false);
 			serviceLoadingDialog.show();
 		}
-		KKDebug.i(getClass().getSimpleName() + " onResume");
 		KKService.attachListener(serviceListener);
 	}
 

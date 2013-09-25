@@ -24,7 +24,7 @@ public class KKMenuCompat {
 	private ArrayList<KKMenuItemCompat> menuItems = new ArrayList<KKMenuItemCompat>();
 	private Menu menu;
 	private int menuResourceId = 0;
-	//TODO: refactor this
+	// TODO: refactor this
 	private Object uiTarget;
 	private ArrayList<KKMenuItemCompat> removedMenuItems = new ArrayList<KKMenuItemCompat>();
 
@@ -34,7 +34,9 @@ public class KKMenuCompat {
 
 	public KKMenuItemCompat findItem(int id) {
 		for (int i = 0; i < menuItems.size(); i++) {
-			if (menuItems.get(i).getItemId() == id) { return menuItems.get(i); }
+			if (menuItems.get(i).getItemId() == id) {
+				return menuItems.get(i);
+			}
 		}
 		return null;
 	}
@@ -71,13 +73,11 @@ public class KKMenuCompat {
 
 	boolean isMenuItemRemoved(int id) {
 		for (int i = 0; i < removedMenuItems.size(); i++) {
-			if (removedMenuItems.get(i).getItemId() == id) {
-				return true;
-			}
+			if (removedMenuItems.get(i).getItemId() == id) { return true; }
 		}
 		return false;
 	}
-	
+
 	void initMenu(int resourceId) {
 		menuResourceId = resourceId;
 		menuItems = new ArrayList<KKMenuItemCompat>();

@@ -197,7 +197,8 @@ public abstract class KKActivity extends FragmentActivity {
 	}
 
 	void checkActionButtonCreated(final Object responseUI, final KKMenuItemCompat menuItem) {
-		if (menuItem.getShowAsActionFlags() != KKMenuItemCompat.SHOW_AS_ACTION_NEVER && menuItem.getActionView() == null) {
+		if (Build.VERSION.SDK_INT < 11 && menuItem.getShowAsActionFlags() != KKMenuItemCompat.SHOW_AS_ACTION_NEVER
+				&& menuItem.getActionView() == null) {
 			final ImageButton button = new ImageButton(this);
 			button.setScaleType(ScaleType.CENTER_INSIDE);
 			TypedValue typedValue = new TypedValue();
@@ -227,11 +228,7 @@ public abstract class KKActivity extends FragmentActivity {
 				menuItem.getCompatSearchView().setDefaultOnCloseListener(new SearchViewCompat.OnCloseListenerCompat() {
 					@Override
 					public boolean onClose() {
-						if (Build.VERSION.SDK_INT >= 11) {
-							menuItem.setActionView(button);
-						} else {
-							invalidateOptionsMenu();
-						}
+						invalidateOptionsMenu();
 						return false;
 					}
 				});
