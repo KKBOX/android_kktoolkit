@@ -26,6 +26,7 @@ import android.speech.RecognizerIntent;
 import android.support.v4.widget.SearchViewCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,9 +50,25 @@ public class KKSearchViewCompat extends LinearLayout {
 
 	KKActivity activity;
 
+	public KKSearchViewCompat(KKActivity activity, AttributeSet attrs) {
+		super(activity, attrs);
+		this.activity = activity;
+		init();
+	}
+
+	public KKSearchViewCompat(KKActivity activity, AttributeSet attrs, int defStyle) {
+		super(activity, attrs, defStyle);
+		this.activity = activity;
+		init();
+	}
+
 	public KKSearchViewCompat(KKActivity activity) {
 		super(activity);
 		this.activity = activity;
+		init();
+	}
+
+	private void init() {
 		if (Build.VERSION.SDK_INT >= 11) {
 			searchView = new SearchView(activity);
 			addView(searchView);
