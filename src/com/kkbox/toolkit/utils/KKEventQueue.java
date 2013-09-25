@@ -61,7 +61,6 @@ public class KKEventQueue {
 				while (!threadUnlockId.contains(lockId) && !threadUnlockFlag) {
 					try {
 						synchronized (threadLock) {
-							KKDebug.i(threadUnlockId.toString() + "/" + lockId);
 							threadLock.wait();
 						}
 					} catch (final InterruptedException e) {}
