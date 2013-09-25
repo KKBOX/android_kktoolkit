@@ -34,7 +34,7 @@ public class KKEventQueue {
 	private final ArrayList<KKEvent> queue = new ArrayList<KKEvent>();
 	private KKEventQueueListener listener;
 	private boolean isRunning = false;
-	private int threadUnlockId = -1;
+	private ArrayList<Integer> threadUnlockId = new ArrayList<Integer>();
 	private boolean threadUnlockFlag = false;
 	private final Object threadLock = new Object();
 
@@ -58,21 +58,22 @@ public class KKEventQueue {
 		add(new Runnable() {
 			@Override
 			public void run() {
-				while (threadUnlockId != lockId && !threadUnlockFlag) {
+				while (!threadUnlockId.contains(lockId) && !threadUnlockFlag) {
 					try {
 						synchronized (threadLock) {
+							KKDebug.i(threadUnlockId.toString() + "/" + lockId);
 							threadLock.wait();
 						}
 					} catch (final InterruptedException e) {}
 				}
-				threadUnlockId = -1;
+				threadUnlockId.clear();
 			}
 		}, ThreadType.NEW_THREAD);
 	}
 
 	public void unlockEvent(int lockId) {
 		synchronized (threadLock) {
-			threadUnlockId = lockId;
+			threadUnlockId.add(lockId);
 			threadLock.notifyAll();
 		}
 	}
@@ -112,7 +113,7 @@ public class KKEventQueue {
 		if (queue.size() == 0) {
 			isRunning = false;
 			threadUnlockFlag = false;
-			threadUnlockId = -1;
+			threadUnlockId.clear();
 			if (listener != null) {
 				listener.onQueueCompleted();
 			}
