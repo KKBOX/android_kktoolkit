@@ -65,7 +65,7 @@ public abstract class KKTabFragment extends KKFragment {
 			} else if (showSubFragmentAnimation) {
 				KKFragment.setAnimation(KKFragment.AnimationType.PUSH);
 			}
-			fragmentTransaction.commit();
+			fragmentTransaction.commitAllowingStateLoss();
 			currentFragment = fragment;
 		}
 	};
