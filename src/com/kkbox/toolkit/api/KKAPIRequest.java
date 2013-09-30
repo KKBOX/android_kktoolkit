@@ -184,6 +184,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 						SystemClock.sleep(1000);
 						break;
 				}
+				response.getEntity().consumeContent();
 			} catch (final IOException e) {
 				KKDebug.w("connetion to " + url + getParams + " failed!");
 				retryTimes++;
