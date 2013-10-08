@@ -32,6 +32,9 @@ import android.view.animation.AnimationUtils;
 import com.kkbox.toolkit.R;
 import com.kkbox.toolkit.utils.KKDebug;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 public abstract class KKFragment extends Fragment {
 
 	public static class AnimationType {
@@ -103,6 +106,40 @@ public abstract class KKFragment extends Fragment {
 		}
 	}
 
+	protected void fixStateForNestedFragment() {
+		// workaround for sdk < 4.2 Orz
+		if (Build.VERSION.SDK_INT < 17) {
+			try {
+				int CREATED = 1;          // Created.
+				int ACTIVITY_CREATED = 2; // The activity has finished its creation.
+				int STOPPED = 3;          // Fully created, not started.
+				int STARTED = 4;          // Created and started, not resumed.
+				int RESUMED = 5;          // Created started and resumed.
+				Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+				Field mState = Fragment.class.getDeclaredField("mState");
+				Method dispatchResumeMethod = childFragmentManager.getType().getDeclaredMethod("dispatchResume", null);
+				Method dispatchStartMethod = childFragmentManager.getType().getDeclaredMethod("dispatchStart", null);
+				Method dispatchActivityCreatedMethod = childFragmentManager.getType().getDeclaredMethod("dispatchActivityCreated", null);
+				Method dispatchCreateMethod = childFragmentManager.getType().getDeclaredMethod("dispatchCreate", null);
+				mState.setAccessible(true);
+				childFragmentManager.setAccessible(true);
+				int state = mState.getInt(this);
+				if (state >= RESUMED) {
+					dispatchResumeMethod.invoke(childFragmentManager.get(this), null);
+				} else if (state >= STARTED) {
+					dispatchStartMethod.invoke(childFragmentManager.get(this), null);
+				} else if (state >= ACTIVITY_CREATED) {
+					dispatchActivityCreatedMethod
+							.invoke(childFragmentManager.get(this), null);
+				} else if (state >= CREATED) {
+					dispatchCreateMethod.invoke(childFragmentManager.get(this), null);
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
 	protected void fetchDataFailed() {
 		uiLoaded = true;
 		if (viewMessage != null) {
@@ -117,7 +154,7 @@ public abstract class KKFragment extends Fragment {
 	}
 
 	public KKActivity getKKActivity() {
-		return (KKActivity)getActivity();
+		return (KKActivity) getActivity();
 	}
 
 	@Override
@@ -179,14 +216,14 @@ public abstract class KKFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		activity = (KKActivity)getActivity();
+		activity = (KKActivity) getActivity();
 		onCreateCompatOptionsMenu(new KKMenuCompat(activity, this), activity.getMenuInflater());
 	}
 
 	public void onReceiveMessage(Bundle arguments) {}
 
 	protected void initView(View view) {
-		viewMessage = (KKMessageView)view.findViewById(R.id.view_message);
+		viewMessage = (KKMessageView) view.findViewById(R.id.view_message);
 		uiLoaded = false;
 		if (Build.VERSION.SDK_INT >= 11) {
 			view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);

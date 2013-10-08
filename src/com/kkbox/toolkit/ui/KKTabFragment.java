@@ -65,7 +65,7 @@ public abstract class KKTabFragment extends KKFragment {
 			} else if (showSubFragmentAnimation) {
 				KKFragment.setAnimation(KKFragment.AnimationType.PUSH);
 			}
-			fragmentTransaction.commitAllowingStateLoss();
+			fragmentTransaction.commit();
 			currentFragment = fragment;
 		}
 	};
@@ -91,6 +91,7 @@ public abstract class KKTabFragment extends KKFragment {
 	}
 
 	protected void initView(View view, int[] buttonTextResourcetId, boolean showSubFragmentAnimation, int currentIndex) {
+		fixStateForNestedFragment();
 		initView(view);
 		if (this.currentIndex == -1) {
 			this.currentIndex = currentIndex;
