@@ -18,6 +18,7 @@
 package com.kkbox.toolkit.api;
 
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
 import com.kkbox.toolkit.utils.KKDebug;
@@ -132,6 +133,9 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 
 	@Override
 	public Void doInBackground(Object... params) {
+		if (TextUtils.isEmpty(url)) {
+			return null;
+		}
 		int readLength;
 		final ByteArrayOutputStream data = new ByteArrayOutputStream();
 		final byte[] buffer = new byte[128];
