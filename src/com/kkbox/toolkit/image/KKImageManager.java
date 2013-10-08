@@ -96,11 +96,9 @@ public class KKImageManager {
 
 		@Override
 		public void onCancelled(KKImageRequest request) {
-			if (workingList.contains(request)) {
-				workingCount--;
-				workingList.remove(request);
-				startFetch();
-			}
+			workingCount--;
+			workingList.remove(request);
+			startFetch();
 		}
 	};
 
@@ -252,7 +250,7 @@ public class KKImageManager {
 		if (request != null) {
 			if (request.getUrl().equals(url)) {
 				return;
-			} else if (workingList.contains(request)) {
+			} else {
 				if (request.getStatus() == UserTask.Status.RUNNING) {
 					request.cancel();
 				} else {

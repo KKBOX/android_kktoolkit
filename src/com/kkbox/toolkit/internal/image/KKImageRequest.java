@@ -98,7 +98,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		this.cipher = cipher;
 	}
 
-	public void cancel() {
+	public synchronized void cancel() {
 		if (listener != null) {
 			listener.onCancelled(this);
 		}
@@ -226,7 +226,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	}
 
 	@Override
-	public void onPostExecute(Bitmap bitmap) {
+	public synchronized void onPostExecute(Bitmap bitmap) {
 		if (listener == null) {
 			return;
 		}
