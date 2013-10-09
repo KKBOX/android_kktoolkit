@@ -19,6 +19,8 @@ package com.kkbox.toolkit.internal.image;
 
 import android.graphics.Bitmap;
 
+import com.kkbox.toolkit.image.KKImageRequest;
+
 public abstract interface KKImageRequestListener {
 	public abstract void onComplete(KKImageRequest request, Bitmap bitmap);
 

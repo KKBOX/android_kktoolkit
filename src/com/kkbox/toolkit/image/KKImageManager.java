@@ -26,7 +26,6 @@ import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.kkbox.toolkit.internal.image.KKImageRequest;
 import com.kkbox.toolkit.internal.image.KKImageRequestListener;
 import com.kkbox.toolkit.utils.StringUtils;
 import com.kkbox.toolkit.utils.UserTask;

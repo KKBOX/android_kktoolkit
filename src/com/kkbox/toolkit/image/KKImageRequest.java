@@ -15,16 +15,14 @@
 /**
  * KKImageRequest
  */
-package com.kkbox.toolkit.internal.image;
+package com.kkbox.toolkit.image;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 
-import com.kkbox.toolkit.image.KKImageListener;
-import com.kkbox.toolkit.image.KKImageManager;
-import com.kkbox.toolkit.image.KKImageOnReceiveHttpHeaderListener;
+import com.kkbox.toolkit.internal.image.KKImageRequestListener;
 import com.kkbox.toolkit.utils.UserTask;
 
 import org.apache.http.Header;
