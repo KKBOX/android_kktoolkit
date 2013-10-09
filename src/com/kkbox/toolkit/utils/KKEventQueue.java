@@ -109,7 +109,9 @@ public class KKEventQueue {
 	}
 
 	private void run() {
-		if (queue.size() == 0) {
+		if (queue.size() > 0) {
+			isRunning = true;
+		} else {
 			isRunning = false;
 			threadUnlockFlag = false;
 			threadUnlockId.clear();
@@ -118,7 +120,6 @@ public class KKEventQueue {
 			}
 			return;
 		}
-		isRunning = true;
 		final KKEvent event = queue.get(0);
 		if (event.threadType == ThreadType.NEW_THREAD) {
 			new UserTask<Void, Void, Void>() {
