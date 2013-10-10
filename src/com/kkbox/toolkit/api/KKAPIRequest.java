@@ -133,9 +133,6 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 
 	@Override
 	public Void doInBackground(Object... params) {
-		if (TextUtils.isEmpty(url)) {
-			return null;
-		}
 		int readLength;
 		final ByteArrayOutputStream data = new ByteArrayOutputStream();
 		final byte[] buffer = new byte[128];
@@ -189,7 +186,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 						break;
 				}
 				response.getEntity().consumeContent();
-			} catch (final IOException e) {
+			} catch (final Exception e) {
 				KKDebug.w("connetion to " + url + getParams + " failed!");
 				retryTimes++;
 				isNetworkError = true;

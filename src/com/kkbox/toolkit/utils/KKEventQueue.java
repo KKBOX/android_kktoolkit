@@ -98,7 +98,7 @@ public class KKEventQueue {
 		return isRunning;
 	}
 
-	public void start() {
+	public synchronized void start() {
 		if (!isRunning) {
 			run();
 		}
