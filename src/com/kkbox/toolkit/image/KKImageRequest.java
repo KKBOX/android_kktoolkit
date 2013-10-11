@@ -35,9 +35,12 @@ import org.apache.http.params.HttpConnectionParams;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.crypto.Cipher;
 
@@ -58,6 +61,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private boolean isNetworkError = false;
 	private Cipher cipher = null;
 	private boolean saveToLocal = false;
+	private static ReentrantLock fileLock = new ReentrantLock();
 
 	public KKImageRequest(Context context, String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener,
 			View view, boolean updateBackground, Cipher cipher, boolean saveToLocal) {
@@ -129,6 +133,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			cachePath = KKImageManager.getTempImagePath(context, url);
 			File cacheFile = new File(cachePath);
 			File localFile = null;
+			String tempFilePath = context.getCacheDir().getAbsolutePath() + File.separator + "image" + File.separator + hashCode();
 			if (localPath != null) {
 				localFile = new File(localPath);
 			}
@@ -155,7 +160,8 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 					if (actionType == KKImageManager.ActionType.DOWNLOAD) {
 						return null;
 					} else {
-						cryptToFile(localPath, cachePath);
+						cryptToFile(localPath, tempFilePath);
+						moveFileTo(tempFilePath, cachePath);
 						bitmap = decodeBitmap(cachePath);
 						if (bitmap != null) {
 							return bitmap;
@@ -170,8 +176,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			response = httpclient.execute(httpget);
 			final InputStream is = response.getEntity().getContent();
 			publishProgress(response.getAllHeaders());
-			removeInvalidImageFiles();
-			String tempFilePath = context.getCacheDir().getAbsolutePath() + File.separator + "image" + File.separator + hashCode();
+			removeCacheFile();
 			if (actionType == KKImageManager.ActionType.DOWNLOAD) {
 				RandomAccessFile tempFile = new RandomAccessFile(tempFilePath, "rw");
 				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
@@ -249,10 +254,25 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	}
 
 	private void moveFileTo(String originalPath, String targetPath) {
-		File originalFile = new File(originalPath);
+		fileLock.lock();
 		File targetFile = new File(targetPath);
 		targetFile.delete();
-		originalFile.renameTo(targetFile);
+		FileChannel originalChannel = null;
+		FileChannel targetChannel = null;
+		try
+		{
+			originalChannel = new FileInputStream(originalPath).getChannel();
+			targetChannel = new FileOutputStream(targetPath).getChannel();
+			originalChannel.transferTo(0, originalChannel.size(), targetChannel);
+		} catch (IOException e) {}
+		try
+		{
+			if (originalChannel != null)
+				originalChannel.close();
+			if (targetChannel != null)
+				targetChannel.close();
+		} catch (IOException e) {}
+		fileLock.unlock();
 	}
 
 	private Bitmap decodeBitmap(String path) {
