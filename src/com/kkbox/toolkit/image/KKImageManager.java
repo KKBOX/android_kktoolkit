@@ -113,6 +113,15 @@ public class KKImageManager {
 		final File cacheFile = new File(getTempImagePath(context, url));
 		cacheFile.delete();
 	}
+	
+	public static void clearCacheFiles(Context context) {
+		File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "image");
+		if (cacheDir.exists()) {
+			for (File file : cacheDir.listFiles()) {
+				file.delete();
+			}
+		}
+	}
 
 	public static void autoRecycleViewBackgroundBitmap(View view) {
 		if (Build.VERSION.SDK_INT < 11) {
@@ -193,12 +202,7 @@ public class KKImageManager {
 		this.context = context;
 		this.cipher = localCipher;
 		if (Build.VERSION.SDK_INT >= 9 && context.getCacheDir().getFreeSpace() < FATAL_STORAGE_SIZE) {
-			File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "image");
-			if (cacheDir.exists()) {
-				for (File file : cacheDir.listFiles()) {
-					file.delete();
-				}
-			}
+			clearCacheFiles(context);
 		}
 		gc();
 	}
