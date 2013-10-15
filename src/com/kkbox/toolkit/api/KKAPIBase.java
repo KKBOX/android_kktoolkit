@@ -17,6 +17,10 @@
  */
 package com.kkbox.toolkit.api;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
 import com.kkbox.toolkit.utils.KKDebug;
 
@@ -35,6 +39,16 @@ public abstract class KKAPIBase {
 	private boolean isRunning = false;
 	private boolean isResponseSilent = false;
 
+	public static boolean isNetworkAvailable(Context context) {
+		ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+		if (networkInfo != null) {
+			return networkInfo.isAvailable();
+		} else {
+			return false;
+		}
+	}
+	
 	private KKAPIRequestListener apiRequestListener = new KKAPIRequestListener() {
 		@Override
 		public void onComplete() {

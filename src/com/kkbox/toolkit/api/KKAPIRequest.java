@@ -18,6 +18,7 @@
 package com.kkbox.toolkit.api;
 
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
 import com.kkbox.toolkit.utils.KKDebug;
@@ -184,7 +185,8 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 						SystemClock.sleep(1000);
 						break;
 				}
-			} catch (final IOException e) {
+				response.getEntity().consumeContent();
+			} catch (final Exception e) {
 				KKDebug.w("connetion to " + url + getParams + " failed!");
 				retryTimes++;
 				isNetworkError = true;

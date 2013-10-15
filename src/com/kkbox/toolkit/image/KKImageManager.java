@@ -26,7 +26,6 @@ import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.kkbox.toolkit.internal.image.KKImageRequest;
 import com.kkbox.toolkit.internal.image.KKImageRequestListener;
 import com.kkbox.toolkit.utils.StringUtils;
 import com.kkbox.toolkit.utils.UserTask;
@@ -37,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.crypto.Cipher;
 
@@ -52,10 +52,11 @@ public class KKImageManager {
 	private static final long FATAL_STORAGE_SIZE = 30 * 1024 * 1024;
 	private static final HashMap<WeakReference<View>, Bitmap> viewBackgroundBitmapReference = new HashMap<WeakReference<View>, Bitmap>();
 	private static final HashMap<WeakReference<ImageView>, Bitmap> imageViewSourceBitmapReference = new HashMap<WeakReference<ImageView>, Bitmap>();
+	private static final ArrayList<KKImageRequest> workingList = new ArrayList<KKImageRequest>();
+	private static int workingCount = 0;
+	private static final ReentrantLock lock = new ReentrantLock();
 
 	private final HashMap<View, KKImageRequest> fetchList = new HashMap<View, KKImageRequest>();
-	private final ArrayList<KKImageRequest> workingList = new ArrayList<KKImageRequest>();
-	private int workingCount = 0;
 	private Context context;
 	private Cipher cipher = null;
 
@@ -72,7 +73,7 @@ public class KKImageManager {
 				autoRecycleViewBackgroundBitmap(view);
 				fetchList.remove(view);
 			} else if (request.getActionType() == ActionType.UPDATE_VIEW_SOURCE) {
-				ImageView imageView = (ImageView)request.getView();
+				ImageView imageView = (ImageView) request.getView();
 				imageView.setImageBitmap(bitmap);
 				autoRecycleViewSourceBitmap(imageView);
 				fetchList.remove(request.getView());
@@ -91,6 +92,13 @@ public class KKImageManager {
 			workingList.remove(request);
 			startFetch();
 		}
+
+		@Override
+		public void onCancelled(KKImageRequest request) {
+			workingCount--;
+			workingList.remove(request);
+			startFetch();
+		}
 	};
 
 	public static String getTempImagePath(Context context, String url) {
@@ -105,12 +113,21 @@ public class KKImageManager {
 		final File cacheFile = new File(getTempImagePath(context, url));
 		cacheFile.delete();
 	}
+	
+	public static void clearCacheFiles(Context context) {
+		File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "image");
+		if (cacheDir.exists()) {
+			for (File file : cacheDir.listFiles()) {
+				file.delete();
+			}
+		}
+	}
 
 	public static void autoRecycleViewBackgroundBitmap(View view) {
 		if (Build.VERSION.SDK_INT < 11) {
 			Iterator iterator = viewBackgroundBitmapReference.entrySet().iterator();
 			while (iterator.hasNext()) {
-				Map.Entry<WeakReference<View>, Bitmap> entry = (Map.Entry<WeakReference<View>, Bitmap>)iterator.next();
+				Map.Entry<WeakReference<View>, Bitmap> entry = (Map.Entry<WeakReference<View>, Bitmap>) iterator.next();
 				View currentView = entry.getKey().get();
 				if (view.equals(currentView)) {
 					Bitmap bitmap = entry.getValue();
@@ -123,7 +140,7 @@ public class KKImageManager {
 			}
 			Drawable drawable = view.getBackground();
 			if (drawable instanceof BitmapDrawable) {
-				Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+				Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 				viewBackgroundBitmapReference.put(new WeakReference<View>(view), bitmap);
 			}
 		}
@@ -133,7 +150,7 @@ public class KKImageManager {
 		if (Build.VERSION.SDK_INT < 11) {
 			Iterator iterator = imageViewSourceBitmapReference.entrySet().iterator();
 			while (iterator.hasNext()) {
-				Map.Entry<WeakReference<ImageView>, Bitmap> entry = (Map.Entry<WeakReference<ImageView>, Bitmap>)iterator.next();
+				Map.Entry<WeakReference<ImageView>, Bitmap> entry = (Map.Entry<WeakReference<ImageView>, Bitmap>) iterator.next();
 				ImageView currentView = entry.getKey().get();
 				if (view.equals(currentView)) {
 					Bitmap bitmap = entry.getValue();
@@ -146,7 +163,7 @@ public class KKImageManager {
 			}
 			Drawable drawable = view.getDrawable();
 			if (drawable instanceof BitmapDrawable) {
-				Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+				Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 				imageViewSourceBitmapReference.put(new WeakReference<ImageView>(view), bitmap);
 			}
 		}
@@ -156,7 +173,7 @@ public class KKImageManager {
 		if (Build.VERSION.SDK_INT < 11) {
 			Iterator iterator = viewBackgroundBitmapReference.entrySet().iterator();
 			while (iterator.hasNext()) {
-				Map.Entry<WeakReference<View>, Bitmap> entry = (Map.Entry<WeakReference<View>, Bitmap>)iterator.next();
+				Map.Entry<WeakReference<View>, Bitmap> entry = (Map.Entry<WeakReference<View>, Bitmap>) iterator.next();
 				if (entry.getKey().get() == null) {
 					Bitmap bitmap = entry.getValue();
 					if (bitmap != null) {
@@ -168,7 +185,7 @@ public class KKImageManager {
 			}
 			iterator = imageViewSourceBitmapReference.entrySet().iterator();
 			while (iterator.hasNext()) {
-				Map.Entry<WeakReference<ImageView>, Bitmap> entry = (Map.Entry<WeakReference<ImageView>, Bitmap>)iterator.next();
+				Map.Entry<WeakReference<ImageView>, Bitmap> entry = (Map.Entry<WeakReference<ImageView>, Bitmap>) iterator.next();
 				if (entry.getKey().get() == null) {
 					Bitmap bitmap = entry.getValue();
 					if (bitmap != null) {
@@ -185,12 +202,7 @@ public class KKImageManager {
 		this.context = context;
 		this.cipher = localCipher;
 		if (Build.VERSION.SDK_INT >= 9 && context.getCacheDir().getFreeSpace() < FATAL_STORAGE_SIZE) {
-			File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "image");
-			if (cacheDir.exists()) {
-				for (File file : cacheDir.listFiles()) {
-					file.delete();
-				}
-			}
+			clearCacheFiles(context);
 		}
 		gc();
 	}
@@ -229,15 +241,10 @@ public class KKImageManager {
 	public Bitmap loadCache(String url, String localPath) {
 		String cachePath = getTempImagePath(context, url);
 		final File cacheFile = new File(cachePath);
-		if (cacheFile.exists()) { return BitmapFactory.decodeFile(cachePath); }
-		return null;
-	}
-
-	@Override
-	public void finalize() {
-		for (KKImageRequest request : workingList) {
-			request.cancel();
+		if (cacheFile.exists()) {
+			return BitmapFactory.decodeFile(cachePath);
 		}
+		return null;
 	}
 
 	private void updateView(View view, String url, String localPath, int defaultResourceId, boolean updateBackground, boolean saveToLocal,
@@ -248,10 +255,10 @@ public class KKImageManager {
 				return;
 			} else {
 				if (request.getStatus() == UserTask.Status.RUNNING) {
-					workingCount--;
+					request.cancel();
+				} else {
+					workingList.remove(request);
 				}
-				request.cancel();
-				workingList.remove(request);
 			}
 		}
 		Bitmap bitmap = loadCache(url, localPath);
@@ -260,7 +267,7 @@ public class KKImageManager {
 				view.setBackgroundDrawable(new BitmapDrawable(context.getResources(), bitmap));
 				autoRecycleViewBackgroundBitmap(view);
 			} else {
-				ImageView imageView = (ImageView)view;
+				ImageView imageView = (ImageView) view;
 				imageView.setImageDrawable(new BitmapDrawable(context.getResources(), bitmap));
 				autoRecycleViewSourceBitmap(imageView);
 			}
@@ -270,7 +277,7 @@ public class KKImageManager {
 			if (updateBackground) {
 				view.setBackgroundResource(defaultResourceId);
 			} else {
-				ImageView imageView = (ImageView)view;
+				ImageView imageView = (ImageView) view;
 				imageView.setImageResource(defaultResourceId);
 			}
 		}
@@ -281,16 +288,18 @@ public class KKImageManager {
 	}
 
 	private void startFetch() {
+		lock.lock();
 		if (workingCount < MAX_WORKING_COUNT) {
-			for (KKImageRequest request : workingList) {
-				if (request.getStatus() == UserTask.Status.PENDING) {
-					request.execute(imageRequestListener);
-					workingCount++;
-				}
+			for (int i = 0; i < workingList.size(); i++) {
 				if (workingCount >= MAX_WORKING_COUNT) {
 					break;
 				}
+				if (workingList.get(i).getStatus() == UserTask.Status.PENDING) {
+					workingList.get(i).execute(imageRequestListener);
+					workingCount++;
+				}
 			}
 		}
+		lock.unlock();
 	}
 }

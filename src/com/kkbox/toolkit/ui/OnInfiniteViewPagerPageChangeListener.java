@@ -16,7 +16,11 @@ public abstract class OnInfiniteViewPagerPageChangeListener implements ViewPager
 
 	@Override
 	public void onPageScrollStateChanged(int state) {
-		scrolled = true;
+		if (state == ViewPager.SCROLL_STATE_SETTLING) {
+			scrolled = true;
+		} else if (state == ViewPager.SCROLL_STATE_IDLE) {
+			scrolled = false;
+		}
 	}
 
 	@Override
@@ -24,7 +28,7 @@ public abstract class OnInfiniteViewPagerPageChangeListener implements ViewPager
 
 	@Override
 	public void onPageSelected(int position) {
-		InfiniteViewPagerAdapter adapter = (InfiniteViewPagerAdapter)viewPager.getAdapter();
+		InfiniteViewPagerAdapter adapter = (InfiniteViewPagerAdapter) viewPager.getAdapter();
 		if (adapter.isLoopEnabled()) {
 			if (position == 0) {
 				if (scrolled) {

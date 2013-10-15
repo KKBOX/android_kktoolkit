@@ -1,4 +1,4 @@
-<img src="http://upload.wikimedia.org/wikipedia/zh/8/82/KKBOX_Logo.png" alt="KKBOX_Logo" align="right" vspace="-50" />
+<img src="http://www.kkbox.com/images/kkbox-logo-b.png" alt="KKBOX_Logo" align="right" vspace="-50" />
 
 # KKBOX Android Toolkit (a.k.a. KKToolkit)
 

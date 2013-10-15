@@ -17,8 +17,9 @@
  */
 package com.kkbox.toolkit.ui;
 
+import android.app.Activity;
 import android.app.SearchManager;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -26,6 +27,7 @@ import android.speech.RecognizerIntent;
 import android.support.v4.widget.SearchViewCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,27 +42,43 @@ import com.kkbox.toolkit.R;
 import java.util.List;
 
 public class KKSearchViewCompat extends LinearLayout {
-	SearchView searchView;
-	SearchViewCompat.OnCloseListenerCompat defaultOnCloseListener;
+	private SearchView searchView;
+	private SearchViewCompat.OnCloseListenerCompat defaultOnCloseListener;
 
-	EditText textSearch;
-	ImageView buttonSearchClose;
-	ImageView buttonVoiceSearch;
+	private EditText textSearch;
+	private ImageView buttonSearchClose;
+	private ImageView buttonVoiceSearch;
 
-	KKActivity activity;
+	private Context context;
 
-	public KKSearchViewCompat(KKActivity activity) {
-		super(activity);
-		this.activity = activity;
+	public KKSearchViewCompat(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		this.context = context;
+		init();
+	}
+
+	public KKSearchViewCompat(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		this.context = context;
+		init();
+	}
+
+	public KKSearchViewCompat(Context context) {
+		super(context);
+		this.context = context;
+		init();
+	}
+
+	private void init() {
 		if (Build.VERSION.SDK_INT >= 11) {
-			searchView = new SearchView(activity);
+			searchView = new SearchView(context);
 			addView(searchView);
 		} else {
-			View view = LayoutInflater.from(activity).inflate(R.layout.search_view_compat, null);
+			View view = LayoutInflater.from(context).inflate(R.layout.search_view_compat, null);
 			textSearch = (EditText)view.findViewById(R.id.text_search);
 			buttonSearchClose = (ImageView)view.findViewById(R.id.button_search_close);
 			buttonVoiceSearch = (ImageView)view.findViewById(R.id.button_voice_search);
-			PackageManager packageManager = activity.getPackageManager();
+			PackageManager packageManager = context.getPackageManager();
 			List<?> recognizedActivities = packageManager.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
 			buttonVoiceSearch.setVisibility(recognizedActivities.size() > 0 ? View.VISIBLE : View.GONE);
 			view.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
@@ -69,9 +87,9 @@ public class KKSearchViewCompat extends LinearLayout {
 		}
 	}
 
-	public void setSearchableInfoCompat(SearchManager searchManager, ComponentName componentName) {
+	public void setSearchableInfoCompat(SearchManager searchManager, final Activity activity) {
 		if (Build.VERSION.SDK_INT >= 11) {
-			searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
+			searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
 		} else {
 			buttonVoiceSearch.setOnClickListener(new OnClickListener() {
 				@Override

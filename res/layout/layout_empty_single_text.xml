@@ -20,7 +20,8 @@
     android:layout_height="fill_parent"
     android:layout_gravity="center"
     android:layout_weight="1"
-    android:gravity="center" >
+    android:gravity="center"
+    android:clickable="true">
 
     <TextView
         android:id="@+id/label_text"

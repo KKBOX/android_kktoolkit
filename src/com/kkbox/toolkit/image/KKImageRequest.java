@@ -15,17 +15,14 @@
 /**
  * KKImageRequest
  */
-package com.kkbox.toolkit.internal.image;
+package com.kkbox.toolkit.image;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 
-import com.kkbox.toolkit.image.KKImageListener;
-import com.kkbox.toolkit.image.KKImageManager;
-import com.kkbox.toolkit.image.KKImageOnReceiveHttpHeaderListener;
-import com.kkbox.toolkit.utils.KKDebug;
+import com.kkbox.toolkit.internal.image.KKImageRequestListener;
 import com.kkbox.toolkit.utils.UserTask;
 
 import org.apache.http.Header;
@@ -38,9 +35,12 @@ import org.apache.http.params.HttpConnectionParams;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.crypto.Cipher;
 
@@ -61,6 +61,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private boolean isNetworkError = false;
 	private Cipher cipher = null;
 	private boolean saveToLocal = false;
+	private static ReentrantLock fileLock = new ReentrantLock();
 
 	public KKImageRequest(Context context, String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener,
 			View view, boolean updateBackground, Cipher cipher, boolean saveToLocal) {
@@ -91,7 +92,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private void init(Context context, String url, String localPath, Cipher cipher) {
 		BasicHttpParams params = new BasicHttpParams();
 		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
-		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 10000);
+		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 120000);
 		httpclient = new DefaultHttpClient(params);
 		this.url = url;
 		this.localPath = localPath;
@@ -99,7 +100,10 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		this.cipher = cipher;
 	}
 
-	public void cancel() {
+	public synchronized void cancel() {
+		if (listener != null) {
+			listener.onCancelled(this);
+		}
 		listener = null;
 		this.cancel(true);
 	}
@@ -122,17 +126,14 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 
 	@Override
 	public Bitmap doInBackground(Object... params) {
-		listener = (KKImageRequestListener)params[0];
+		listener = (KKImageRequestListener) params[0];
 		Bitmap bitmap;
-
 		try {
 			int readLength;
-			// TODO: use fileOutoutStream instead
-			RandomAccessFile localRandomAccessFile = null;
-			RandomAccessFile cacheRandomAccessFile = null;
 			cachePath = KKImageManager.getTempImagePath(context, url);
 			File cacheFile = new File(cachePath);
 			File localFile = null;
+			String tempFilePath = context.getCacheDir().getAbsolutePath() + File.separator + "image" + File.separator + hashCode();
 			if (localPath != null) {
 				localFile = new File(localPath);
 			}
@@ -159,7 +160,8 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 					if (actionType == KKImageManager.ActionType.DOWNLOAD) {
 						return null;
 					} else {
-						cryptToFile(localPath, cachePath);
+						cryptToFile(localPath, tempFilePath);
+						moveFileTo(tempFilePath, cachePath);
 						bitmap = decodeBitmap(cachePath);
 						if (bitmap != null) {
 							return bitmap;
@@ -174,42 +176,42 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			response = httpclient.execute(httpget);
 			final InputStream is = response.getEntity().getContent();
 			publishProgress(response.getAllHeaders());
-			removeInvalidImageFiles();
+			removeCacheFile();
 			if (actionType == KKImageManager.ActionType.DOWNLOAD) {
-				localRandomAccessFile = new RandomAccessFile(localPath, "rw");
+				RandomAccessFile tempFile = new RandomAccessFile(tempFilePath, "rw");
 				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
 					if (cipher != null) {
 						buffer = cipher.doFinal(buffer);
 					}
-					localRandomAccessFile.write(buffer, 0, readLength);
+					tempFile.write(buffer, 0, readLength);
 				}
-				localRandomAccessFile.close();
+				tempFile.close();
+				moveFileTo(tempFilePath, localPath);
 				return null;
 			} else {
+				RandomAccessFile tempFile;
 				try {
-					cacheRandomAccessFile = new RandomAccessFile(cachePath, "rw");
+					tempFile = new RandomAccessFile(tempFilePath, "rw");
 				} catch (IOException e) {
 					// we don't save to SD card if cache is full
 					return BitmapFactory.decodeStream(is);
 				}
-				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
-					try {
-						cacheRandomAccessFile.write(buffer, 0, readLength);
-					} catch (IOException e) {
-						cacheRandomAccessFile.close();
-						removeCacheFile();
-						return null;
+				try {
+					while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+						tempFile.write(buffer, 0, readLength);
 					}
+				} catch (IOException e) {
+					tempFile.close();
+					return null;
 				}
-				cacheRandomAccessFile.close();
+				tempFile.close();
+				moveFileTo(tempFilePath, cachePath);
 				bitmap = decodeBitmap(cachePath);
 				if (bitmap != null) {
 					if (saveToLocal && localPath != null) {
 						cryptToFile(cachePath, localPath);
 					}
 					return bitmap;
-				} else {
-					removeCacheFile();
 				}
 			}
 		} catch (final Exception e) {
@@ -227,8 +229,10 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	}
 
 	@Override
-	public void onPostExecute(Bitmap bitmap) {
-		if (listener == null) { return; }
+	public synchronized void onPostExecute(Bitmap bitmap) {
+		if (listener == null) {
+			return;
+		}
 		if (isNetworkError || (actionType != KKImageManager.ActionType.DOWNLOAD && bitmap == null)) {
 			listener.onNetworkError(this);
 		} else {
@@ -247,6 +251,28 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private void removeCacheFile() {
 		File cacheFile = new File(cachePath);
 		cacheFile.delete();
+	}
+
+	private void moveFileTo(String originalPath, String targetPath) {
+		fileLock.lock();
+		File targetFile = new File(targetPath);
+		targetFile.delete();
+		FileChannel originalChannel = null;
+		FileChannel targetChannel = null;
+		try
+		{
+			originalChannel = new FileInputStream(originalPath).getChannel();
+			targetChannel = new FileOutputStream(targetPath).getChannel();
+			originalChannel.transferTo(0, originalChannel.size(), targetChannel);
+		} catch (IOException e) {}
+		try
+		{
+			if (originalChannel != null)
+				originalChannel.close();
+			if (targetChannel != null)
+				targetChannel.close();
+		} catch (IOException e) {}
+		fileLock.unlock();
 	}
 
 	private Bitmap decodeBitmap(String path) {

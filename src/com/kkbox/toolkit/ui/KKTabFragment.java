@@ -91,6 +91,7 @@ public abstract class KKTabFragment extends KKFragment {
 	}
 
 	protected void initView(View view, int[] buttonTextResourcetId, boolean showSubFragmentAnimation, int currentIndex) {
+		fixStateForNestedFragment();
 		initView(view);
 		if (this.currentIndex == -1) {
 			this.currentIndex = currentIndex;
