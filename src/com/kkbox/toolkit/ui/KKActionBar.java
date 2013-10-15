@@ -66,11 +66,13 @@ public class KKActionBar {
 				actionBar = activity.getActionBar();
 				if (actionBar == null) { return; }
 				labelTitle = (TextView)activity.findViewById(Resources.getSystem().getIdentifier("action_bar_title", "id", "android"));
-				labelSubTitle = (TextView)activity
-						.findViewById(Resources.getSystem().getIdentifier("action_bar_subtitle", "id", "android"));
+				labelTitle.setContentDescription("actionbar_title");
+				labelSubTitle = (TextView)activity.findViewById(
+						Resources.getSystem().getIdentifier("action_bar_subtitle", "id", "android"));
+				labelSubTitle .setContentDescription("actionbar_sub_title");
 				if (Build.VERSION.SDK_INT < 14) {
-					viewIcon = (ImageView)activity
-							.findViewById(Resources.getSystem().getIdentifier("home", "id", "android"));
+					viewIcon = (ImageView)activity.findViewById(
+							Resources.getSystem().getIdentifier("home", "id", "android"));
 				}
 			} else {
 				actionBarCompat = (LinearLayout)activity.findViewById(R.id.action_bar);
