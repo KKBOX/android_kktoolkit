@@ -34,6 +34,7 @@ public class KKMenuItemCompat implements MenuItem {
 	private View compatActionView;
 	private KKSearchViewCompat searchViewCompat;
 	private int showAsActionFlags = 0;
+	private String contentDescription;
 
 	public KKSearchViewCompat getCompatSearchView() {
 		return searchViewCompat;
@@ -166,6 +167,14 @@ public class KKMenuItemCompat implements MenuItem {
 	@Override
 	public boolean isVisible() {
 		return menuItem.isVisible();
+	}
+
+	public void setContentDescription(String contentDescription) {
+		this.contentDescription = contentDescription;
+	}
+
+	public String getContentDescription() {
+		return contentDescription;
 	}
 
 	@Override

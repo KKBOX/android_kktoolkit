@@ -91,6 +91,10 @@ public class KKMenuInflaterCompat extends MenuInflater {
 									currentMenuItem.setCompatSearchView(new KKSearchViewCompat(activity));
 									currentMenuItem.setActionView(null);
 								}
+
+								if(parser.getAttributeName(i).toLowerCase().equals("contentdescription")) {
+									currentMenuItem.setContentDescription(parser.getAttributeValue(i).toLowerCase());
+								}
 							}
 						}
 					}

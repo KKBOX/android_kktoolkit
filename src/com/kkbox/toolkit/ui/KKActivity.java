@@ -212,6 +212,7 @@ public abstract class KKActivity extends FragmentActivity {
 			button.setPadding(array.getDimensionPixelSize(0, button.getPaddingLeft()),
 					array.getDimensionPixelSize(1, button.getPaddingTop()), array.getDimensionPixelSize(2, button.getPaddingRight()),
 					array.getDimensionPixelSize(3, button.getPaddingBottom()));
+			button.setContentDescription(menuItem.getContentDescription());
 			button.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
