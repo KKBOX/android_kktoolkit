@@ -27,7 +27,7 @@ public class KKEventQueue {
 
 	private class KKEvent {
 		public Runnable runnable;
-		public int threadType;
+		public int threadType = ThreadType.CALLER_THREAD;
 		public Runnable postEventRunnable;
 	}
 
@@ -134,13 +134,13 @@ public class KKEventQueue {
 					if (event.postEventRunnable != null) {
 						event.postEventRunnable.run();
 					}
-					queue.remove(0);
+					queue.remove(event);
 					run();
 				}
 			}.execute();
 		} else if (event.threadType == ThreadType.CALLER_THREAD) {
 			event.runnable.run();
-			queue.remove(0);
+			queue.remove(event);
 			run();
 		}
 	}
