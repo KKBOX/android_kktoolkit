@@ -176,7 +176,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			response = httpclient.execute(httpget);
 			final InputStream is = response.getEntity().getContent();
 			publishProgress(response.getAllHeaders());
-			removeCacheFile();
+			removeInvalidImageFiles();
 			if (actionType == KKImageManager.ActionType.DOWNLOAD) {
 				RandomAccessFile tempFile = new RandomAccessFile(tempFilePath, "rw");
 				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
