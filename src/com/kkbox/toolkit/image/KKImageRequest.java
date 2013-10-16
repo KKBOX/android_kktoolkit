@@ -92,7 +92,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private void init(Context context, String url, String localPath, Cipher cipher) {
 		BasicHttpParams params = new BasicHttpParams();
 		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
-		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 120000);
+		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 10000);
 		httpclient = new DefaultHttpClient(params);
 		this.url = url;
 		this.localPath = localPath;
