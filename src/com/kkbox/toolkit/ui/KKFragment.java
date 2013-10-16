@@ -225,9 +225,6 @@ public abstract class KKFragment extends Fragment {
 	protected void initView(View view) {
 		viewMessage = (KKMessageView) view.findViewById(R.id.view_message);
 		uiLoaded = false;
-		if (Build.VERSION.SDK_INT >= 11) {
-			view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-		}
 	}
 
 	public void switchToFragment(Fragment fragment, Bundle arguments) {
