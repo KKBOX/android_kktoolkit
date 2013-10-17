@@ -47,9 +47,13 @@ public abstract class OnInfiniteViewPagerPageChangeListener implements ViewPager
 				currentPosition = 1;
 				return;
 			}
-			onLoopPageSelected(position - 1);
+			if (scrolled) {
+				onLoopPageSelected(position - 1);
+			}
 		} else {
-			onLoopPageSelected(position);
+			if (scrolled) {
+				onLoopPageSelected(position);
+			}
 		}
 		if (scrolled) {
 			scrolled = false;

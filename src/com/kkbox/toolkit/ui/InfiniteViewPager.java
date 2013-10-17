@@ -30,4 +30,14 @@ public class InfiniteViewPager extends ViewPager {
 	public void setCurrentItem (int item) {
 		setCurrentItem(item, true);
 	}
+	
+	@Override
+	public int getCurrentItem() {
+		InfiniteViewPagerAdapter adapter = (InfiniteViewPagerAdapter)getAdapter();
+		if (adapter.isLoopEnabled()) {
+			return super.getCurrentItem() - 1;
+		} else {
+			return super.getCurrentItem();
+		}
+	}
 }
