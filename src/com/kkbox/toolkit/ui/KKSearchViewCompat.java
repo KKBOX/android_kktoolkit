@@ -32,6 +32,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -152,6 +153,9 @@ public class KKSearchViewCompat extends LinearLayout {
 				public boolean onKey(View view, int keycode, KeyEvent keyEvent) {
 					if (keyEvent.getAction() == KeyEvent.ACTION_DOWN
 							&& (keycode == KeyEvent.KEYCODE_SEARCH || keycode == KeyEvent.KEYCODE_ENTER)) {
+						InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(context.INPUT_METHOD_SERVICE);
+						inputMethodManager.hideSoftInputFromWindow(textSearch.getWindowToken(), 0);
+						textSearch.setFocusable(false);
 						staticListener.onQueryTextSubmit(textSearch.getText().toString());
 						return true;
 					}
@@ -178,6 +182,7 @@ public class KKSearchViewCompat extends LinearLayout {
 			buttonSearchClose.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
+					textSearch.setFocusable(true);
 					staticListener.onClose();
 					if (defaultOnCloseListener != null) {
 						defaultOnCloseListener.onClose();
