@@ -20,7 +20,6 @@ package com.kkbox.toolkit.api;
 import android.os.SystemClock;
 
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
-import com.kkbox.toolkit.utils.GZIPUtils;
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.UserTask;
 
@@ -51,6 +50,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.crypto.Cipher;
 
@@ -82,7 +83,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		this.url = url;
 		this.cipher = cipher;
 	}
-	
+
 	public void addGetParam(String key, String value) {
 		if (getParams == "") {
 			getParams = "?";
@@ -131,10 +132,15 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addGZIPPostParam(String key, String value) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		GZIPOutputStream gZIPOutputStream = null;
 		try {
 			ArrayList<NameValuePair> postParams = new ArrayList<NameValuePair>();
 			postParams.add((new BasicNameValuePair(key, value)));
-			byte[] byteDataForGZIP = GZIPUtils.gzipCompress(EntityUtils.toByteArray(new UrlEncodedFormEntity(postParams, HTTP.UTF_8)));
+			gZIPOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+			gZIPOutputStream.write(EntityUtils.toByteArray(new UrlEncodedFormEntity(postParams, HTTP.UTF_8)));
+			gZIPOutputStream.close();
+			byte[] byteDataForGZIP = byteArrayOutputStream.toByteArray();
 			inputStreamEntity = new InputStreamEntity(new ByteArrayInputStream(byteDataForGZIP), byteDataForGZIP.length);
 			inputStreamEntity.setContentType("application/x-www-form-urlencoded");
 			inputStreamEntity.setContentEncoding("gzip");
@@ -185,11 +191,18 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 				switch (httpStatusCode) {
 					case 200:
 						Header contentEncoding = response.getFirstHeader("Content-Encoding");
-						boolean isResponseGzip = contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip");
+						boolean isResponseGZIP = contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip");
 						final InputStream is;
-						if (isResponseGzip) {
-							final byte[] bytesData = GZIPUtils.gzipDecompress(EntityUtils.toByteArray(response.getEntity()));
-							is = new ByteArrayInputStream(bytesData);
+						if (isResponseGZIP) {
+							byte[] inputStreamBuffer = new byte[8192];
+							int length;
+							ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+							GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity())));
+							while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
+								byteArrayOutputStream.write(inputStreamBuffer, 0, length);
+							}
+							gZIPInputStream.close();
+							is = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 						} else {
 							is = response.getEntity().getContent();
 						}
