@@ -132,15 +132,15 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addGZIPPostParam(String key, String value) {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		GZIPOutputStream gZIPOutputStream = null;
 		try {
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			ArrayList<NameValuePair> postParams = new ArrayList<NameValuePair>();
 			postParams.add((new BasicNameValuePair(key, value)));
-			gZIPOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+			GZIPOutputStream gZIPOutputStream = new GZIPOutputStream(byteArrayOutputStream);
 			gZIPOutputStream.write(EntityUtils.toByteArray(new UrlEncodedFormEntity(postParams, HTTP.UTF_8)));
-			gZIPOutputStream.close();
 			byte[] byteDataForGZIP = byteArrayOutputStream.toByteArray();
+			gZIPOutputStream.close();
+			byteArrayOutputStream.close();
 			inputStreamEntity = new InputStreamEntity(new ByteArrayInputStream(byteDataForGZIP), byteDataForGZIP.length);
 			inputStreamEntity.setContentType("application/x-www-form-urlencoded");
 			inputStreamEntity.setContentEncoding("gzip");
@@ -201,8 +201,9 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 							while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
 								byteArrayOutputStream.write(inputStreamBuffer, 0, length);
 							}
-							gZIPInputStream.close();
 							is = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+							gZIPInputStream.close();
+							byteArrayOutputStream.close();
 						} else {
 							is = response.getEntity().getContent();
 						}
