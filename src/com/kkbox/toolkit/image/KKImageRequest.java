@@ -61,6 +61,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private boolean isNetworkError = false;
 	private Cipher cipher = null;
 	private boolean saveToLocal = false;
+	private boolean networkEnabled = true;
 	private static ReentrantLock fileLock = new ReentrantLock();
 
 	public KKImageRequest(Context context, String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener,
@@ -87,6 +88,10 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		this.imageListener = imageListener;
 		actionType = KKImageManager.ActionType.CALL_LISTENER;
 		init(context, url, localPath, cipher);
+	}
+
+	public void setNetworkEnabled(boolean networkEnabled) {
+		this.networkEnabled = networkEnabled;
 	}
 
 	private void init(Context context, String url, String localPath, Cipher cipher) {
@@ -171,6 +176,9 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 					}
 				}
 			} catch (Exception e) {}
+			if (!networkEnabled) {
+				return null;
+			}
 			// Do fetch server resource if either cache nor local file is not valid to read
 			final HttpGet httpget = new HttpGet(url);
 			response = httpclient.execute(httpget);

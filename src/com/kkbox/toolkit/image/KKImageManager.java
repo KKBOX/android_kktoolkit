@@ -59,6 +59,7 @@ public class KKImageManager {
 	private final HashMap<View, KKImageRequest> fetchList = new HashMap<View, KKImageRequest>();
 	private Context context;
 	private Cipher cipher = null;
+	private boolean networkEnabled = true;
 
 	protected KKImageRequestListener imageRequestListener = new KKImageRequestListener() {
 		@Override
@@ -100,6 +101,10 @@ public class KKImageManager {
 			startFetch();
 		}
 	};
+
+	public void setNetworkEnabled(boolean networkEnabled) {
+		this.networkEnabled = networkEnabled;
+	}
 
 	public static String getTempImagePath(Context context, String url) {
 		final File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "image");
@@ -209,12 +214,14 @@ public class KKImageManager {
 
 	public void downloadBitmap(String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener) {
 		KKImageRequest request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, cipher);
+		request.setNetworkEnabled(networkEnabled);
 		workingList.add(request);
 		startFetch();
 	}
 
 	public KKImageRequest loadBitmap(KKImageListener listener, String url, String localPath) {
 		KKImageRequest request = new KKImageRequest(context, url, localPath, listener, cipher);
+		request.setNetworkEnabled(networkEnabled);
 		workingList.add(request);
 		startFetch();
 		return request;
@@ -251,6 +258,7 @@ public class KKImageManager {
 			KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener) {
 		KKImageRequest request = fetchList.get(view);
 		if (request != null) {
+			request.setNetworkEnabled(networkEnabled);
 			if (request.getUrl().equals(url)) {
 				return;
 			} else {
@@ -282,6 +290,7 @@ public class KKImageManager {
 			}
 		}
 		request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, view, updateBackground, cipher, saveToLocal);
+		request.setNetworkEnabled(networkEnabled);
 		workingList.add(request);
 		fetchList.put(view, request);
 		startFetch();
