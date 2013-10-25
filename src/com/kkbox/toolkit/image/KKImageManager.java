@@ -59,6 +59,7 @@ public class KKImageManager {
 	private final HashMap<View, KKImageRequest> fetchList = new HashMap<View, KKImageRequest>();
 	private Context context;
 	private Cipher cipher = null;
+	public static boolean networkEnabled = true;
 
 	protected KKImageRequestListener imageRequestListener = new KKImageRequestListener() {
 		@Override

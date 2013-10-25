@@ -172,6 +172,9 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 				}
 			} catch (Exception e) {}
 			// Do fetch server resource if either cache nor local file is not valid to read
+			if (!KKImageManager.networkEnabled) {
+				return null;
+			}
 			final HttpGet httpget = new HttpGet(url);
 			response = httpclient.execute(httpget);
 			final InputStream is = response.getEntity().getContent();
