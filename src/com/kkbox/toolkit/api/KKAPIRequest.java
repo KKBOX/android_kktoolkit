@@ -18,12 +18,12 @@
 package com.kkbox.toolkit.api;
 
 import android.os.SystemClock;
-import android.text.TextUtils;
 
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.UserTask;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -33,6 +33,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -42,12 +43,15 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.crypto.Cipher;
 
@@ -64,6 +68,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	private StringEntity stringEntity;
 	private FileEntity fileEntity;
 	private ByteArrayEntity byteArrayEntity;
+	private InputStreamEntity gzipStreamEntity;
 	private Cipher cipher = null;
 
 	public KKAPIRequest(String url, Cipher cipher) {
@@ -78,7 +83,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		this.url = url;
 		this.cipher = cipher;
 	}
-	
+
 	public void addGetParam(String key, String value) {
 		if (getParams == "") {
 			getParams = "?";
@@ -126,6 +131,22 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		byteArrayEntity.setContentType("application/octet-stream");
 	}
 
+	public void addGZIPPostParam(String key, String value) {
+		try {
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			ArrayList<NameValuePair> postParams = new ArrayList<NameValuePair>();
+			postParams.add((new BasicNameValuePair(key, value)));
+			GZIPOutputStream gZIPOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+			gZIPOutputStream.write(EntityUtils.toByteArray(new UrlEncodedFormEntity(postParams, HTTP.UTF_8)));
+			gZIPOutputStream.close();
+			byte[] byteDataForGZIP = byteArrayOutputStream.toByteArray();
+			byteArrayOutputStream.close();
+			gzipStreamEntity = new InputStreamEntity(new ByteArrayInputStream(byteDataForGZIP), byteDataForGZIP.length);
+			gzipStreamEntity.setContentType("application/x-www-form-urlencoded");
+			gzipStreamEntity.setContentEncoding("gzip");
+		} catch (Exception e) {}
+	}
+
 	public void cancel() {
 		listener = null;
 		this.cancel(true);
@@ -141,7 +162,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		do {
 			try {
 				HttpResponse response;
-				if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null || byteArrayEntity != null) {
+				if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null || byteArrayEntity != null || gzipStreamEntity != null) {
 					final HttpPost httppost = new HttpPost(url + getParams);
 					if (postParams != null) {
 						httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
@@ -158,6 +179,10 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 					if (byteArrayEntity != null) {
 						httppost.setEntity(byteArrayEntity);
 					}
+					if (gzipStreamEntity != null) {
+						httppost.setHeader("Accept-Encoding", "gzip");
+						httppost.setEntity(gzipStreamEntity);
+					}
 					response = httpclient.execute(httppost);
 				} else {
 					response = httpclient.execute(new HttpGet(url + getParams));
@@ -165,7 +190,22 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 				httpStatusCode = response.getStatusLine().getStatusCode();
 				switch (httpStatusCode) {
 					case 200:
-						final InputStream is = response.getEntity().getContent();
+						final InputStream is;
+						Header contentEncoding = response.getFirstHeader("Content-Encoding");
+						if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
+							byte[] inputStreamBuffer = new byte[8192];
+							int length;
+							ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+							GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity())));
+							while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
+								byteArrayOutputStream.write(inputStreamBuffer, 0, length);
+							}
+							is = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+							gZIPInputStream.close();
+							byteArrayOutputStream.close();
+						} else {
+							is = response.getEntity().getContent();
+						}
 						while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
 							data.write(buffer, 0, readLength);
 						}
@@ -203,7 +243,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 					}
 				}
 			}
-		} catch (Exception e) {};
+		} catch (Exception e) {}
 		return null;
 	}
 
