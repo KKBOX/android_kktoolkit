@@ -17,9 +17,11 @@
  */
 package com.kkbox.toolkit.api;
 
+import android.content.Context;
 import android.os.SystemClock;
 
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
+import com.kkbox.toolkit.utils.CacheUtils;
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.UserTask;
 
@@ -48,6 +50,8 @@ import org.apache.http.util.EntityUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
@@ -70,6 +74,17 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	private ByteArrayEntity byteArrayEntity;
 	private InputStreamEntity gzipStreamEntity;
 	private Cipher cipher = null;
+
+	private Context context = null;
+	private static final String APITag = "api";
+	private long reloadPeriod = -1;
+	private long timeStamp = 0;
+
+	public KKAPIRequest(String url, Cipher cipher, long reloadPeriod, Context context) {
+		this(url, cipher, 10000);
+		this.reloadPeriod = reloadPeriod;
+		this.context = context;
+	}
 
 	public KKAPIRequest(String url, Cipher cipher) {
 		this(url, cipher, 10000);
@@ -159,87 +174,112 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		final byte[] buffer = new byte[128];
 		listener = (KKAPIRequestListener)params[0];
 		int retryTimes = 0;
-		do {
+		long currentTimeStamp = System.currentTimeMillis();
+		File cacheFile = null;
+		if(context != null) {
+			cacheFile = new File(CacheUtils.getCachePath(context, APITag, (url + getParams)));
+		}
+		if (context!= null && reloadPeriod > 0 && cacheFile.exists() && (currentTimeStamp - timeStamp < reloadPeriod)) {
 			try {
-				HttpResponse response;
-				if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null || byteArrayEntity != null || gzipStreamEntity != null) {
-					final HttpPost httppost = new HttpPost(url + getParams);
-					if (postParams != null) {
-						httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
-					}
-					if (multipartEntity != null) {
-						httppost.setEntity(multipartEntity);
-					}
-					if (stringEntity != null) {
-						httppost.setEntity(stringEntity);
-					}
-					if (fileEntity != null) {
-						httppost.setEntity(fileEntity);
-					}
-					if (byteArrayEntity != null) {
-						httppost.setEntity(byteArrayEntity);
-					}
-					if (gzipStreamEntity != null) {
-						httppost.setHeader("Accept-Encoding", "gzip");
-						httppost.setEntity(gzipStreamEntity);
-					}
-					response = httpclient.execute(httppost);
-				} else {
-					response = httpclient.execute(new HttpGet(url + getParams));
+				InputStream inputStream = new FileInputStream(cacheFile);
+				while ((readLength = inputStream.read(buffer, 0, buffer.length)) != -1) {
+					data.write(buffer, 0, readLength);
 				}
-				httpStatusCode = response.getStatusLine().getStatusCode();
-				switch (httpStatusCode) {
-					case 200:
-						final InputStream is;
-						Header contentEncoding = response.getFirstHeader("Content-Encoding");
-						if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
-							byte[] inputStreamBuffer = new byte[8192];
-							int length;
-							ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-							GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity())));
-							while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
-								byteArrayOutputStream.write(inputStreamBuffer, 0, length);
-							}
-							is = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-							gZIPInputStream.close();
-							byteArrayOutputStream.close();
-						} else {
-							is = response.getEntity().getContent();
-						}
-						while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
-							data.write(buffer, 0, readLength);
-						}
-						data.flush();
-						isNetworkError = false;
-						break;
-					case 404:
-					case 403:
-					case 400:
-						isHttpStatusError = true;
-						isNetworkError = false;
-						break;
-					default:
-						KKDebug.w("connetion to " + url + getParams + " returns " + httpStatusCode);
-						retryTimes++;
-						isNetworkError = true;
-						SystemClock.sleep(1000);
-						break;
-				}
-				response.getEntity().consumeContent();
-			} catch (final Exception e) {
-				KKDebug.w("connetion to " + url + getParams + " failed!");
-				retryTimes++;
-				isNetworkError = true;
-				SystemClock.sleep(1000);
+				data.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} while (isNetworkError && retryTimes < 3);
+		} else {
+			if (reloadPeriod > 0) {
+				timeStamp = currentTimeStamp;
+			}
+			do {
+				try {
+					HttpResponse response;
+					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null || byteArrayEntity != null || gzipStreamEntity != null) {
+						final HttpPost httppost = new HttpPost(url + getParams);
+						if (postParams != null) {
+							httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+						}
+						if (multipartEntity != null) {
+							httppost.setEntity(multipartEntity);
+						}
+						if (stringEntity != null) {
+							httppost.setEntity(stringEntity);
+						}
+						if (fileEntity != null) {
+							httppost.setEntity(fileEntity);
+						}
+						if (byteArrayEntity != null) {
+							httppost.setEntity(byteArrayEntity);
+						}
+						if (gzipStreamEntity != null) {
+							httppost.setHeader("Accept-Encoding", "gzip");
+							httppost.setEntity(gzipStreamEntity);
+						}
+						response = httpclient.execute(httppost);
+					} else {
+						response = httpclient.execute(new HttpGet(url + getParams));
+					}
+					httpStatusCode = response.getStatusLine().getStatusCode();
+					switch (httpStatusCode) {
+						case 200:
+							final InputStream is;
+							Header contentEncoding = response.getFirstHeader("Content-Encoding");
+							if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
+								byte[] inputStreamBuffer = new byte[8192];
+								int length;
+								ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+								GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity())));
+								while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
+									byteArrayOutputStream.write(inputStreamBuffer, 0, length);
+								}
+								is = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+								gZIPInputStream.close();
+								byteArrayOutputStream.close();
+							} else {
+								is = response.getEntity().getContent();
+							}
+							while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+								data.write(buffer, 0, readLength);
+							}
+							data.flush();
+							isNetworkError = false;
+							break;
+						case 404:
+						case 403:
+						case 400:
+							isHttpStatusError = true;
+							isNetworkError = false;
+							break;
+						default:
+							KKDebug.w("connetion to " + url + getParams + " returns " + httpStatusCode);
+							retryTimes++;
+							isNetworkError = true;
+							SystemClock.sleep(1000);
+							break;
+					}
+					response.getEntity().consumeContent();
+				} catch (final Exception e) {
+					KKDebug.w("connetion to " + url + getParams + " failed!");
+					retryTimes++;
+					isNetworkError = true;
+					SystemClock.sleep(1000);
+				}
+			} while (isNetworkError && retryTimes < 3);
+		}
 		try {
 			if (!isNetworkError && !isHttpStatusError) {
 				if (listener != null) {
+					String jsonData;
 					if (cipher != null) {
-						listener.onPreComplete(new String(cipher.doFinal(data.toByteArray())));
+						jsonData = new String(cipher.doFinal(data.toByteArray()));
 					} else {
-						listener.onPreComplete(data.toString());
+						jsonData = data.toString();
+					}
+					listener.onPreComplete(jsonData);
+					if (context != null) {
+						CacheUtils.saveDataToCache(jsonData, cacheFile);
 					}
 				}
 			}
