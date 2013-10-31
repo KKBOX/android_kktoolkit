@@ -18,11 +18,12 @@
 package com.kkbox.toolkit.api;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.SystemClock;
 
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
-import com.kkbox.toolkit.utils.CacheUtils;
 import com.kkbox.toolkit.utils.KKDebug;
+import com.kkbox.toolkit.utils.StringUtils;
 import com.kkbox.toolkit.utils.UserTask;
 
 import org.apache.http.Header;
@@ -51,8 +52,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -76,9 +79,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	private Cipher cipher = null;
 
 	private Context context = null;
-	private static final String APITag = "api";
 	private long reloadPeriod = -1;
-	private long timeStamp = 0;
 
 	public KKAPIRequest(String url, Cipher cipher, long reloadPeriod, Context context) {
 		this(url, cipher, 10000);
@@ -174,12 +175,19 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		final byte[] buffer = new byte[128];
 		listener = (KKAPIRequestListener)params[0];
 		int retryTimes = 0;
-		long currentTimeStamp = System.currentTimeMillis();
 		File cacheFile = null;
+		ConnectivityManager connectivityManager = null;
 		if(context != null) {
-			cacheFile = new File(CacheUtils.getCachePath(context, APITag, (url + getParams)));
+			final File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "api");
+			if (!cacheDir.exists()) {
+				cacheDir.mkdir();
+			}
+			cacheFile = new File(cacheDir.getAbsolutePath() + File.separator + StringUtils.getMd5Hash(url + getParams));
+			connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
 		}
-		if (context!= null && reloadPeriod > 0 && cacheFile.exists() && (currentTimeStamp - timeStamp < reloadPeriod)) {
+
+		if (context!= null && reloadPeriod > 0 && cacheFile.exists() && ((System.currentTimeMillis() - cacheFile.lastModified() < reloadPeriod)
+			|| connectivityManager == null)) {
 			try {
 				InputStream inputStream = new FileInputStream(cacheFile);
 				while ((readLength = inputStream.read(buffer, 0, buffer.length)) != -1) {
@@ -190,9 +198,6 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 				e.printStackTrace();
 			}
 		} else {
-			if (reloadPeriod > 0) {
-				timeStamp = currentTimeStamp;
-			}
 			do {
 				try {
 					HttpResponse response;
@@ -279,7 +284,14 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 					}
 					listener.onPreComplete(jsonData);
 					if (context != null) {
-						CacheUtils.saveDataToCache(jsonData, cacheFile);
+						try {
+							FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
+							OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+							outputStreamWriter.write(jsonData);
+							outputStreamWriter.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
