@@ -61,6 +61,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private boolean isNetworkError = false;
 	private Cipher cipher = null;
 	private boolean saveToLocal = false;
+	private boolean interuptFlag = false;
 	private static ReentrantLock fileLock = new ReentrantLock();
 
 	public KKImageRequest(Context context, String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener,
@@ -104,8 +105,8 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		if (listener != null) {
 			listener.onCancelled(this);
 		}
+		interuptFlag = true;
 		listener = null;
-		this.cancel(true);
 	}
 
 	public String getUrl() {
@@ -183,6 +184,9 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			if (actionType == KKImageManager.ActionType.DOWNLOAD) {
 				RandomAccessFile tempFile = new RandomAccessFile(tempFilePath, "rw");
 				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+					if (interuptFlag) {
+						return null;
+					}
 					if (cipher != null) {
 						buffer = cipher.doFinal(buffer);
 					}
@@ -201,6 +205,9 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 				}
 				try {
 					while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+						if (interuptFlag) {
+							return null;
+						}
 						tempFile.write(buffer, 0, readLength);
 					}
 				} catch (IOException e) {
