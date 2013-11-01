@@ -30,7 +30,7 @@ public class ResizableViewActivity extends KKActivity {
 
         setCtrlButton();
         btnS.callOnClick();
-        mResizableView.setBackgroundResource(R.drawable.ic_launcher);
+        mResizableView.setBackgroundResource(R.drawable.small);
     }
 
     int mDisplayHeight = 0;
@@ -42,14 +42,14 @@ public class ResizableViewActivity extends KKActivity {
             @Override
             public void onClick(View view) {
                 mResizableView.setLayoutParams(new LinearLayout.LayoutParams(
-                        mDisplayHeight/2, mDisplayHeight/2));
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
         });
         btnM.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mResizableView.setLayoutParams(new LinearLayout.LayoutParams(
-                        mDisplayHeight/3, mDisplayHeight/3));
+                        mDisplayHeight/3, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
         });
 
@@ -57,7 +57,7 @@ public class ResizableViewActivity extends KKActivity {
             @Override
             public void onClick(View view) {
                 mResizableView.setLayoutParams(new LinearLayout.LayoutParams(
-                        mDisplayHeight/4, mDisplayHeight/4));
+                        mDisplayHeight/4, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
         });
     }

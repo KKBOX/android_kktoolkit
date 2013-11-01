@@ -30,34 +30,26 @@ public class ActionBarActivity extends KKActivity {
         btnSetHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(actionBar != null){
-                    actionBar.setDisplayHomeAsUpEnabled(true);
-                }
+                actionBar.setDisplayHomeAsUpEnabled(true);
             }
         });
         btnSetLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(actionBar != null){
-                    actionBar.setLogo(getBaseContext().getResources().getDrawable(R.drawable.ic_launcher));
-                }
-
+                actionBar.setLogo(getBaseContext().getResources().getDrawable(R.drawable.ic_launcher));
             }
         });
         btnSetSubTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(actionBar != null){
-                    actionBar.setSubtitle("This is SubTitle");
-                }
+                actionBar.setSubtitle("This is SubTitle");
             }
         });
         btnSetTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(actionBar != null){
-                    actionBar.setTitle("This is Title");
-                }
+                actionBar.setTitle("This is Title");
+
             }
         });
 

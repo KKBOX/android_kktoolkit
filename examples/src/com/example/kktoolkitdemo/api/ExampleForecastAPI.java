@@ -13,7 +13,6 @@ import java.util.ArrayList;
  * Created by gigichien on 13/10/24.
  */
 public class ExampleForecastAPI extends KKAPIBase {
-    private String mResponseData = null;
     ArrayList<Float> mForecast;
     private KKAPIRequest mRequest = null;
     @Override
@@ -37,8 +36,10 @@ public class ExampleForecastAPI extends KKAPIBase {
         }
         return ErrorCode.NO_ERROR;
     }
-    public void start(KKAPIRequest request){
-        mRequest = request;
+
+    public void start(){
+        String inputURL = "http://api.openweathermap.org/data/2.5/forecast/daily?id=2643743";
+        mRequest = new KKAPIRequest(inputURL, null);
         if(mRequest != null) {
             execute(mRequest);
         }

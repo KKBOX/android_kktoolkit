@@ -40,8 +40,7 @@ public class MainActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         setListAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, mStrings));
-        Intent intent = new Intent(this, ExampleService.class);
-        startService(intent);
+
 	}
 
     @Override
@@ -88,13 +87,5 @@ public class MainActivity extends ListActivity {
         if (intent != null) {
             startActivity(intent);
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Intent intent = new Intent(this, ExampleService.class);
-        stopService(intent);
-        super.onStop();
     }
 }
