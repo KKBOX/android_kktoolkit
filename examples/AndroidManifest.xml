@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.example.kktoolkitdemo"
+          android:versionCode="1"
+          android:versionName="1.0">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <uses-sdk
+            android:minSdkVersion="8"
+            android:targetSdkVersion="18"/>
+
+    <application
+            android:allowBackup="true"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/app_name">
+        <service android:name=".notification.ExampleService"/>
+
+        <activity
+                android:name="MainActivity"
+                android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".actionbar.ActionBarActivity"
+                android:theme="@style/KKActivityTheme"
+                android:label="KKActionBar sample">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".eventqueue.EventQueueActivity"
+                android:theme="@style/KKActivityTheme"
+                android:label="KKEventQueue sample">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".viewpager.InfiniteViewPagerActivity"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".resizableview.ResizableViewActivity"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".messageview.KKMessageViewActivity"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".listview.KKDragAndDropListViewActivity"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".listview.KKListViewActivity"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".tabfragment.ActivityTabFragment"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".image.ImageManagerActivity"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".api.KKAPIActivity"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".fragment.ListFragmentActivity"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".notification.ActivityNotification"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".notification.EmptyActivity"
+                android:theme="@style/KKActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

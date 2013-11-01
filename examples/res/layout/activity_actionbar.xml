@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <Button
+        android:id="@+id/set__home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show Home"
+        android:gravity="left"/>
+    <Button
+        android:id="@+id/set_sub_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set subtitle"
+        android:gravity="left"/>
+    <Button
+        android:id="@+id/set_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set title"
+        android:gravity="left"/>
+    <Button
+        android:id="@+id/set_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set logo"
+        android:gravity="left"/>
+</LinearLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">KKToolkitDemo</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="tab_1">Tab 1</string>
+    <string name="tab_2">Tab 2</string>
+    <string name="tab_3">Tab 3</string>
+    <string name="auto_update_image">Auto Update Image</string>
+    <string name="manual_update_image">Manual Update Image</string>
+    <string name="imageview">Image View</string>
+    <string name="notify_1">Delay Show Alert Dialog</string>
+    <string name="notify_2">Delay Show Notify Dialog</string>
+    <string name="notify_3">Delay Show Choice Dialog</string>
+    <string name="notify_4">Delay Show Progressing Dialog</string>
+</resources>

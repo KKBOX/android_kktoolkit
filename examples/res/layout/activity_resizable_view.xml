@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+            android:id="@+id/ctrl_resizable_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:id="@+id/origin_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_launcher"/>
+
+        <Button
+                android:id="@+id/btn_small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Small Size"
+                android:layout_toRightOf="@id/origin_img"/>
+
+        <Button
+                android:id="@+id/btn_middle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Middle Size"
+                android:layout_toRightOf="@id/origin_img"
+                android:layout_below="@id/btn_small"/>
+
+        <Button
+                android:id="@+id/btn_large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Large Size"
+                android:layout_toRightOf="@id/origin_img"
+                android:layout_below="@id/btn_middle"/>
+    </RelativeLayout>
+
+    <com.kkbox.toolkit.ui.ResizableView
+            android:id="@+id/resizable_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+</LinearLayout>
+

@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <Button
+            android:id="@+id/add__event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add an event"
+            android:gravity="left"/>
+
+    <Button
+            android:id="@+id/lock_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add a lock event"
+            android:gravity="left"/>
+
+    <Button
+            android:id="@+id/start_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start events"
+            android:gravity="left"/>
+
+    <Button
+            android:id="@+id/unlock_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Unlock an event"
+            android:gravity="left"/>
+
+    <Button
+            android:id="@+id/unlock_all_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Unlock all events"
+            android:gravity="left"/>
+
+    <Button
+            android:id="@+id/clear_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="clear pending event"
+            android:gravity="left"/>
+
+
+    <TextView
+            android:id="@+id/job_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"/>
+
+    <TextView
+            android:id="@+id/label_pending"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"/>
+
+    <TextView
+            android:id="@+id/lock_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"/>
+
+
+</LinearLayout>
