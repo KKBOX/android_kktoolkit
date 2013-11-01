@@ -210,7 +210,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 				try {
 					HttpResponse response;
 					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null || byteArrayEntity != null
-							|| gzipStreamEntity != null || headerParams != null) {
+							|| gzipStreamEntity != null || (headerParams != null && postParams != null)) {
 						final HttpPost httppost = new HttpPost(url + getParams);
 						if (postParams != null) {
 							httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
