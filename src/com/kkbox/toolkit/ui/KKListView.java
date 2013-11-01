@@ -59,7 +59,17 @@ public class KKListView extends ListView {
 	public void setLoadMore(OnLoadMoreListener onLoadMoreListener) {
 		delegate.setLoadMore(onLoadMoreListener);
 	}
-	
+
+	@Override
+	public boolean onInterceptTouchEvent(MotionEvent event) {
+		delegate.onInterceptTouchEvent(event);
+		try {
+			return super.onInterceptTouchEvent(event);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return false;
+		}
+	}
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		delegate.onTouchEvent(event);

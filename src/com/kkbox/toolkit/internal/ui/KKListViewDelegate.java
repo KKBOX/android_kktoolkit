@@ -67,7 +67,6 @@ public class KKListViewDelegate {
 	private TextView labelPullToRefreshUpdatedAt;
 	private ImageView viewPullToRefresh;
 	private RotateAnimation animationFlip;
-	private RotateAnimation animationReverseFlip;
 	private KKListViewOnRefreshListener onRefreshListener;
 	private KKListViewOnLoadMoreListener onLoadMoreListener;
 	private int refreshHeaderhViewOriginHeight = 0;
@@ -95,10 +94,6 @@ public class KKListViewDelegate {
 		animationFlip.setInterpolator(new LinearInterpolator());
 		animationFlip.setDuration(250);
 		animationFlip.setFillAfter(true);
-		animationReverseFlip = new RotateAnimation(-180, 0, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
-		animationReverseFlip.setInterpolator(new LinearInterpolator());
-		animationReverseFlip.setDuration(250);
-		animationReverseFlip.setFillAfter(true);
 		refreshHeaderhViewOriginHeight = (int)(60 * context.getResources().getDisplayMetrics().density);
 		listView.addHeaderView(headerView, null, false);
 		String lastUpdatedTime = (String)context.getResources().getText(R.string.last_update) + " "
@@ -129,8 +124,6 @@ public class KKListViewDelegate {
 					labelPullToRefresh.setText(R.string.pull_down_to_resort);
 					progressPullToRefresh.setVisibility(View.GONE);
 					viewPullToRefresh.setVisibility(View.VISIBLE);
-					viewPullToRefresh.clearAnimation();
-					viewPullToRefresh.startAnimation(animationReverseFlip);
 					break;
 				case State.PULLING_DOWN:
 					labelPullToRefresh.setText(R.string.release_in_order_to_resort);
@@ -152,6 +145,12 @@ public class KKListViewDelegate {
 		}
 	}
 
+	public void onInterceptTouchEvent(MotionEvent event) {
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			actionDownY = event.getY();
+		}
+	}
+	
 	public void onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_UP:
@@ -161,9 +160,6 @@ public class KKListViewDelegate {
 				if (currentState == State.PULLING_DOWN) {
 					updateState(State.UPDATING);
 				}
-				break;
-			case MotionEvent.ACTION_DOWN:
-				actionDownY = event.getY();
 				break;
 			case MotionEvent.ACTION_MOVE:
 				if (currentState == State.NORMAL) {
