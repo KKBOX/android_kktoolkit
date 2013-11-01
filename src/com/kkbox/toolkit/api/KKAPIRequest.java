@@ -71,6 +71,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	private boolean isHttpStatusError = false;
 	private int httpStatusCode = 0;
 	private ArrayList<NameValuePair> postParams;
+	private ArrayList<NameValuePair> headerParams;
 	private MultipartEntity multipartEntity;
 	private StringEntity stringEntity;
 	private FileEntity fileEntity;
@@ -123,6 +124,13 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 			postParams = new ArrayList<NameValuePair>();
 		}
 		postParams.add((new BasicNameValuePair(key, value)));
+	}
+
+	public void addHeaderParam(String key, String value) {
+		if (headerParams == null) {
+			headerParams = new ArrayList<NameValuePair>();
+		}
+		headerParams.add((new BasicNameValuePair(key, value)));
 	}
 
 	public void addMultiPartPostParam(String key, ContentBody contentBody) {
@@ -201,7 +209,8 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					HttpResponse response;
-					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null || byteArrayEntity != null || gzipStreamEntity != null) {
+					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null || byteArrayEntity != null
+							|| gzipStreamEntity != null || headerParams != null) {
 						final HttpPost httppost = new HttpPost(url + getParams);
 						if (postParams != null) {
 							httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
@@ -222,9 +231,20 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 							httppost.setHeader("Accept-Encoding", "gzip");
 							httppost.setEntity(gzipStreamEntity);
 						}
+						if (headerParams != null) {
+							for (NameValuePair header : headerParams) {
+								httppost.setHeader(header.getName(), header.getValue());
+							}
+						}
 						response = httpclient.execute(httppost);
 					} else {
-						response = httpclient.execute(new HttpGet(url + getParams));
+						final HttpGet httpGet = new HttpGet(url + getParams);
+						if (headerParams != null) {
+							for (NameValuePair header : headerParams) {
+								httpGet.setHeader(header.getName(), header.getValue());
+							}
+						}
+						response = httpclient.execute(httpGet);
 					}
 					httpStatusCode = response.getStatusLine().getStatusCode();
 					switch (httpStatusCode) {
