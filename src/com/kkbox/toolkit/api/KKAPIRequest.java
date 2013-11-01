@@ -181,11 +181,11 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		int readLength;
 		final ByteArrayOutputStream data = new ByteArrayOutputStream();
 		final byte[] buffer = new byte[128];
-		listener = (KKAPIRequestListener)params[0];
+		listener = (KKAPIRequestListener) params[0];
 		int retryTimes = 0;
 		File cacheFile = null;
 		ConnectivityManager connectivityManager = null;
-		if(context != null) {
+		if (context != null) {
 			final File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "api");
 			if (!cacheDir.exists()) {
 				cacheDir.mkdir();
@@ -194,8 +194,9 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 			connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
 		}
 
-		if (context!= null && reloadPeriod > 0 && cacheFile.exists() && ((System.currentTimeMillis() - cacheFile.lastModified() < reloadPeriod)
-			|| connectivityManager == null)) {
+		if (context != null && reloadPeriod > 0 && cacheFile.exists()
+				&& ((System.currentTimeMillis() - cacheFile.lastModified() < reloadPeriod)
+				|| connectivityManager == null)) {
 			try {
 				InputStream inputStream = new FileInputStream(cacheFile);
 				while ((readLength = inputStream.read(buffer, 0, buffer.length)) != -1) {
@@ -209,8 +210,9 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					HttpResponse response;
-					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null || byteArrayEntity != null
-							|| gzipStreamEntity != null || headerParams != null) {
+					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
+							|| byteArrayEntity != null
+							|| gzipStreamEntity != null || (headerParams != null && postParams != null)) {
 						final HttpPost httppost = new HttpPost(url + getParams);
 						if (postParams != null) {
 							httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
@@ -255,7 +257,8 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 								byte[] inputStreamBuffer = new byte[8192];
 								int length;
 								ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-								GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity())));
+								GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(
+										EntityUtils.toByteArray(response.getEntity())));
 								while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
 									byteArrayOutputStream.write(inputStreamBuffer, 0, length);
 								}
@@ -321,7 +324,9 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 
 	@Override
 	public void onPostExecute(Void v) {
-		if (listener == null) { return; }
+		if (listener == null) {
+			return;
+		}
 		if (isHttpStatusError) {
 			listener.onHttpStatusError(httpStatusCode);
 		} else if (isNetworkError) {
