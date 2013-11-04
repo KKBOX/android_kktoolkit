@@ -16,9 +16,6 @@ import com.kkbox.toolkit.utils.KKDebug;
 
 import java.util.ArrayList;
 
-/**
- * Created by gigichien on 13/10/21.
- */
 public class InfiniteViewPagerActivity extends KKActivity {
     private InfiniteViewPager mViewPager;
 

@@ -25,9 +25,9 @@ public class MainActivity extends ListActivity {
     private String[] mStrings = {
             "KKActionBar",
             "KKMessageView",
-            "ViewPager",
+            "InfiniteViewPager",
             "ResizableView",
-            "EventQueue",
+            "KKEventQueue",
             "KKListView",
             "KKDragAndDropListView",
             "KKTabFragment",

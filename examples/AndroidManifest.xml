@@ -32,7 +32,7 @@
         <activity
                 android:name=".actionbar.ActionBarActivity"
                 android:theme="@style/KKActivityTheme"
-                android:label="KKActionBar sample">
+                android:label="KKActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -41,7 +41,7 @@
         <activity
                 android:name=".eventqueue.EventQueueActivity"
                 android:theme="@style/KKActivityTheme"
-                android:label="KKEventQueue sample">
+                android:label="KKEventQueue">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -49,7 +49,8 @@
 
         <activity
                 android:name=".viewpager.InfiniteViewPagerActivity"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="InfiniteViewPager">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -57,7 +58,8 @@
 
         <activity
                 android:name=".resizableview.ResizableViewActivity"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="ResizableView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -65,7 +67,8 @@
 
         <activity
                 android:name=".messageview.KKMessageViewActivity"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="KKMessageView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -73,7 +76,8 @@
 
         <activity
                 android:name=".listview.KKDragAndDropListViewActivity"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="KKDragAndDropListView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -81,7 +85,8 @@
 
         <activity
                 android:name=".listview.KKListViewActivity"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="KKListView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -89,21 +94,24 @@
 
         <activity
                 android:name=".tabfragment.ActivityTabFragment"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="KKTabFragment">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
         <activity
                 android:name=".image.ImageManagerActivity"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="KKImageManager">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
         <activity
                 android:name=".api.KKAPIActivity"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="KKAPIBase">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -111,7 +119,8 @@
 
         <activity
                 android:name=".fragment.ListFragmentActivity"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="KKFragment">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -119,7 +128,8 @@
 
         <activity
                 android:name=".notification.ActivityNotification"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="KKDialog">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -127,7 +137,8 @@
 
         <activity
                 android:name=".notification.EmptyActivity"
-                android:theme="@style/KKActivityTheme">
+                android:theme="@style/KKActivityTheme"
+                android:label="KKDialog">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>

@@ -14,4 +14,27 @@
     <string name="notify_2">Delay Show Notify Dialog</string>
     <string name="notify_3">Delay Show Choice Dialog</string>
     <string name="notify_4">Delay Show Progressing Dialog</string>
+
+    <string-array name = "city">
+        <item>Taipei</item>
+        <item>Tokyo</item>
+        <item>London</item>
+        <item>Seattle</item>
+        <item>Singapore</item>
+        <item>Shanghai</item>
+        <item>York</item>
+        <item>Lyon</item>
+        <item>Angers</item>
+        <item>Bari</item>
+        <item>Italy</item>
+        <item>Rome</item>
+        <item>Kyoto</item>
+        <item>Brighton</item>
+        <item>New York</item>
+        <item>Boston</item>
+        <item>Cambridge</item>
+        <item>Tainan</item>
+        <item>Brazil</item>
+        <item>Canada</item>
+       </string-array>
 </resources>

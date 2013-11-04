@@ -10,9 +10,6 @@ import android.widget.TextView;
 
 import com.kkbox.toolkit.ui.KKFragment;
 
-/**
- * Created by gigichien on 13/10/22.
- */
 public class ExampleFragment extends KKFragment{
 
     public enum TAB_STYLE{GRAY, YELLOW, BLUE};

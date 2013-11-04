@@ -10,9 +10,6 @@ import android.widget.TextView;
 import com.kkbox.toolkit.ui.KKActivity;
 import com.kkbox.toolkit.ui.KKServiceActivity;
 
-/**
- * Created by gigichien on 13/10/25.
- */
 public class EmptyActivity extends KKServiceActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {

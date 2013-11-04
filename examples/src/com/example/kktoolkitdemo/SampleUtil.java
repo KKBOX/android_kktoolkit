@@ -29,19 +29,4 @@ public class SampleUtil {
             "http://openweathermap.org/img/w/04d.png",
             "http://openweathermap.org/img/w/10d.png"
     };
-
-
-    public static String[] test_list_item = {
-            "Taipei",
-            "Tokyo",
-            "London",
-            "Seattle",
-            "Singapore",
-            "York",
-            "Lyon",
-            "Shanghai",
-            "Angers",
-            "Bari",
-            "Italy"
-            };
 }

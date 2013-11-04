@@ -11,9 +11,6 @@ import com.example.kktoolkitdemo.api.ExampleWeatherAPI;
 import com.kkbox.toolkit.api.KKAPIListener;
 import com.kkbox.toolkit.ui.KKFragment;
 
-/**
- * Created by gigichien on 13/10/23.
- */
 public class ExampleWeatherFragment extends KKFragment {
 
     TextView mCity;
@@ -57,7 +54,7 @@ public class ExampleWeatherFragment extends KKFragment {
 
     @Override
     public void onLoadData() {
-        super.onLoadData();
+
         startFetchData(); //Just show message
         Bundle bundle = getArguments();
         String city = null;

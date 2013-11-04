@@ -12,9 +12,6 @@ import android.widget.TextView;
 import com.kkbox.toolkit.ui.KKActivity;
 import com.kkbox.toolkit.ui.KKMessageView;
 
-/**
- * Created by gigichien on 13/10/21.
- */
 public class KKMessageViewActivity extends KKActivity {
     private KKMessageView mMsg;
 

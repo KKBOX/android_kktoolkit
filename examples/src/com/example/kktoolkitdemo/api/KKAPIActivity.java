@@ -13,9 +13,7 @@ import android.widget.TextView;
 import com.example.kktoolkitdemo.R;
 import com.kkbox.toolkit.api.KKAPIListener;
 import com.kkbox.toolkit.ui.KKActivity;
-/**
- * Created by gigichien on 13/10/22.
- */
+
 public class KKAPIActivity extends KKActivity {
     private TextView mTextView;
     private ExampleWeatherAPI mAPI;

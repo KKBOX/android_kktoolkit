@@ -7,9 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by gigichien on 13/10/22.
- */
 public class ExampleWeatherAPI extends KKAPIBase{
     private WeatherData mWeatherData;
     private String mResponseData = null;

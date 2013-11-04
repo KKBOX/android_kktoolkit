@@ -15,10 +15,6 @@ import com.kkbox.toolkit.utils.KKEventQueueListener;
 
 import java.util.ArrayList;
 
-
-/**
- * Created by gigichien on 13/10/18.
- */
 public class EventQueueActivity extends KKActivity {
     private KKEventQueue eventQueue;
     private int mID = 1;

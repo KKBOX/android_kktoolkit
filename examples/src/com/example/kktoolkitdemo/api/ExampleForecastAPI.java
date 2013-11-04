@@ -9,9 +9,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-/**
- * Created by gigichien on 13/10/24.
- */
 public class ExampleForecastAPI extends KKAPIBase {
     ArrayList<Float> mForecast;
     private KKAPIRequest mRequest = null;

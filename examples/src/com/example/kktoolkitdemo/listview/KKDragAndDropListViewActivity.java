@@ -13,9 +13,6 @@ import com.kkbox.toolkit.ui.KKDragAndDropListView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by gigichien on 13/10/22.
- */
 public class KKDragAndDropListViewActivity extends KKActivity {
     private KKDragAndDropListView mListView;
     private String[] mString = {"item 1", "item 2", "item 3", "item 4", "item 5", "item 6" };

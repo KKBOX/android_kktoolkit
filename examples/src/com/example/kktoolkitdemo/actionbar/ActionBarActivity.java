@@ -8,9 +8,6 @@ import com.example.kktoolkitdemo.R;
 import com.kkbox.toolkit.ui.KKActionBar;
 import com.kkbox.toolkit.ui.KKActivity;
 
-/**
- * Created by gigichien on 13/10/18.
- */
 public class ActionBarActivity extends KKActivity {
     private KKActionBar actionBar = null;
     @Override

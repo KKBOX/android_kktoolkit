@@ -14,9 +14,6 @@ import com.kkbox.toolkit.api.KKAPIRequest;
 import com.kkbox.toolkit.ui.KKActivity;
 import com.kkbox.toolkit.ui.KKListFragment;
 
-/**
- * Created by gigichien on 13/10/23.
- */
 public class ExampleCityListFragment extends KKListFragment {
 
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {

@@ -8,9 +8,6 @@ import com.example.kktoolkitdemo.R;
 import com.example.kktoolkitdemo.api.ExampleWeatherAPI;
 import com.kkbox.toolkit.ui.KKActivity;
 
-/**
- * Created by gigichien on 13/10/23.
- */
 public class ListFragmentActivity  extends KKActivity{
 
     @Override

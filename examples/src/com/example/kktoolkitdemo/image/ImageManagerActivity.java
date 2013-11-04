@@ -16,9 +16,6 @@ import com.kkbox.toolkit.image.KKImageListener;
 import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.ui.KKActivity;
 
-/**
- * Created by gigichien on 13/10/24.
- */
 public class ImageManagerActivity extends KKActivity{
     LinearLayout mLinearLayout;
     Button mAuto, mManual, mClear;
