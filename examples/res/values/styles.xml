@@ -1,0 +1,31 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Holo.NoActionBar">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <!--<style name="ExampleActivityTheme" parent="KKActivityTheme">-->
+        <!--<item name="KKTabFragmentStyle">@style/TabFragmentStyle</item>-->
+    <!--</style>-->
+
+    <!--<style name="TabFragmentStyle" parent="KKTabFragmentStyle">-->
+        <!--<item name="KKTabButtonBackgroundLeft">@drawable/selector_button_top_tab_left</item>-->
+        <!--<item name="KKTabButtonBackgroundMiddle">@drawable/selector_button_top_tab_center</item>-->
+        <!--<item name="KKTabButtonBackgroundRight">@drawable/selector_button_top_tab_right</item>-->
+        <!--<item name="android:height">40dp</item>-->
+        <!--<item name="android:textSize">14sp</item>-->
+    <!--</style>-->
+</resources>
