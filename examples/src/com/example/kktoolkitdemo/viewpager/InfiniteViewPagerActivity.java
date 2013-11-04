@@ -81,7 +81,7 @@ public class InfiniteViewPagerActivity extends KKActivity {
                     break;
 
             }
-            ((ViewPager)container).addView(v);
+            container.addView(v);
             return v;
         }
     }

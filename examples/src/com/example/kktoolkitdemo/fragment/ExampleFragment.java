@@ -15,9 +15,6 @@ public class ExampleFragment extends KKFragment{
     public enum TAB_STYLE{GRAY, YELLOW, BLUE};
     TAB_STYLE mStyle = TAB_STYLE.GRAY;
 
-    public ExampleFragment() {
-        super();
-    }
     public ExampleFragment(TAB_STYLE style) {
         super();
         mStyle = style;

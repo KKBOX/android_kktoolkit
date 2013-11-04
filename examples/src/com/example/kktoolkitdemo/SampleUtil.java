@@ -20,6 +20,7 @@ package com.example.kktoolkitdemo;
 public class SampleUtil {
 
     public static String LOG_TAG = "KKToolKitDemo";
+    
     public static String[] test_item = { "Taipei", "Tokyo", "London", "Seattle", "Error" };
 
     public static String[] pic_url = {

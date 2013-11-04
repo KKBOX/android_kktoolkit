@@ -15,21 +15,19 @@ import java.util.List;
 
 public class KKDragAndDropListViewActivity extends KKActivity {
     private KKDragAndDropListView mListView;
-    private String[] mString = {"item 1", "item 2", "item 3", "item 4", "item 5", "item 6" };
-    private ArrayList<String> mStrings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.activity_draganddrop);
+        setContentView(R.layout.activity_draganddrop);
         mListView = (KKDragAndDropListView) findViewById(R.id.drag_listview);
 
-        mStrings = new ArrayList<String>();
-        mStrings.add("item 1");
-        mStrings.add("item 2");
-        mStrings.add("item 3");
-        mStrings.add("item 4");
-        mStrings.add("item 5");
-        mStrings.add("item 6");
+        ArrayList<String> mStrings = new ArrayList<String>();
+        mStrings.add("Item 1");
+        mStrings.add("Item 2");
+        mStrings.add("Item 3");
+        mStrings.add("Item 4");
+        mStrings.add("Item 5");
+        mStrings.add("Item 6");
 
         mListView.setAdapter(new DragAdapter(
                 this,

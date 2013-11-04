@@ -12,9 +12,6 @@ import com.example.kktoolkitdemo.R;
 import com.kkbox.toolkit.ui.KKActivity;
 import com.kkbox.toolkit.ui.ResizableView;
 
-/**
- * Created by gigichien on 13/10/21.
- */
 public class ResizableViewActivity extends KKActivity {
     Button btnL, btnM, btnS;
     ResizableView mResizableView;
