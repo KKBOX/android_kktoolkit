@@ -66,6 +66,7 @@ public abstract class KKTabFragment extends KKFragment {
 				KKFragment.setAnimation(KKFragment.AnimationType.PUSH);
 			}
 			fragmentTransaction.commit();
+			getChildFragmentManager().executePendingTransactions();
 			currentFragment = fragment;
 		}
 	};
@@ -87,6 +88,7 @@ public abstract class KKTabFragment extends KKFragment {
 		fragmentTransaction.replace(R.id.sub_fragment, fragment, String.valueOf(currentIndex));
 		KKFragment.setAnimation(KKFragment.AnimationType.NONE);
 		fragmentTransaction.commit();
+		getChildFragmentManager().executePendingTransactions();
 		currentFragment = fragment;
 	}
 
