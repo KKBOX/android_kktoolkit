@@ -24,8 +24,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import com.kkbox.toolkit.R;
 import com.kkbox.toolkit.internal.image.KKImageRequestListener;
 import com.kkbox.toolkit.utils.StringUtils;
 import com.kkbox.toolkit.utils.UserTask;
@@ -262,19 +264,7 @@ public class KKImageManager {
 				}
 			}
 		}
-		Bitmap bitmap = loadCache(url, localPath);
-		if (bitmap != null) {
-			if (updateBackground) {
-				view.setBackgroundDrawable(new BitmapDrawable(context.getResources(), bitmap));
-				autoRecycleViewBackgroundBitmap(view);
-			} else {
-				ImageView imageView = (ImageView) view;
-				imageView.setImageDrawable(new BitmapDrawable(context.getResources(), bitmap));
-				autoRecycleViewSourceBitmap(imageView);
-			}
-
-			return;
-		} else if (defaultResourceId > 0) {
+		if (defaultResourceId > 0) {
 			if (updateBackground) {
 				view.setBackgroundResource(defaultResourceId);
 			} else {
