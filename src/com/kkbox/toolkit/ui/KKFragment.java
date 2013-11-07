@@ -20,6 +20,7 @@ package com.kkbox.toolkit.ui;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -232,15 +233,18 @@ public abstract class KKFragment extends Fragment {
 			fragment.setArguments(arguments);
 		}
 		FragmentTransaction fragmentTransaction;
+		FragmentManager fragmentManager;
 		if (getArguments() == null || !getArguments().getBoolean("nested_in_tab", false)) {
-			fragmentTransaction = getFragmentManager().beginTransaction();
+			fragmentManager = getFragmentManager();
 		} else {
-			fragmentTransaction = getParentFragment().getFragmentManager().beginTransaction();
+			fragmentManager = getParentFragment().getFragmentManager();
 		}
+		fragmentTransaction = fragmentManager.beginTransaction();
 		KKFragment.setAnimation(KKFragment.AnimationType.PUSH);
 		fragmentTransaction.replace(R.id.sub_fragment, fragment);
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
+		fragmentManager.executePendingTransactions();
 	}
 
 	@Override
