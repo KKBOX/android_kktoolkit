@@ -35,7 +35,7 @@ public class InfiniteViewPagerActivity extends KKActivity {
 
         mAdapter = new ViewPagerAdapter(mColorList, true);
         mViewPager.setAdapter(mAdapter);
-        mViewPager.setOnPageChangeListener(new OnInfiniteViewPagerPageChangeListener(mViewPager) {
+        mViewPager.setOnPageChangeListener(new OnInfiniteViewPagerPageChangeListener() {
             @Override
             public void onLoopPageSelected(int position) {
                 KKDebug.i(SampleUtil.LOG_TAG, "OnInfiniteViewPagerPageChangeListener onLoopPageSelected");
