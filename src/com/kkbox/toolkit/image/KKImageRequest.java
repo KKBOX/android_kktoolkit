@@ -47,6 +47,7 @@ import javax.crypto.Cipher;
 public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private final int BUFFER_SIZE = 1024;
 	private byte[] buffer = new byte[BUFFER_SIZE];
+	private HttpClient httpclient;
 	private KKImageRequestListener listener;
 	private HttpResponse response;
 	private Context context;
@@ -90,6 +91,10 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	}
 
 	private void init(Context context, String url, String localPath, Cipher cipher) {
+		BasicHttpParams params = new BasicHttpParams();
+		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
+		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 10000);
+		httpclient = new DefaultHttpClient(params);
 		this.url = url;
 		this.localPath = localPath;
 		this.context = context;
@@ -171,10 +176,6 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			if (!KKImageManager.networkEnabled) {
 				return null;
 			}
-			BasicHttpParams basicHttpParams = new BasicHttpParams();
-			basicHttpParams.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
-			basicHttpParams.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 10000);
-			HttpClient httpclient = new DefaultHttpClient(basicHttpParams);
 			final HttpGet httpget = new HttpGet(url);
 			response = httpclient.execute(httpget);
 			final InputStream is = response.getEntity().getContent();

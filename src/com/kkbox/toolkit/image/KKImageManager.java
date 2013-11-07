@@ -262,7 +262,19 @@ public class KKImageManager {
 				}
 			}
 		}
-		if (defaultResourceId > 0) {
+		Bitmap bitmap = loadCache(url, localPath);
+		if (bitmap != null) {
+			if (updateBackground) {
+				view.setBackgroundDrawable(new BitmapDrawable(context.getResources(), bitmap));
+				autoRecycleViewBackgroundBitmap(view);
+			} else {
+				ImageView imageView = (ImageView) view;
+				imageView.setImageDrawable(new BitmapDrawable(context.getResources(), bitmap));
+				autoRecycleViewSourceBitmap(imageView);
+			}
+
+			return;
+		} else if (defaultResourceId > 0) {
 			if (updateBackground) {
 				view.setBackgroundResource(defaultResourceId);
 			} else {
