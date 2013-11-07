@@ -9,19 +9,18 @@ import com.kkbox.toolkit.listview.adapter.InfiniteViewPagerAdapter;
 
 public class InfiniteViewPager extends ViewPager {
 
-	private OnPageChangeListener onPageChangeListener;
 	private OnInfiniteViewPagerPageChangeListener onInfiniteViewPagerPageChangeListener;
 	private float currentPosition = 0;
 	private boolean scrolled = false;
 
 	public InfiniteViewPager(Context context) {
 		super(context);
-		initListener();
+		setOnPageChangeListener(onPageChangeListener);
 	}
 
 	public InfiniteViewPager(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		initListener();
+		setOnPageChangeListener(onPageChangeListener);
 	}
 
 	@Override
@@ -63,87 +62,72 @@ public class InfiniteViewPager extends ViewPager {
 		onInfiniteViewPagerPageChangeListener = listener;
 	}
 
-	private void initListener() {
-		onPageChangeListener = new OnPageChangeListener() {
-			@Override
-			public void onPageScrolled(int i, float v, int i2) {
-			}
+	private OnPageChangeListener onPageChangeListener = new OnPageChangeListener() {
+		@Override
+		public void onPageScrolled(int i, float v, int i2) {
+		}
 
-			@Override
-			public void onPageSelected(int position) {
+		@Override
+		public void onPageSelected(int position) {
+			InfiniteViewPagerAdapter adapter = (InfiniteViewPagerAdapter) getAdapter();
+			if (adapter.isLoopEnabled()) {
+				if (position == 0) {
+					if (scrolled) {
+						scrolled = false;
+						if (onInfiniteViewPagerPageChangeListener != null) {
+							onInfiniteViewPagerPageChangeListener.onPageScrollLeft();
+						}
+					}
+					return;
+				} else if (position == adapter.getCount() - 1) {
+					if (scrolled) {
+						scrolled = false;
+						if (onInfiniteViewPagerPageChangeListener != null) {
+							onInfiniteViewPagerPageChangeListener.onPageScrollRight();
+						}
+					}
+					return;
+				}
+			}
+			if (scrolled) {
+				scrolled = false;
+				if (onInfiniteViewPagerPageChangeListener != null) {
+					onInfiniteViewPagerPageChangeListener.onLoopPageSelected(position);
+				}
+				if (currentPosition > position) {
+					if (onInfiniteViewPagerPageChangeListener != null) {
+						onInfiniteViewPagerPageChangeListener.onPageScrollLeft();
+					}
+				} else if (currentPosition < position) {
+					if (onInfiniteViewPagerPageChangeListener != null) {
+						onInfiniteViewPagerPageChangeListener.onPageScrollRight();
+					}
+				}
+			}
+			currentPosition = position;
+		}
+
+		@Override
+		public void onPageScrollStateChanged(int state) {
+			if (state == ViewPager.SCROLL_STATE_SETTLING) {
+				scrolled = true;
+			} else if (state == ViewPager.SCROLL_STATE_IDLE) {
+				scrolled = false;
 				InfiniteViewPagerAdapter adapter = (InfiniteViewPagerAdapter) getAdapter();
 				if (adapter.isLoopEnabled()) {
-					if (position == 0) {
-						if (scrolled) {
-							scrolled = false;
-							onPageScrollLeft();
-						}
-						return;
-					} else if (position == adapter.getCount() - 1) {
-						if (scrolled) {
-							scrolled = false;
-							onPageScrollRight();
-						}
-						return;
-					}
-				}
-				if (scrolled) {
-					scrolled = false;
-					onLoopPageSelected(position - 1);
-
-					if (currentPosition > position) {
-						onPageScrollLeft();
-					} else if (currentPosition < position) {
-						onPageScrollRight();
-					}
-				}
-				currentPosition = position;
-			}
-
-			@Override
-			public void onPageScrollStateChanged(int state) {
-				if (state == ViewPager.SCROLL_STATE_SETTLING) {
-					scrolled = true;
-				} else if (state == ViewPager.SCROLL_STATE_IDLE) {
-					scrolled = false;
-					InfiniteViewPagerAdapter adapter = (InfiniteViewPagerAdapter) getAdapter();
-					if (adapter.isLoopEnabled()) {
-						int currentItem = getCurrentItem();
-						if (currentItem == adapter.getCount() - 2) {
-							//last to first
-							setCurrentItem(0, false);
-							currentPosition = 1;
-						} else if (currentItem == -1) {
-							//first to last
-							setCurrentItem(getAdapter().getCount() - 3, false);
-							currentPosition = adapter.getCount() - 2;
-						}
+					int currentItem = getCurrentItem();
+					if (currentItem == adapter.getCount() - 2) {
+						//last to first
+						setCurrentItem(0, false);
+						currentPosition = 1;
+					} else if (currentItem == -1) {
+						//first to last
+						setCurrentItem(getAdapter().getCount() - 3, false);
+						currentPosition = adapter.getCount() - 2;
 					}
 				}
 			}
-		};
-
-		setOnPageChangeListener(onPageChangeListener);
-	}
-
-
-	private void onPageScrollRight() {
-		if (onInfiniteViewPagerPageChangeListener != null) {
-			onInfiniteViewPagerPageChangeListener.onPageScrollRight();
 		}
-	}
-
-
-	private void onPageScrollLeft() {
-		if (onInfiniteViewPagerPageChangeListener != null) {
-			onInfiniteViewPagerPageChangeListener.onPageScrollLeft();
-		}
-	}
-
-	private void onLoopPageSelected(int position) {
-		if (onInfiniteViewPagerPageChangeListener != null) {
-			onInfiniteViewPagerPageChangeListener.onLoopPageSelected(position);
-		}
-	}
+	};
 
 }
