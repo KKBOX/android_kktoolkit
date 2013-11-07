@@ -262,7 +262,9 @@ public class KKImageManager {
 				}
 			}
 		}
-		if (defaultResourceId > 0) {
+		String cachePath = getTempImagePath(context, url);
+		final File cacheFile = new File(cachePath);
+		if (!cacheFile.exists() && defaultResourceId > 0) {
 			if (updateBackground) {
 				view.setBackgroundResource(defaultResourceId);
 			} else {
