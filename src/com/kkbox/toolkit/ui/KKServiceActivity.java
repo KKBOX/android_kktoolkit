@@ -111,6 +111,7 @@ public abstract class KKServiceActivity extends KKActivity {
 			serviceLoadingDialog.setMessage(getString(R.string.loading));
 			serviceLoadingDialog.setIndeterminate(true);
 			serviceLoadingDialog.setCanceledOnTouchOutside(false);
+			serviceLoadingDialog.setCancelable(false);
 			serviceLoadingDialog.show();
 		}
 		KKDebug.i(getClass().getSimpleName() + " onResume");
@@ -120,6 +121,8 @@ public abstract class KKServiceActivity extends KKActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		KKService.getDialogNotificationManager().removeListener();
+		if (KKService.isRunning()) {
+			KKService.getDialogNotificationManager().removeListener();
+		}
 	}
 }
