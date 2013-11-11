@@ -10,7 +10,7 @@ import com.kkbox.toolkit.listview.adapter.InfiniteViewPagerAdapter;
 public class InfiniteViewPager extends ViewPager {
 
 	private OnInfiniteViewPagerPageChangeListener onInfiniteViewPagerPageChangeListener;
-	private float currentPosition = 0;
+	private int currentPosition = 0;
 	private boolean scrolled = false;
 	private boolean isLoopEnable = false;
 
@@ -41,7 +41,15 @@ public class InfiniteViewPager extends ViewPager {
 	@Override
 	public int getCurrentItem() {
 		if (isLoopEnable) {
-			return super.getCurrentItem() - 1;
+			final int index = super.getCurrentItem();
+			final int count = getAdapter().getCount();
+			if (index == 0) {
+				return count - 3;
+			} else if (index == count - 1) {
+				return 0;
+			} else {
+				return index - 1;
+			}
 		} else {
 			return super.getCurrentItem();
 		}
@@ -94,17 +102,16 @@ public class InfiniteViewPager extends ViewPager {
 				scrolled = true;
 			} else if (state == ViewPager.SCROLL_STATE_IDLE) {
 				scrolled = false;
-				InfiniteViewPagerAdapter adapter = (InfiniteViewPagerAdapter) getAdapter();
 				if (isLoopEnable) {
-					int currentItem = getCurrentItem();
-					if (currentItem == adapter.getCount() - 2) {
+					final int count = getAdapter().getCount();
+					if (currentPosition == count - 1) {
 						//last to first
 						setCurrentItem(0, false);
 						currentPosition = 1;
-					} else if (currentItem == -1) {
+					} else if (currentPosition == 0) {
 						//first to last
-						setCurrentItem(getAdapter().getCount() - 3, false);
-						currentPosition = adapter.getCount() - 2;
+						setCurrentItem(count - 3, false);
+						currentPosition = count - 2;
 					}
 				}
 			}
