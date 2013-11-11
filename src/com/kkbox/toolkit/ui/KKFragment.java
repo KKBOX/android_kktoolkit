@@ -22,9 +22,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -59,7 +56,6 @@ public abstract class KKFragment extends Fragment {
 	private boolean uiLoaded = false;
 	private boolean animationEnded = false;
 	private boolean autoDataLoading = true;
-	private KKMenuCompat menuCompat;
 
 	public KKFragment() {}
 
@@ -159,66 +155,9 @@ public abstract class KKFragment extends Fragment {
 	}
 
 	@Override
-	public void setHasOptionsMenu(boolean hasMenu) {
-		if (hasMenu && Build.VERSION.SDK_INT < 11) {
-			boolean foundMenu = false;
-			for (int i = 0; i < menuCompat.size(); i++) {
-				if (menuCompat.getItem(i).getShowAsActionFlags() == KKMenuItemCompat.SHOW_AS_ACTION_NEVER) {
-					foundMenu = true;
-					break;
-				}
-			}
-			super.setHasOptionsMenu(foundMenu);
-		} else {
-			super.setHasOptionsMenu(hasMenu);
-		}
-	}
-
-	public void onCreateCompatOptionsMenu(KKMenuCompat menu, KKMenuInflaterCompat inflater) {
-		this.menuCompat = menu;
-		if (activity.getKKActionBar() != null) {
-			for (int i = 0; i < menuCompat.size(); i++) {
-				getKKActivity().checkActionButtonCreated(this, menuCompat.getItem(i));
-			}
-			activity.getKKActionBar().addActionMenu(menuCompat);
-		}
-	}
-
-	public void onCompatOptionsItemSelected(KKMenuItemCompat item) {
-		getKKActivity().checkSearchViewSelected(item);
-	}
-
-	public void onPrepareCompatOptionsMenu(KKMenuCompat menu) {}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		KKMenuItemCompat menuItemCompat = menuCompat.findItem(item.getItemId());
-		if (menuItemCompat != null) {
-			onCompatOptionsItemSelected(menuItemCompat);
-		} else {
-			onCompatOptionsItemSelected(new KKMenuItemCompat(item));
-		}
-		return true;
-	}
-
-	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		onPrepareCompatOptionsMenu(menuCompat);
-		activity.prepareOptionsMenu(menuCompat, menu);
-		super.onPrepareOptionsMenu(menu);
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		getKKActivity().createOptionsMenu(this.menuCompat, menu);
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		activity = (KKActivity) getActivity();
-		onCreateCompatOptionsMenu(new KKMenuCompat(activity, this), activity.getMenuInflater());
 	}
 
 	public void onReceiveMessage(Bundle arguments) {}
@@ -290,9 +229,6 @@ public abstract class KKFragment extends Fragment {
 		super.onResume();
 		KKDebug.i(getClass().getSimpleName() + " onResume");
 		activity.activateSubFragment(this);
-		if (activity.getKKActionBar() != null) {
-			activity.invalidateOptionsMenu();
-		}
 		if (autoDataLoading) {
 			if (dataFetchedStatus == DataFetchStatus.SUCCESS) {
 				onLoadUI();
