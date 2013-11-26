@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.kktoolkitdemo.api.KKAPIActivity;
+import com.example.kktoolkitdemo.circleImageView.CircleImageViewActivity;
 import com.example.kktoolkitdemo.eventqueue.EventQueueActivity;
 import com.example.kktoolkitdemo.fragment.ListFragmentActivity;
 import com.example.kktoolkitdemo.image.ImageManagerActivity;
@@ -31,7 +32,8 @@ public class MainActivity extends ListActivity {
 			"KKImageManager",
 			"KKAPIBase",
 			"KKFragment",
-			"KKDialog"};
+			"KKDialog",
+			"CircleImageView"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,9 @@ public class MainActivity extends ListActivity {
 				break;
 			case 10:
 				intent = new Intent(MainActivity.this, ActivityNotification.class);
+				break;
+			case 11:
+				intent = new Intent(MainActivity.this, CircleImageViewActivity.class);
 				break;
 		}
 		if (intent != null) {

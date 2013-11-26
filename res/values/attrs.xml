@@ -1,11 +1,16 @@
 <resources>
 
-    <!-- tab fragment style -->
-    <attr name="KKTabFragmentStyle" />
-    <attr name="KKTabButtonBackgroundLeft" />
-    <attr name="KKTabButtonBackgroundMiddle" />
-    <attr name="KKTabButtonBackgroundRight" />
-    <attr name="KKTabBackground" />
-    <attr name="KKTabOverlay" />
+	<!-- tab fragment style -->
+	<attr name="KKTabFragmentStyle" />
+	<attr name="KKTabButtonBackgroundLeft" />
+	<attr name="KKTabButtonBackgroundMiddle" />
+	<attr name="KKTabButtonBackgroundRight" />
+	<attr name="KKTabBackground" />
+	<attr name="KKTabOverlay" />
+
+	<!-- circular imageView style -->
+	<attr name="maskColor" />
+	<attr name="maskedImage" />
+	<attr name="roundedCorner" />
 
 </resources>

@@ -114,6 +114,13 @@
 				<action android:name="android.intent.action.MAIN" />
 			</intent-filter>
 		</activity>
+		<activity
+			android:name=".circleImageView.CircleImageViewActivity"
+			android:label="CircleImageView" >
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
 	</application>
 
 </manifest>
