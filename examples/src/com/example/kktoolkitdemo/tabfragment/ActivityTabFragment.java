@@ -26,13 +26,12 @@ import com.kkbox.toolkit.ui.KKActivity;
 
 public class ActivityTabFragment extends KKActivity {
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listfragment_example);
-		getKKActionBar().setTitle("KKTabFragment Example");
-		
+		getSupportActionBar().setTitle("KKTabFragment Example");
+
 		ExampleTabFragment firstFragment = new ExampleTabFragment();
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
