@@ -29,11 +29,11 @@ import com.kkbox.toolkit.ui.KKFragment;
 import com.kkbox.toolkit.ui.KKTabFragment;
 import com.kkbox.toolkit.utils.KKDebug;
 
-public class ExampleTabFragment extends KKTabFragment{
-	
+public class ExampleTabFragment extends KKTabFragment {
+
 	private int[] buttonTextResourcetId = new int[3];
 	private int currentIndex = 0;
-	
+
 	protected KKFragment onRequestTabFragment(int index, Bundle arguments) {
 		KKFragment fragment = null;
 		KKDebug.i("current index: " + index);
@@ -46,7 +46,7 @@ public class ExampleTabFragment extends KKTabFragment{
 				break;
 			case 2:
 				fragment = new ExampleFragment(ExampleFragment.TAB_STYLE.BLUE);
-                break;
+				break;
 		}
 		return fragment;
 	}
@@ -57,12 +57,12 @@ public class ExampleTabFragment extends KKTabFragment{
 		buttonTextResourcetId[1] = R.string.tab_2;
 		buttonTextResourcetId[2] = R.string.tab_3;
 		initView(view, buttonTextResourcetId, false, currentIndex);
-        view.setBackgroundColor(Color.GRAY);
+		view.setBackgroundColor(Color.GRAY);
 		return view;
 	}
-	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 }

@@ -141,10 +141,12 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			try {
 				if (cacheFile.exists()) {
 					if (actionType == KKImageManager.ActionType.DOWNLOAD) {
-						if (localFile == null || !localFile.exists()) {
-							cryptToFile(cachePath, localPath);
+						if (onReceiveHttpHeaderListener == null) {
+							if (localFile == null || !localFile.exists()) {
+								cryptToFile(cachePath, localPath);
+							}
+							return null;
 						}
-						return null;
 					} else {
 						bitmap = decodeBitmap(cachePath);
 						if (bitmap != null) {
