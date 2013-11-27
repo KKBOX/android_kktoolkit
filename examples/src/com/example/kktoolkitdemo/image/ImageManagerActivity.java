@@ -9,13 +9,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.example.kktoolkitdemo.R;
 import com.example.kktoolkitdemo.SampleUtil;
 import com.kkbox.toolkit.image.KKImageListener;
 import com.kkbox.toolkit.image.KKImageManager;
-import com.kkbox.toolkit.ui.KKActivity;
 
-public class ImageManagerActivity extends KKActivity {
+public class ImageManagerActivity extends ExampleActivity {
 	LinearLayout mLinearLayout;
 	Button mAuto, mManual, mClear;
 	ImageView[] mWeatherIcon;

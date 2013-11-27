@@ -7,11 +7,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.example.kktoolkitdemo.R;
-import com.kkbox.toolkit.ui.KKActivity;
 import com.kkbox.toolkit.ui.ResizableView;
 
-public class ResizableViewActivity extends KKActivity {
+public class ResizableViewActivity extends ExampleActivity {
 	Button btnL, btnM, btnS;
 	ResizableView mResizableView;
 

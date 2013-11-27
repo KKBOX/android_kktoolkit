@@ -5,17 +5,17 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.example.kktoolkitdemo.R;
 import com.example.kktoolkitdemo.SampleUtil;
 import com.kkbox.toolkit.listview.adapter.InfiniteViewPagerAdapter;
 import com.kkbox.toolkit.ui.InfiniteViewPager;
-import com.kkbox.toolkit.ui.KKActivity;
 import com.kkbox.toolkit.ui.OnInfiniteViewPagerPageChangeListener;
 import com.kkbox.toolkit.utils.KKDebug;
 
 import java.util.ArrayList;
 
-public class InfiniteViewPagerActivity extends KKActivity {
+public class InfiniteViewPagerActivity extends ExampleActivity {
 	private InfiniteViewPager mViewPager;
 
 	private ViewPagerAdapter mAdapter;

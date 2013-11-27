@@ -21,10 +21,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.example.kktoolkitdemo.R;
-import com.kkbox.toolkit.ui.KKActivity;
 
-public class ActivityTabFragment extends KKActivity {
+public class ActivityTabFragment extends ExampleActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

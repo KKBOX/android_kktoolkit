@@ -6,9 +6,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.kkbox.toolkit.ui.KKServiceActivity;
+import com.example.kktoolkitdemo.ExampleActivity;
 
-public class EmptyActivity extends KKServiceActivity {
+public class EmptyActivity extends ExampleActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

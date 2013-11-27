@@ -17,6 +17,7 @@
  */
 package com.kkbox.toolkit.ui;
 
+import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -48,7 +49,7 @@ public abstract class KKFragment extends Fragment {
 	}
 
 	private static int animationType;
-	private KKActivity activity;
+	private Activity activity;
 	private KKMessageView viewMessage;
 	private View customErrorView;
 	private View customLoadingView;
@@ -150,14 +151,10 @@ public abstract class KKFragment extends Fragment {
 		dataFetchedStatus = DataFetchStatus.ERROR;
 	}
 
-	public KKActivity getKKActivity() {
-		return (KKActivity) getActivity();
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		activity = (KKActivity) getActivity();
+		activity = getActivity();
 	}
 
 	public void onReceiveMessage(Bundle arguments) {}
@@ -228,7 +225,7 @@ public abstract class KKFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		KKDebug.i(getClass().getSimpleName() + " onResume");
-		activity.activateSubFragment(this);
+		((KKServiceActivity) activity).activateSubFragment(this);
 		if (autoDataLoading) {
 			if (dataFetchedStatus == DataFetchStatus.SUCCESS) {
 				onLoadUI();
@@ -241,6 +238,6 @@ public abstract class KKFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		activity.deactivateSubFragment(this);
+		((KKServiceActivity) activity).deactivateSubFragment(this);
 	}
 }

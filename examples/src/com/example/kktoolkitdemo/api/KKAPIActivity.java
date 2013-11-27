@@ -6,11 +6,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.example.kktoolkitdemo.R;
 import com.kkbox.toolkit.api.KKAPIListener;
-import com.kkbox.toolkit.ui.KKActivity;
 
-public class KKAPIActivity extends KKActivity {
+public class KKAPIActivity extends ExampleActivity {
 	private TextView mTextView;
 	private ExampleWeatherAPI mAPI;
 	private EditText mInput;

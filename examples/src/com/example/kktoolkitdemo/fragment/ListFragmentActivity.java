@@ -4,10 +4,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.example.kktoolkitdemo.R;
-import com.kkbox.toolkit.ui.KKActivity;
 
-public class ListFragmentActivity extends KKActivity {
+public class ListFragmentActivity extends ExampleActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

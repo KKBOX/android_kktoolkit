@@ -4,14 +4,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.example.kktoolkitdemo.R;
 import com.kkbox.toolkit.listview.adapter.ReorderListAdapter;
-import com.kkbox.toolkit.ui.KKActivity;
 import com.kkbox.toolkit.ui.KKDragAndDropListView;
 
 import java.util.ArrayList;
 
-public class KKDragAndDropListViewActivity extends KKActivity {
+public class KKDragAndDropListViewActivity extends ExampleActivity {
 	private KKDragAndDropListView mListView;
 
 	@Override

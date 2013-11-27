@@ -102,14 +102,14 @@ public abstract class KKTabFragment extends KKFragment {
 		radioGroup = (RadioGroup)view.findViewById(R.id.button_radiogroup);
 
 		TypedValue typedValue = new TypedValue();
-		getKKActivity().getTheme().resolveAttribute(R.attr.KKTabFragmentStyle, typedValue, true);
-		TypedArray array = getKKActivity().obtainStyledAttributes(typedValue.resourceId,
+		getActivity().getTheme().resolveAttribute(R.attr.KKTabFragmentStyle, typedValue, true);
+		TypedArray array = getActivity().obtainStyledAttributes(typedValue.resourceId,
 				new int[] { R.attr.KKTabButtonBackgroundLeft, R.attr.KKTabButtonBackgroundMiddle, R.attr.KKTabButtonBackgroundRight });
 		int tabButtonBackgroundLeftResourceId = array.getResourceId(0, -1);
 		int tabButtonBackgroundMiddleResourceId = array.getResourceId(1, -1);
 		int tabButtonBackgroundRightResourceId = array.getResourceId(2, -1);
 		array.recycle();
-		array = getKKActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { R.attr.KKTabBackground });
+		array = getActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { R.attr.KKTabBackground });
 		int backgroundResourceId = array.getResourceId(0, -1);
 		FrameLayout layoutRadioBar = (FrameLayout)view.findViewById(R.id.layout_radio_bar);
 		if (backgroundResourceId != -1) {
@@ -117,7 +117,7 @@ public abstract class KKTabFragment extends KKFragment {
 		}
 		array.recycle();
 
-		array = getKKActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { R.attr.KKTabOverlay });
+		array = getActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { R.attr.KKTabOverlay });
 		int overlayResourceId = array.getResourceId(0, -1);
 		ImageView viewOverlay = (ImageView)view.findViewById(R.id.view_overlay);
 		if (overlayResourceId != -1) {
@@ -125,13 +125,13 @@ public abstract class KKTabFragment extends KKFragment {
 		}
 		array.recycle();
 
-		array = getKKActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { android.R.attr.textSize });
+		array = getActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { android.R.attr.textSize });
 		int textSize = array.getDimensionPixelSize(0, -1);
 		array.recycle();
-		array = getKKActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { android.R.attr.textColor });
+		array = getActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { android.R.attr.textColor });
 		ColorStateList textColor = array.getColorStateList(0);
 		array.recycle();
-		array = getKKActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { android.R.attr.height });
+		array = getActivity().obtainStyledAttributes(typedValue.resourceId, new int[] { android.R.attr.height });
 		int height = array.getDimensionPixelSize(0, -1);
 		array.recycle();
 		for (int i = 0; i < buttonTextResourcetId.length; i++) {

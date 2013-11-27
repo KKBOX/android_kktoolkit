@@ -23,10 +23,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.example.kktoolkitdemo.R;
-import com.kkbox.toolkit.ui.KKServiceActivity;
 
-public class ActivityNotification extends KKServiceActivity {
+public class ActivityNotification extends ExampleActivity {
 
 	private final OnClickListener btnNotifyOne = new OnClickListener() {
 		@Override

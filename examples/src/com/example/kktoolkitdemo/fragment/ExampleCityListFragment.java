@@ -30,7 +30,7 @@ public class ExampleCityListFragment extends KKListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_listview, container, false);
 		initView(view);
-		getKKListView().setAdapter(new ArrayAdapter<String>(getKKActivity(), android.R.layout.simple_list_item_1, SampleUtil.test_item));
+		getKKListView().setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, SampleUtil.test_item));
 		getKKListView().setOnItemClickListener(onItemClickListener);
 		return view;
 	}

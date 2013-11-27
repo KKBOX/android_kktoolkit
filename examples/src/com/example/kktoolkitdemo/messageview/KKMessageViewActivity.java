@@ -8,10 +8,10 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kkbox.toolkit.ui.KKActivity;
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.kkbox.toolkit.ui.KKMessageView;
 
-public class KKMessageViewActivity extends KKActivity {
+public class KKMessageViewActivity extends ExampleActivity {
 	private KKMessageView mMsg;
 
 	@Override

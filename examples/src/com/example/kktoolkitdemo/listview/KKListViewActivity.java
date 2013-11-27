@@ -5,15 +5,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 
+import com.example.kktoolkitdemo.ExampleActivity;
 import com.example.kktoolkitdemo.R;
 import com.example.kktoolkitdemo.SampleUtil;
 import com.example.kktoolkitdemo.api.ExampleWeatherAPI;
 import com.kkbox.toolkit.api.KKAPIListener;
-import com.kkbox.toolkit.ui.KKActivity;
 import com.kkbox.toolkit.ui.KKListView;
 import com.kkbox.toolkit.utils.KKDebug;
 
-public class KKListViewActivity extends KKActivity {
+public class KKListViewActivity extends ExampleActivity {
 	private static final String TAG = "KKListViewActivity";
 	private KKListView mListView;
 
