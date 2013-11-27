@@ -6,9 +6,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.kkbox.toolkit.api.KKAPIListener;
 import com.kkbox.toolkit.example.ExampleActivity;
 import com.kkbox.toolkit.example.R;
-import com.kkbox.toolkit.api.KKAPIListener;
 
 public class KKAPIActivity extends ExampleActivity {
 	private TextView mTextView;
