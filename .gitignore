@@ -1,11 +1,9 @@
-/tests/.settings
-/tests/bin
-/tests/gen
-/tests/lint.xml
+/examples/.settings
+/examples/bin
+/examples/gen
+/examples/lint.xml
 /bin
 /gen
 /.settings
 /.idea
 lint.xml
-doxygen
-android_kktoolkit.iml
