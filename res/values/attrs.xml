@@ -10,7 +10,7 @@
 
 	<!-- circular imageView style -->
 	<attr name="maskColor" />
-	<attr name="maskedImage" />
-	<attr name="roundedCorner" />
-
+	<attr name="maskColorPressed" />
+	<attr name="strokeWidth" />
+	<attr name="strokeColor" />
 </resources>

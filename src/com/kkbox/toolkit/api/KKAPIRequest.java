@@ -251,6 +251,13 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 					httpStatusCode = response.getStatusLine().getStatusCode();
 					switch (httpStatusCode) {
 						case 200:
+						case 201:
+						case 202:
+						case 203:
+						case 204:
+						case 205:
+						case 206:
+						case 207:
 							final InputStream is;
 							Header contentEncoding = response.getFirstHeader("Content-Encoding");
 							if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
