@@ -16,8 +16,8 @@ package com.kkbox.toolkit.ui;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -35,22 +35,25 @@ public class CircularImageView extends ImageView {
 
 	public CircularImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		GradientDrawable gradientDrawable;
-		if (attrs.getAttributeBooleanValue("http://schemas.android.com/apk/res-auto", "roundedCorner", false)) {
-			gradientDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.rounded_corner_image_mask);
-		} else {
-			gradientDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_image_mask);
+		StateListDrawable stateListDrawable = new StateListDrawable();
+		if (attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColor") != null) {
+			GradientDrawable gradientDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_image_mask);
+			gradientDrawable.setColor(Color.parseColor(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColor")));
+			if (attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "strokeColor") != null) {
+				gradientDrawable.setStroke(attrs.getAttributeIntValue("http://schemas.android.com/apk/res-auto", "strokeWidth", 1),
+						Color.parseColor(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "strokeColor")));
+			}
+			stateListDrawable.addState(new int[]{-android.R.attr.state_pressed}, gradientDrawable);
 		}
-		gradientDrawable.setColor(Color.parseColor(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColor")));
-		setImageDrawable(gradientDrawable);
-		setBackgroundResource(attrs.getAttributeResourceValue("http://schemas.android.com/apk/res-auto", "maskedImage", 0));
-	}
-
-	public void setMaskedImageResource(int resid) {
-		setBackgroundResource(resid);
-	}
-
-	public void setMaskedImageDrawble(Drawable background) {
-		setBackgroundDrawable(background);
+		if (attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColorPressed") != null) {
+			GradientDrawable pressedDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_image_mask);
+			pressedDrawable.setColor(Color.parseColor(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColorPressed")));
+			if (attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "strokeColor") != null) {
+				pressedDrawable.setStroke(attrs.getAttributeIntValue("http://schemas.android.com/apk/res-auto", "strokeWidth", 1),
+						Color.parseColor(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "strokeColor")));
+			}
+			stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, pressedDrawable);
+		}
+		setImageDrawable(stateListDrawable);
 	}
 }

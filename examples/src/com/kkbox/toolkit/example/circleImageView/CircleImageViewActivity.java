@@ -13,6 +13,6 @@ public class CircleImageViewActivity extends ExampleActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_circular_imageview);
 		CircularImageView imageView = (CircularImageView)findViewById(R.id.imageview2);
-		imageView.setMaskedImageResource(R.drawable.ic_launcher);
+		imageView.setBackground(R.drawable.ic_launcher);
 	}
 }

@@ -8,21 +8,14 @@
 		android:id="@+id/imageview"
 		android:layout_width="100dp"
 		android:layout_height="100dp"
-		kkbox:maskColor="#FFFFFF"
-		kkbox:maskedImage="@drawable/ic_launcher" />
+		android:background="@drawable/ic_launcher"
+		kkbox:maskColor="#FFFFFF"/>
 
 	<com.kkbox.toolkit.ui.CircularImageView
 		android:id="@+id/imageview1"
 		android:layout_width="100dp"
 		android:layout_height="100dp"
-		kkbox:maskColor="#000000"
-		kkbox:maskedImage="@drawable/ic_launcher" />
-
-	<com.kkbox.toolkit.ui.CircularImageView
-		android:id="@+id/imageview2"
-		android:layout_width="100dp"
-		android:layout_height="100dp"
-		kkbox:maskColor="#F3AE1B"
-		kkbox:roundedCorner="true" />
+		android:background="@drawable/ic_launcher"
+		kkbox:maskColor="#000000"/>
 
 </LinearLayout>
