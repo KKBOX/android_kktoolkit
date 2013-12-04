@@ -35,25 +35,30 @@ public class CircularImageView extends ImageView {
 
 	public CircularImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		StateListDrawable stateListDrawable = new StateListDrawable();
-		if (attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColor") != null) {
-			GradientDrawable gradientDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_image_mask);
-			gradientDrawable.setColor(Color.parseColor(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColor")));
-			if (attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "strokeColor") != null) {
-				gradientDrawable.setStroke(attrs.getAttributeIntValue("http://schemas.android.com/apk/res-auto", "strokeWidth", 1),
-						Color.parseColor(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "strokeColor")));
-			}
-			stateListDrawable.addState(new int[]{-android.R.attr.state_pressed}, gradientDrawable);
-		}
-		if (attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColorPressed") != null) {
-			GradientDrawable pressedDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_image_mask);
-			pressedDrawable.setColor(Color.parseColor(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColorPressed")));
-			if (attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "strokeColor") != null) {
-				pressedDrawable.setStroke(attrs.getAttributeIntValue("http://schemas.android.com/apk/res-auto", "strokeWidth", 1),
-						Color.parseColor(attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "strokeColor")));
-			}
-			stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, pressedDrawable);
-		}
-		setImageDrawable(stateListDrawable);
+        setMask (attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColor"),
+                attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "maskColorPressed"),
+                attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "strokeColor"),
+                attrs.getAttributeIntValue("http://schemas.android.com/apk/res-auto", "strokeWidth", 1));
 	}
+
+    public void setMask (String colorNormal, String colorPressed, String colorStroke, int strokeWidth) {
+        StateListDrawable stateListDrawable = new StateListDrawable();
+        if (colorNormal != null) {
+            GradientDrawable gradientDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_image_mask);
+            gradientDrawable.setColor(Color.parseColor(colorNormal));
+            if (colorStroke != null) {
+                gradientDrawable.setStroke(strokeWidth, Color.parseColor(colorStroke));
+            }
+            stateListDrawable.addState(new int[]{-android.R.attr.state_pressed}, gradientDrawable);
+        }
+        if (colorPressed != null) {
+            GradientDrawable pressedDrawable = (GradientDrawable) getResources().getDrawable(R.drawable.circular_image_mask);
+            pressedDrawable.setColor(Color.parseColor(colorPressed));
+            if (colorStroke != null) {
+                pressedDrawable.setStroke(strokeWidth, Color.parseColor(colorStroke));
+            }
+            stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, pressedDrawable);
+        }
+        setImageDrawable(stateListDrawable);
+    }
 }
