@@ -25,7 +25,7 @@ public interface KKServiceActivity {
 	public void onServiceStarted();
 
 	public void sendMessageToActiveSubFragments(Bundle arguments);
-	
+
 	public void finishAllKKActivity();
 	
 	public void startActivityIfNoDialog(Intent intent);
