@@ -284,6 +284,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 						case 404:
 						case 403:
 						case 400:
+						case 412:
 							isHttpStatusError = true;
 							isNetworkError = false;
 							break;
