@@ -48,13 +48,17 @@ public class KKListViewDelegate {
 
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-			headerViewIsFirstItem = (firstVisibleItem == 0) ? true : false;
-			boolean footerViewIsLastItem = false;
-			if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount != 0) {
-				footerViewIsLastItem = true;
+			if (onRefreshListener != null) {
+				headerViewIsFirstItem = (firstVisibleItem == 0) ? true : false;
 			}
-			if (footerViewIsLastItem && currentState == State.NORMAL && footerViewAdded) {
-				updateState(State.LOADING_MORE);
+			if (onLoadMoreListener != null) {
+				boolean footerViewIsLastItem = false;
+				if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount != 0) {
+					footerViewIsLastItem = true;
+				}
+				if (footerViewIsLastItem && currentState == State.NORMAL && footerViewAdded) {
+					updateState(State.LOADING_MORE);
+				}
 			}
 		}
 	};
@@ -80,6 +84,7 @@ public class KKListViewDelegate {
 	public KKListViewDelegate(Context context, ListView listView) {
 		this.context = context;
 		this.listView = listView;
+		listView.setOnScrollListener(onScrollListener);
 	}
 
 	public void setPullToRefresh(KKListViewOnRefreshListener onRefreshListener) {
@@ -99,7 +104,6 @@ public class KKListViewDelegate {
 		String lastUpdatedTime = (String)context.getResources().getText(R.string.last_update) + " "
 				+ StringUtils.timeMillisToString(System.currentTimeMillis(), "yyyy-MM-dd HH:mm");
 		labelPullToRefreshUpdatedAt.setText(lastUpdatedTime);
-		listView.setOnScrollListener(onScrollListener);
 		this.onRefreshListener = onRefreshListener;
 	}
 
