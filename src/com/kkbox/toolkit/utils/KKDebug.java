@@ -32,6 +32,7 @@ public class KKDebug {
 	private static boolean debugEnabled;
 	private static String debugLogPath;
 	private static DataOutputStream logStream;
+	private static long runningTimestamp = 0;
 
 	public static void setDebugEnabled(boolean enabled) {
 		debugEnabled = enabled;
@@ -92,6 +93,14 @@ public class KKDebug {
 			Log.wtf("KKBOX", "" + msg);
 			writeLog("" + msg);
 		}
+	}
+	
+	public static void startToMeasureRunningTime() {
+		runningTimestamp = System.currentTimeMillis();
+	}
+	
+	public static void printRunningTime(Object msg) {
+		KKDebug.i(msg + " running time: " + (System.currentTimeMillis() - runningTimestamp));
 	}
 
 	private static void writeLog(String msg) {
