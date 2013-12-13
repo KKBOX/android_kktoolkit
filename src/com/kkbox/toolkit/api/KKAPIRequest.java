@@ -249,15 +249,9 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 						response = httpclient.execute(httpGet);
 					}
 					httpStatusCode = response.getStatusLine().getStatusCode();
-					switch (httpStatusCode) {
-						case 200:
-						case 201:
-						case 202:
-						case 203:
-						case 204:
-						case 205:
-						case 206:
-						case 207:
+					int httpStatusType = httpStatusCode / 100;
+					switch (httpStatusType) {
+						case 2:
 							final InputStream is;
 							Header contentEncoding = response.getFirstHeader("Content-Encoding");
 							if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
@@ -281,17 +275,18 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 							data.flush();
 							isNetworkError = false;
 							break;
-						case 401:
-						case 404:
-						case 403:
-						case 400:
-						case 412:
-						case 500:
+						case 4:
+							KKDebug.w("Get client error " + httpStatusCode + " with connection : " + url + getParams);
+							isHttpStatusError = true;
+							isNetworkError = false;
+							break;
+						case 5:
+							KKDebug.w("Get server error " + httpStatusCode + " with connection : " + url + getParams);
 							isHttpStatusError = true;
 							isNetworkError = false;
 							break;
 						default:
-							KKDebug.w("connetion to " + url + getParams + " returns " + httpStatusCode);
+							KKDebug.w("connection to " + url + getParams + " returns " + httpStatusCode);
 							retryTimes++;
 							isNetworkError = true;
 							SystemClock.sleep(1000);
