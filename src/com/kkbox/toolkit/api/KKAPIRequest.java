@@ -281,10 +281,12 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 							data.flush();
 							isNetworkError = false;
 							break;
+						case 401:
 						case 404:
 						case 403:
 						case 400:
 						case 412:
+						case 500:
 							isHttpStatusError = true;
 							isNetworkError = false;
 							break;
