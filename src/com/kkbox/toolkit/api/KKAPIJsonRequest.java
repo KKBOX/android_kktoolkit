@@ -43,7 +43,7 @@ public class KKAPIJsonRequest extends APIRequest {
 	@Override
 	protected void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException {
 		jsonRequestListener.onStreamPreComplete(is);
-		if (context != null) {
+		if (reloadPeriod > 0) {
 			try {
 				int readLength;
 				byte[] buffer = new byte[128];

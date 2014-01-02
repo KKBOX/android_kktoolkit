@@ -24,6 +24,10 @@ public abstract class APIBase {
 	protected boolean isRunning = false;
 	protected boolean isResponseSilent = false;
 
+	public APIBase() {
+		setRequestListener();
+	}
+
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -82,4 +86,6 @@ public abstract class APIBase {
 		isRunning = true;
 		request.execute(requestListener);
 	}
+
+	protected abstract void setRequestListener();
 }

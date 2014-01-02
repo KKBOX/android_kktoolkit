@@ -71,7 +71,7 @@ public class KKAPIRequest extends APIRequest {
 			jsonData = data.toString();
 		}
 		requestListener.onPreComplete(jsonData);
-		if (context != null) {
+		if (reloadPeriod > 0) {
 			try {
 				FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
 				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);

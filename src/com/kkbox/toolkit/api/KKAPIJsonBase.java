@@ -47,7 +47,8 @@ public abstract class KKAPIJsonBase extends APIBase {
 		}
 	};
 
-	public KKAPIJsonBase() {
+	@Override
+	protected void setRequestListener() {
 		requestListener = apiJsonRequestListener;
 	}
 

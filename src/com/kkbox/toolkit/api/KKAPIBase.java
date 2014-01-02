@@ -55,7 +55,8 @@ public abstract class KKAPIBase extends APIBase {
 		}
 	};
 
-	public KKAPIBase() {
+	@Override
+	protected void setRequestListener() {
 		requestListener = apiRequestListener;
 	}
 

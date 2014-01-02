@@ -64,8 +64,8 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 	private InputStreamEntity gzipStreamEntity;
 	protected Cipher cipher = null;
 
-	protected Context context = null;
-	private long reloadPeriod = -1;
+	private Context context = null;
+	protected long reloadPeriod = -1;
 
 	protected InputStream is = null;
 	private HttpResponse response;
@@ -288,6 +288,8 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 				preCompleteAndCachedAPI(data, cacheFile);
 			}
 			response.getEntity().consumeContent();
+		} catch (IOException e) {
+			isNetworkError = true;
 		} catch (Exception e) {}
 		return null;
 	}
