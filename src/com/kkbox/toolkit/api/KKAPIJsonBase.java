@@ -42,7 +42,7 @@ public abstract class KKAPIJsonBase extends APIBase {
 		public void onStreamPreComplete(InputStream inputStream) throws UnsupportedEncodingException {
 			if (Build.VERSION.SDK_INT >= 11) {
 				JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-				parse(reader);
+				errorCode = parse(reader);
 			}
 		}
 	};
