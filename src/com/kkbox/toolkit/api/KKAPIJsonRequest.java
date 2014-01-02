@@ -15,10 +15,9 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 
-public class KKAPIJsonRequest extends KKAPIRequest {
+public class KKAPIJsonRequest extends APIRequest {
 
 	private KKAPIJsonRequestListener jsonRequestListener;
-
 
 	public KKAPIJsonRequest(String url, Cipher cipher, long reloadPeriod, Context context) {
 		super(url, cipher, reloadPeriod, context);

@@ -17,12 +17,7 @@
  */
 package com.kkbox.toolkit.internal.api;
 
-public abstract interface KKAPIRequestListener {
-	abstract public void onComplete();
+public abstract interface KKAPIRequestListener extends APIRequestListener {
 
 	abstract public void onPreComplete(String data);
-	
-	abstract public void onHttpStatusError(int statusCode);
-
-	abstract public void onNetworkError();
 }

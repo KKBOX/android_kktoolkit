@@ -9,9 +9,34 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
-public abstract class KKAPIJsonBase extends KKAPIBase {
+public abstract class KKAPIJsonBase extends APIBase {
 
 	private KKAPIJsonRequestListener apiJsonRequestListener = new KKAPIJsonRequestListener() {
+		@Override
+		public void onComplete() {
+			if (errorCode == ErrorCode.NO_ERROR) {
+				onAPIComplete();
+			} else if (!isResponseSilent) {
+				onAPIError(errorCode);
+			}
+			isRunning = false;
+		}
+
+		@Override
+		public void onNetworkError() {
+			if (!isResponseSilent) {
+				onAPINetworkError();
+			}
+			isRunning = false;
+		}
+
+		@Override
+		public void onHttpStatusError(int statusCode) {
+			if (!isResponseSilent) {
+				onAPIHttpStatusError(statusCode);
+			}
+			isRunning = false;
+		}
 
 		@Override
 		public void onStreamPreComplete(InputStream inputStream) throws UnsupportedEncodingException {
@@ -19,24 +44,6 @@ public abstract class KKAPIJsonBase extends KKAPIBase {
 				JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
 				parse(reader);
 			}
-		}
-
-		@Override
-		public void onComplete() {
-			apiRequestListener.onComplete();
-		}
-
-		@Override
-		public void onPreComplete(String data) {}
-
-		@Override
-		public void onHttpStatusError(int statusCode) {
-			apiRequestListener.onHttpStatusError(statusCode);
-		}
-
-		@Override
-		public void onNetworkError() {
-			apiRequestListener.onNetworkError();
 		}
 	};
 
