@@ -56,11 +56,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 
 public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	private KKAPIRequestListener listener;
@@ -79,8 +82,11 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 	private InputStreamEntity gzipStreamEntity;
 	private Cipher cipher = null;
 
-	private Context context = null;
-	private long reloadPeriod = -1;
+	protected Context context = null;
+	protected long reloadPeriod = -1;
+
+	protected InputStream is = null;
+	private HttpResponse response;
 
 	public KKAPIRequest(String url, Cipher cipher, long reloadPeriod, Context context) {
 		this(url, cipher, 10000);
@@ -178,7 +184,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 
 	@Override
 	public Void doInBackground(Object... params) {
-		int readLength;
+		int readLength = 0;
 		final ByteArrayOutputStream data = new ByteArrayOutputStream();
 		final byte[] buffer = new byte[128];
 		listener = (KKAPIRequestListener) params[0];
@@ -209,7 +215,6 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 		} else {
 			do {
 				try {
-					HttpResponse response;
 					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
 							|| byteArrayEntity != null
 							|| gzipStreamEntity != null || (headerParams != null && postParams != null)) {
@@ -252,7 +257,6 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 					int httpStatusType = httpStatusCode / 100;
 					switch (httpStatusType) {
 						case 2:
-							final InputStream is;
 							Header contentEncoding = response.getFirstHeader("Content-Encoding");
 							if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
 								byte[] inputStreamBuffer = new byte[8192];
@@ -269,10 +273,7 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 							} else {
 								is = response.getEntity().getContent();
 							}
-							while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
-								data.write(buffer, 0, readLength);
-							}
-							data.flush();
+							readDataFromInputStream(data);
 							isNetworkError = false;
 							break;
 						case 4:
@@ -292,9 +293,8 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 							SystemClock.sleep(1000);
 							break;
 					}
-					response.getEntity().consumeContent();
 				} catch (final Exception e) {
-					KKDebug.w("connetion to " + url + getParams + " failed!");
+					KKDebug.w("connection to " + url + getParams + " failed!");
 					retryTimes++;
 					isNetworkError = true;
 					SystemClock.sleep(1000);
@@ -302,29 +302,41 @@ public class KKAPIRequest extends UserTask<Object, Void, Void> {
 			} while (isNetworkError && retryTimes < 3);
 		}
 		try {
-			if (!isNetworkError && !isHttpStatusError) {
-				if (listener != null) {
-					String jsonData;
-					if (cipher != null) {
-						jsonData = new String(cipher.doFinal(data.toByteArray()));
-					} else {
-						jsonData = data.toString();
-					}
-					listener.onPreComplete(jsonData);
-					if (context != null) {
-						try {
-							FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
-							OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-							outputStreamWriter.write(jsonData);
-							outputStreamWriter.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
+			if (!isNetworkError && !isHttpStatusError && listener != null) {
+				preCompleteAndCachedAPI(data, cacheFile);
 			}
+			response.getEntity().consumeContent();
 		} catch (Exception e) {}
 		return null;
+	}
+
+	protected void readDataFromInputStream(ByteArrayOutputStream data) throws IOException {
+		int readLength;
+		byte[] buffer = new byte[128];
+		while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+			data.write(buffer, 0, readLength);
+		}
+		data.flush();
+	}
+
+	protected void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException {
+		String jsonData;
+		if (cipher != null) {
+			jsonData = new String(cipher.doFinal(data.toByteArray()));
+		} else {
+			jsonData = data.toString();
+		}
+		listener.onPreComplete(jsonData);
+		if (context != null) {
+			try {
+				FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
+				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+				outputStreamWriter.write(jsonData);
+				outputStreamWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override

@@ -32,11 +32,12 @@ public abstract class KKAPIBase {
 		public static final int INVALID_API_FORMAT = -103;
 	}
 
-	private KKAPIRequest request;
+	protected KKAPIRequest request;
 	private KKAPIListener apiListener;
+	protected KKAPIRequestListener requestListener;
 
 	private int errorCode;
-	private boolean isRunning = false;
+	protected boolean isRunning = false;
 	private boolean isResponseSilent = false;
 
 	public static boolean isNetworkAvailable(Context context) {
@@ -49,7 +50,7 @@ public abstract class KKAPIBase {
 		}
 	}
 	
-	private KKAPIRequestListener apiRequestListener = new KKAPIRequestListener() {
+	protected KKAPIRequestListener apiRequestListener = new KKAPIRequestListener() {
 		@Override
 		public void onComplete() {
 			if (errorCode == ErrorCode.NO_ERROR) {
@@ -81,6 +82,10 @@ public abstract class KKAPIBase {
 			isRunning = false;
 		}
 	};
+
+	public KKAPIBase() {
+		requestListener = apiRequestListener;
+	}
 
 	public void cancel() {
 		if (request != null) {
@@ -130,6 +135,6 @@ public abstract class KKAPIBase {
 	protected void execute(KKAPIRequest request) {
 		this.request = request;
 		isRunning = true;
-		request.execute(apiRequestListener);
+		request.execute(requestListener);
 	}
 }
