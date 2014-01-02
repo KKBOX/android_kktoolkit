@@ -17,6 +17,7 @@
  */
 package com.kkbox.toolkit.api;
 
+import com.kkbox.toolkit.internal.api.APIRequestListener;
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
 
 
@@ -56,8 +57,8 @@ public abstract class KKAPIBase extends APIBase {
 	};
 
 	@Override
-	protected void setRequestListener() {
-		requestListener = apiRequestListener;
+	protected APIRequestListener getRequestListener() {
+		return apiRequestListener;
 	}
 
 	protected abstract int parse(String data);

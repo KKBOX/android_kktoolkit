@@ -3,8 +3,10 @@ package com.kkbox.toolkit.api;
 import android.os.Build;
 import android.util.JsonReader;
 
+import com.kkbox.toolkit.internal.api.APIRequestListener;
 import com.kkbox.toolkit.internal.api.KKAPIJsonRequestListener;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -39,7 +41,7 @@ public abstract class KKAPIJsonBase extends APIBase {
 		}
 
 		@Override
-		public void onStreamPreComplete(InputStream inputStream) throws UnsupportedEncodingException {
+		public void onStreamPreComplete(InputStream inputStream) throws UnsupportedEncodingException, IOException {
 			if (Build.VERSION.SDK_INT >= 11) {
 				JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
 				errorCode = parse(reader);
@@ -48,9 +50,9 @@ public abstract class KKAPIJsonBase extends APIBase {
 	};
 
 	@Override
-	protected void setRequestListener() {
-		requestListener = apiJsonRequestListener;
+	protected APIRequestListener getRequestListener() {
+		return apiJsonRequestListener;
 	}
 
-	protected abstract int parse(JsonReader reader);
+	protected abstract int parse(JsonReader reader) throws IOException;
 }

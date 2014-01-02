@@ -65,14 +65,14 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 	protected Cipher cipher = null;
 
 	private Context context = null;
-	protected long reloadPeriod = -1;
+	protected long cacheTimeOut = -1;
 
 	protected InputStream is = null;
 	private HttpResponse response;
 
-	public APIRequest(String url, Cipher cipher, long reloadPeriod, Context context) {
+	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
 		this(url, cipher, 10000);
-		this.reloadPeriod = reloadPeriod;
+		this.cacheTimeOut = cacheTimeOut;
 		this.context = context;
 	}
 
@@ -182,8 +182,8 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 			connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
 		}
 
-		if (context != null && reloadPeriod > 0 && cacheFile.exists()
-				&& ((System.currentTimeMillis() - cacheFile.lastModified() < reloadPeriod)
+		if (context != null && cacheTimeOut > 0 && cacheFile.exists()
+				&& ((System.currentTimeMillis() - cacheFile.lastModified() < cacheTimeOut)
 				|| connectivityManager == null)) {
 			try {
 				InputStream inputStream = new FileInputStream(cacheFile);
@@ -296,7 +296,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 
 	protected abstract void readDataFromInputStream(ByteArrayOutputStream data) throws IOException;
 
-	protected abstract void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException;
+	protected abstract void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, IOException;
 
 	@Override
 	public void onPostExecute(Void v) {

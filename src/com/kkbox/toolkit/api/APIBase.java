@@ -18,15 +18,10 @@ public abstract class APIBase {
 
 	private APIRequest request;
 	private KKAPIListener apiListener;
-	protected APIRequestListener requestListener;
 
 	protected int errorCode;
 	protected boolean isRunning = false;
 	protected boolean isResponseSilent = false;
-
-	public APIBase() {
-		setRequestListener();
-	}
 
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -84,8 +79,8 @@ public abstract class APIBase {
 	protected void execute(APIRequest request) {
 		this.request = request;
 		isRunning = true;
-		request.execute(requestListener);
+		request.execute(getRequestListener());
 	}
 
-	protected abstract void setRequestListener();
+	protected abstract APIRequestListener getRequestListener();
 }
