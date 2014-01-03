@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 KKBOX Inc.
+/* Copyright (C) 2014 KKBOX Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,11 +12,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-/**
- * KKService is an abstract class that runs a service.
- * You will need to implement initServiceComponent() by yourself.
- */
-
 package com.kkbox.toolkit;
 
 import android.app.Service;

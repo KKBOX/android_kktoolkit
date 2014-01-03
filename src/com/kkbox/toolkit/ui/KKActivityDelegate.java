@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 KKBOX Inc.
+/* Copyright (C) 2014 KKBOX Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.kkbox.toolkit.KKService;
 import com.kkbox.toolkit.KKServiceListener;
 import com.kkbox.toolkit.R;
 import com.kkbox.toolkit.dialog.KKDialog;
-import com.kkbox.toolkit.internal.notification.KKDialogManagerListener;
+import com.kkbox.toolkit.internal.dialog.KKDialogManagerListener;
 
 import java.util.ArrayList;
 
