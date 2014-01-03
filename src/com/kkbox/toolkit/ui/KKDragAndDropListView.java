@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.listview.adapter.ReorderListAdapter;
@@ -37,7 +38,7 @@ import com.kkbox.toolkit.listview.adapter.ReorderListAdapter;
 public class KKDragAndDropListView extends ListView {
 	private Object movingObject;
 	private ImageView viewDrag;
-	private LinearLayout layoutExpanded;
+	private View layoutExpanded;
 	private WindowManager windowManager;
 	private WindowManager.LayoutParams dragViewParams;
 	private int expandedViewIndex = -1;
@@ -109,7 +110,7 @@ public class KKDragAndDropListView extends ListView {
 						listViewItemHeight = item.getHeight();
 						dragPoint = (int)ev.getRawY() - y + item.getTop() - y;
 						View dragger = item.findViewById(grabberId);
-						if ((dragger.getLeft() < x) && (x < dragger.getRight())) {
+						if (dragger != null && (dragger.getLeft() < x) && (x < dragger.getRight())) {
 							item.destroyDrawingCache();
 							item.buildDrawingCache();
 							Bitmap bitmap = Bitmap.createBitmap(item.getDrawingCache());
@@ -125,12 +126,20 @@ public class KKDragAndDropListView extends ListView {
 							if (adapter.getCount() > 0) {
 								if (itemIndex == ((ReorderListAdapter) adapter).getCount()) {
 									itemIndex--;
-									layoutExpanded = (LinearLayout) getChildAt(itemIndex - getFirstVisiblePosition());
-									layoutExpanded.setGravity(Gravity.TOP);
+									layoutExpanded = getChildAt(itemIndex - getFirstVisiblePosition());
+									if(layoutExpanded instanceof LinearLayout) {
+										((LinearLayout)layoutExpanded).setGravity(Gravity.TOP);
+									} else {
+										((RelativeLayout)layoutExpanded).setGravity(Gravity.TOP);
+									}
 									isLastItem = true;
 								} else {
-									layoutExpanded = (LinearLayout) getChildAt(itemIndex - getFirstVisiblePosition());
-									layoutExpanded.setGravity(Gravity.BOTTOM);
+									layoutExpanded = getChildAt(itemIndex - getFirstVisiblePosition());
+									if(layoutExpanded instanceof LinearLayout) {
+										((LinearLayout)layoutExpanded).setGravity(Gravity.BOTTOM);
+									} else {
+										((RelativeLayout)layoutExpanded).setGravity(Gravity.BOTTOM);
+									}
 									isLastItem = false;
 								}
 								ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
@@ -183,14 +192,22 @@ public class KKDragAndDropListView extends ListView {
 							}
 						}
 						if (getAdapter().getCount() > 0) {
-							layoutExpanded = (LinearLayout) getChildAt(itemIndex - getFirstVisiblePosition());
+							layoutExpanded = getChildAt(itemIndex - getFirstVisiblePosition());
 							if (layoutExpanded == null) {
 								itemIndex--;
-								layoutExpanded = (LinearLayout) getChildAt(itemIndex - getFirstVisiblePosition());
-								layoutExpanded.setGravity(Gravity.TOP);
+								layoutExpanded = getChildAt(itemIndex - getFirstVisiblePosition());
+								if(layoutExpanded instanceof LinearLayout) {
+									((LinearLayout)layoutExpanded).setGravity(Gravity.TOP);
+								} else {
+									((RelativeLayout)layoutExpanded).setGravity(Gravity.TOP);
+								}
 								isLastItem = true;
 							} else {
-								layoutExpanded.setGravity(Gravity.BOTTOM);
+								if(layoutExpanded instanceof LinearLayout) {
+									((LinearLayout)layoutExpanded).setGravity(Gravity.BOTTOM);
+								} else {
+									((RelativeLayout)layoutExpanded).setGravity(Gravity.BOTTOM);
+								}
 								isLastItem = false;
 							}
 							ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
