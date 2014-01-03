@@ -12,11 +12,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.kkbox.toolkit.ui;
+package com.kkbox.toolkit.app;
 
 import android.view.View;
 
 import com.kkbox.toolkit.internal.ui.KKListFragmentDelegate;
+import com.kkbox.toolkit.widget.KKListView;
 
 public abstract class KKListFragment extends KKFragment {
 	private KKListFragmentDelegate delegate = new KKListFragmentDelegate();

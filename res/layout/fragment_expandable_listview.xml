@@ -18,7 +18,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <com.kkbox.toolkit.ui.KKExpandableListView
+    <com.kkbox.toolkit.widget.KKExpandableListView
         android:id="@+id/listview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -28,13 +28,13 @@
         android:fadingEdge="none"
         android:smoothScrollbar="true" />
 
-    <com.kkbox.toolkit.ui.KKMessageView
+    <com.kkbox.toolkit.widget.KKMessageView
         android:id="@+id/view_message"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:visibility="gone" />
 
-    <com.kkbox.toolkit.ui.KKMessageView
+    <com.kkbox.toolkit.widget.KKMessageView
         android:id="@+id/view_empty"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

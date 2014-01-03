@@ -42,7 +42,7 @@
         android:layout_below="@id/layout_radio_bar"
         android:orientation="vertical" >
 
-        <com.kkbox.toolkit.ui.KKMessageView
+        <com.kkbox.toolkit.widget.KKMessageView
             android:id="@+id/view_message"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

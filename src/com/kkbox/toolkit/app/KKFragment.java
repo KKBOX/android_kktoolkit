@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kkbox.toolkit.ui;
+package com.kkbox.toolkit.app;
 
 import android.app.Activity;
 import android.os.Build;
@@ -27,6 +27,7 @@ import android.view.animation.AnimationUtils;
 
 import com.kkbox.toolkit.R;
 import com.kkbox.toolkit.utils.KKDebug;
+import com.kkbox.toolkit.widget.KKMessageView;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

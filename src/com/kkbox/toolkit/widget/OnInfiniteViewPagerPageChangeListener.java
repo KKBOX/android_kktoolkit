@@ -12,25 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kkbox.toolkit.ui;
+package com.kkbox.toolkit.widget;
 
-import android.content.Intent;
-import android.os.Bundle;
+public abstract class OnInfiniteViewPagerPageChangeListener {
 
-public interface KKServiceActivity {
-	public void activateSubFragment(KKFragment fragment);
+	public abstract void onLoopPageSelected(int position);
 
-	public void deactivateSubFragment(KKFragment fragment);
+	public abstract void onPageScrollLeft();
 
-	public void onServiceStarted();
-
-	public void sendMessageToActiveSubFragments(Bundle arguments);
-
-	public void finishAllKKActivity();
-	
-	public void startActivityIfNoDialog(Intent intent);
-	
-	public void finishIfNoDialog();
-	
-	public void startActivityForResultIfNoDialog(Intent intent, int requestCode);
+	public abstract void onPageScrollRight();
 }
