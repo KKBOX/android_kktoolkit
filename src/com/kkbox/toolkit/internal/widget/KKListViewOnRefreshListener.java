@@ -12,13 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kkbox.toolkit.widget;
+package com.kkbox.toolkit.internal.widget;
 
-public abstract class OnInfiniteViewPagerPageChangeListener {
-
-	public abstract void onLoopPageSelected(int position);
-
-	public abstract void onPageScrollLeft();
-
-	public abstract void onPageScrollRight();
+public abstract interface KKListViewOnRefreshListener {
+	public abstract void onRefresh();
 }

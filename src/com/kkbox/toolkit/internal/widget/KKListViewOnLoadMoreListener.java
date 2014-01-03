@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kkbox.toolkit.internal.ui;
+package com.kkbox.toolkit.internal.widget;
 
-public abstract interface KKListViewOnRefreshListener {
-	public abstract void onRefresh();
+public abstract interface KKListViewOnLoadMoreListener {
+	public abstract void onLoadMore();
 }

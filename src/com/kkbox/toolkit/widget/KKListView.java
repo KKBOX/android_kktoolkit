@@ -20,9 +20,9 @@ import android.view.MotionEvent;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.kkbox.toolkit.internal.ui.KKListViewDelegate;
-import com.kkbox.toolkit.internal.ui.KKListViewOnLoadMoreListener;
-import com.kkbox.toolkit.internal.ui.KKListViewOnRefreshListener;
+import com.kkbox.toolkit.internal.widget.KKListViewDelegate;
+import com.kkbox.toolkit.internal.widget.KKListViewOnLoadMoreListener;
+import com.kkbox.toolkit.internal.widget.KKListViewOnRefreshListener;
 
 public class KKListView extends ListView {
 

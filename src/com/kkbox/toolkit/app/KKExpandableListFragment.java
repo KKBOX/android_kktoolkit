@@ -16,7 +16,7 @@ package com.kkbox.toolkit.app;
 
 import android.view.View;
 
-import com.kkbox.toolkit.internal.ui.KKListFragmentDelegate;
+import com.kkbox.toolkit.internal.app.KKListFragmentDelegate;
 import com.kkbox.toolkit.widget.KKExpandableListView;
 
 public class KKExpandableListFragment extends KKFragment {

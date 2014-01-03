@@ -19,10 +19,18 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 
-import com.kkbox.toolkit.listview.adapter.InfiniteViewPagerAdapter;
 
 public class InfiniteViewPager extends ViewPager {
 
+	public abstract class OnInfiniteViewPagerPageChangeListener {
+
+		public abstract void onLoopPageSelected(int position);
+
+		public abstract void onPageScrollLeft();
+
+		public abstract void onPageScrollRight();
+	}
+	
 	private OnInfiniteViewPagerPageChangeListener onInfiniteViewPagerPageChangeListener;
 	private int currentPosition = 0;
 	private boolean scrolled = false;
