@@ -22,7 +22,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 
+import com.kkbox.toolkit.BuildConfig;
 import com.kkbox.toolkit.internal.image.KKImageRequestListener;
+import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.UserTask;
 
 import org.apache.http.Header;
@@ -39,6 +41,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -148,7 +152,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 							return null;
 						}
 					} else {
-						bitmap = decodeBitmap(cachePath);
+						bitmap = KKImageUtils.getBitmapFromCacheFileWhenDecode(cachePath);
 						if (bitmap != null) {
 							if (localPath != null && saveToLocal && (localFile == null || !localFile.exists())) {
 								cryptToFile(cachePath, localPath);
@@ -165,7 +169,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 					} else {
 						cryptToFile(localPath, tempFilePath);
 						moveFileTo(tempFilePath, cachePath);
-						bitmap = decodeBitmap(cachePath);
+						bitmap = KKImageUtils.getBitmapFromCacheFileWhenDecode(cachePath);
 						if (bitmap != null) {
 							return bitmap;
 						} else {
@@ -178,6 +182,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			if (!KKImageManager.networkEnabled) {
 				return null;
 			}
+			
 			final HttpGet httpget = new HttpGet(url);
 			response = httpclient.execute(httpget);
 			final InputStream is = response.getEntity().getContent();
@@ -217,8 +222,8 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 					return null;
 				}
 				tempFile.close();
-				moveFileTo(tempFilePath, cachePath);
-				bitmap = decodeBitmap(cachePath);
+				moveFileAndDecode(tempFilePath, cachePath);
+				bitmap = KKImageUtils.getBitmapFromCacheFileWhenDecode(cachePath);
 				if (bitmap != null) {
 					if (saveToLocal && localPath != null) {
 						cryptToFile(cachePath, localPath);
@@ -227,6 +232,9 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 				}
 			}
 		} catch (final Exception e) {
+			if(BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 			isNetworkError = true;
 			removeInvalidImageFiles();
 		}
@@ -286,14 +294,41 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		} catch (IOException e) {}
 		fileLock.unlock();
 	}
+	
+	@SuppressWarnings("resource")
+	private void moveFileAndDecode(String originalPath, String targetPath) {
+		fileLock.lock();
+		
+		try
+		{
+			File targetFile = new File(targetPath);
+			targetFile.delete();
+			FileChannel targetChannel = null;
+			
+			targetChannel = new FileOutputStream(targetPath).getChannel();
 
-	private Bitmap decodeBitmap(String path) {
-		try {
-			File file = new File(path);
-			return BitmapFactory.decodeStream(new FileInputStream(file));
+			Bitmap bitmap = KKImageRequest.decodeBitmap(originalPath);
+			int byteCount = bitmap.getRowBytes() * bitmap.getHeight();
+			//2 * 4 是為了要放入 bitmap 長/寬 之空間
+			ByteBuffer buffer = ByteBuffer.allocateDirect(byteCount + (2 * 4));
+			buffer.order(ByteOrder.nativeOrder());
+			buffer.clear();
+			buffer.putInt(bitmap.getWidth());
+			buffer.putInt(bitmap.getHeight());
+			bitmap.copyPixelsToBuffer(buffer);
+			
+			buffer.flip();
+			
+			while (buffer.hasRemaining()) {
+				targetChannel.write(buffer);
+			}
+			targetChannel.close();
+			buffer.clear();
 		} catch (IOException e) {
-			return null;
+			KKDebug.e(e);
 		}
+		
+		fileLock.unlock();
 	}
 
 	private void cryptToFile(String sourceFilePath, String targetFilePath) throws Exception {
@@ -312,5 +347,14 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		} while (readLength != -1);
 		sourceFile.close();
 		targetFile.close();
+	}
+
+	public static Bitmap decodeBitmap(String path) {
+		try {
+			File file = new File(path);
+			return BitmapFactory.decodeStream(new FileInputStream(file));
+		} catch (IOException e) {
+			return null;
+		}
 	}
 }

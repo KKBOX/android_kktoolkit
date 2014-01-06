@@ -26,7 +26,9 @@ import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.kkbox.toolkit.file.KKFileUtils;
 import com.kkbox.toolkit.internal.image.KKImageRequestListener;
+import com.kkbox.toolkit.ui.ResizableView;
 import com.kkbox.toolkit.utils.StringUtils;
 import com.kkbox.toolkit.utils.UserTask;
 
@@ -53,13 +55,17 @@ public class KKImageManager {
 	private static final HashMap<WeakReference<View>, Bitmap> viewBackgroundBitmapReference = new HashMap<WeakReference<View>, Bitmap>();
 	private static final HashMap<WeakReference<ImageView>, Bitmap> imageViewSourceBitmapReference = new HashMap<WeakReference<ImageView>, Bitmap>();
 	private static final ArrayList<KKImageRequest> workingList = new ArrayList<KKImageRequest>();
-	private static int workingCount = 0;
+	private int workingCount = 0;
 	private static final ReentrantLock lock = new ReentrantLock();
 
 	private final HashMap<View, KKImageRequest> fetchList = new HashMap<View, KKImageRequest>();
 	private Context context;
 	private Cipher cipher = null;
 	public static boolean networkEnabled = true;
+	private int getMode = KKImageUtils.GetMode.DOWNLOAD;
+	public void setImageGetMode(int type) {
+		getMode = type;
+	}
 
 	protected KKImageRequestListener imageRequestListener = new KKImageRequestListener() {
 		@Override
@@ -115,7 +121,8 @@ public class KKImageManager {
 		cacheFile.delete();
 	}
 	
-	public static void clearCacheFiles(Context context) {
+	public static void
+	clearCacheFiles(Context context) {
 		File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "image");
 		if (cacheDir.exists()) {
 			for (File file : cacheDir.listFiles()) {
@@ -202,7 +209,7 @@ public class KKImageManager {
 	public KKImageManager(Context context, Cipher localCipher) {
 		this.context = context;
 		this.cipher = localCipher;
-		if (Build.VERSION.SDK_INT >= 9 && context.getCacheDir().getFreeSpace() < FATAL_STORAGE_SIZE) {
+		if (getMode == KKImageUtils.GetMode.CACHE || (Build.VERSION.SDK_INT >= 9 && context.getCacheDir().getFreeSpace() < FATAL_STORAGE_SIZE)) {
 			clearCacheFiles(context);
 		}
 		gc();
@@ -264,7 +271,10 @@ public class KKImageManager {
 		}
 		String cachePath = getTempImagePath(context, url);
 		final File cacheFile = new File(cachePath);
-		if (!cacheFile.exists() && defaultResourceId > 0) {
+
+		final boolean isCacheFileEmpty = KKFileUtils.isFileEmpty(cacheFile);
+
+		if (isCacheFileEmpty && defaultResourceId > 0) {
 			if (updateBackground) {
 				view.setBackgroundResource(defaultResourceId);
 			} else {
@@ -272,10 +282,24 @@ public class KKImageManager {
 				imageView.setImageResource(defaultResourceId);
 			}
 		}
-		request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, view, updateBackground, cipher, saveToLocal);
-		workingList.add(request);
-		fetchList.put(view, request);
-		startFetch();
+
+		if(getMode == KKImageUtils.GetMode.DOWNLOAD || isCacheFileEmpty) {
+			request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, view, updateBackground, cipher, saveToLocal);
+			workingList.add(request);
+			fetchList.put(view, request);
+			startFetch();
+		} else {
+			Bitmap bitmap = KKImageUtils.getBitmapFromCacheFileWhenDecode(cachePath);
+			if(view instanceof ResizableView) {
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+					((ResizableView)view).setBackground(new BitmapDrawable(bitmap));
+				} else {
+					((ResizableView)view).setBackgroundDrawable(new BitmapDrawable(bitmap));
+				}
+			} else {
+				((ImageView) view).setImageBitmap(bitmap);
+			}
+		}
 	}
 
 	private void startFetch() {
