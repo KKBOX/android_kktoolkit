@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 KKBOX Inc.
+/* Copyright (C) 2014 KKBOX Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -12,17 +12,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-/**
- * KKAPIRequestListener
- */
 package com.kkbox.toolkit.internal.api;
 
-public abstract interface KKAPIRequestListener {
-	abstract public void onComplete();
+public abstract interface KKAPIRequestListener extends APIRequestListener {
 
 	abstract public void onPreComplete(String data);
-	
-	abstract public void onHttpStatusError(int statusCode);
-
-	abstract public void onNetworkError();
 }

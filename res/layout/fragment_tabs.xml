@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (C) 2013 KKBOX Inc.
+  Copyright (C) 2014 KKBOX Inc.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@
         android:layout_below="@id/layout_radio_bar"
         android:orientation="vertical" >
 
-        <com.kkbox.toolkit.ui.KKMessageView
+        <com.kkbox.toolkit.widget.KKMessageView
             android:id="@+id/view_message"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
