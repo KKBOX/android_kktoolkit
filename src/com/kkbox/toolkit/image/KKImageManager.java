@@ -62,7 +62,7 @@ public class KKImageManager {
 	private Context context;
 	private Cipher cipher = null;
 	public static boolean networkEnabled = true;
-	private int getMode = KKImageUtils.GetMode.DOWNLOAD;
+	private int getMode = KKImageUtils.GetMode.CACHE;
 	public void setImageGetMode(int type) {
 		getMode = type;
 	}
@@ -209,7 +209,7 @@ public class KKImageManager {
 	public KKImageManager(Context context, Cipher localCipher) {
 		this.context = context;
 		this.cipher = localCipher;
-		if (getMode == KKImageUtils.GetMode.CACHE || (Build.VERSION.SDK_INT >= 9 && context.getCacheDir().getFreeSpace() < FATAL_STORAGE_SIZE)) {
+		if ((Build.VERSION.SDK_INT >= 9 && context.getCacheDir().getFreeSpace() < FATAL_STORAGE_SIZE)) {
 			clearCacheFiles(context);
 		}
 		gc();

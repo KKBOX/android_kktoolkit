@@ -9,9 +9,11 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.kkbox.toolkit.BuildConfig;
 import com.kkbox.toolkit.file.KKFileUtils;
+import com.kkbox.toolkit.utils.KKDebug;
 
 public class KKImageUtils {
 	public class GetMode {
@@ -36,12 +38,27 @@ public class KKImageUtils {
 		bitmap.copyPixelsFromBuffer(buffer);
 		return bitmap;
 	}
-	
+
+	public static ByteBuffer BUFFER;
+	private static void BuildBuffer(int size) {
+		if(BUFFER == null) {
+			BUFFER = createBuffer(size);
+			KKDebug.i("Set Buffer Init", "Size: " + String.valueOf(size) + "Limite: " + String.valueOf(BUFFER.limit()));
+		} else {
+			if(BUFFER.limit() < size) {
+				BUFFER.limit(size);
+			}
+			BUFFER.position(0);
+			KKDebug.i("Set Buffer ReSize", "Size: " + String.valueOf(size) + "Limite: " + String.valueOf(BUFFER.limit()));
+		}
+	}
+
 	/**
 	 * Get Bitmap From Cache File, if the image file is save pure pixels when
 	 * it downloaded.
 	 * */
-	public static Bitmap getBitmapFromCacheFileWhenDecode(String path) {
+	public synchronized static Bitmap getBitmapFromCacheFileWhenDecode(String path) {
+		long startTime = System.currentTimeMillis();
 		File file = new File(path);
 		if(KKFileUtils.isFileEmpty(file)) {
 			return null;
@@ -49,17 +66,21 @@ public class KKImageUtils {
 		
 		Bitmap bitmap = null;
 		try {
-			ByteBuffer buffer = createBuffer((int)file.length());
-			
+			final int fileSize = (int)file.length();
+			BuildBuffer(fileSize);
+//			if(BUFFER == null || (BUFFER.limit() + 1) != fileSize) {
+//				BUFFER = createBuffer(fileSize);
+//			}
+
 			@SuppressWarnings("resource")
 			FileChannel fileChannel = new FileInputStream(path).getChannel();
-			fileChannel.read(buffer);
+			fileChannel.read(BUFFER);
 			
-			buffer.rewind();
-			final int width = buffer.getInt();
-			final int height = buffer.getInt();
+			BUFFER.rewind();
+			final int width = BUFFER.getInt();
+			final int height = BUFFER.getInt();
 			
-			bitmap = createBitmap(buffer, width, height);
+			bitmap = createBitmap(BUFFER, width, height);
 		} catch (FileNotFoundException e) {
 			if(BuildConfig.DEBUG) {
 				e.printStackTrace();
@@ -69,7 +90,9 @@ public class KKImageUtils {
 				e.printStackTrace();
 			}
 		} 
-		
+		final long endTime = System.currentTimeMillis();
+
+		KKDebug.e("Decode Time", String.valueOf(endTime - startTime));
 		return bitmap;
 	}
 
