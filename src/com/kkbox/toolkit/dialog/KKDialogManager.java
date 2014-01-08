@@ -21,12 +21,12 @@ import java.util.ArrayList;
 
 public class KKDialogManager {
 
-	private ArrayList<KKDialog> dialogs = new ArrayList<KKDialog>();
+	private ArrayList<KKServiceDialog> dialogs = new ArrayList<KKServiceDialog>();
 	private KKDialogManagerListener listener;
 	private boolean isDialogOnShown = false;
 
-	public void addDialog(KKDialog newDialog) {
-		for (KKDialog dialog : dialogs) {
+	public void addDialog(KKServiceDialog newDialog) {
+		for (KKServiceDialog dialog : dialogs) {
 			if (dialog.getNotificationId() == newDialog.getNotificationId()) { return; }
 		}
 		dialogs.add(newDialog);

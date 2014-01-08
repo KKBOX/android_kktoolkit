@@ -46,7 +46,7 @@ public class KKDialog extends DialogFragment {
 
 	public KKDialog() {}
 
-	void setContent(int notificationId, String title, String message, String positiveButtonText, String negativeButtonText,
+	public void setContent(int notificationId, String title, String message, String positiveButtonText, String negativeButtonText,
 			String neutralButtonText, int dialogType, KKDialogPostExecutionListener listener) {
 		this.notificationId = notificationId;
 		this.title = title;
@@ -68,34 +68,40 @@ public class KKDialog extends DialogFragment {
 		if (listener != null) {
 			listener.onCancel();
 		}
+		onDialogFinishedByUser();
 	}
+
+	protected void onDialogFinishedByUser() {}
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		DialogInterface.OnClickListener positiveListener = new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				if (listener != null) {
 					listener.onPositive();
 				}
-				KKService.getDialogNotificationManager().dismissCurrentDialog();
+				onDialogFinishedByUser();
 			}
 		};
 
 		DialogInterface.OnClickListener neutralListener = new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				if (listener != null) {
 					listener.onNeutral();
 				}
-				KKService.getDialogNotificationManager().dismissCurrentDialog();
+				onDialogFinishedByUser();
 			}
 		};
 
 		DialogInterface.OnClickListener negativeListener = new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				if (listener != null) {
 					listener.onNegative();
 				}
-				KKService.getDialogNotificationManager().dismissCurrentDialog();
+				onDialogFinishedByUser();
 			}
 		};
 

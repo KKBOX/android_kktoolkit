@@ -14,11 +14,11 @@
 */
 package com.kkbox.toolkit.internal.dialog;
 
-import com.kkbox.toolkit.dialog.KKDialog;
+import com.kkbox.toolkit.dialog.KKServiceDialog;
 
 
 public abstract interface KKDialogManagerListener {
-	public abstract void onNotification(KKDialog dialog);
+	public abstract void onNotification(KKServiceDialog dialog);
 	
 	public abstract void onCancelNotification();
 

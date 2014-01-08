@@ -17,32 +17,32 @@ package com.kkbox.toolkit.dialog;
 
 public class KKDialogFactory {
 
-	public static KKDialog createAlertDialog(int notificationId, String title, String message, String positiveButtonText,
+	public static KKServiceDialog createAlertDialog(int notificationId, String title, String message, String positiveButtonText,
 			KKDialogPostExecutionListener listener) {
-		KKDialog dialog = new KKDialog();
-		dialog.setContent(notificationId, title, message, positiveButtonText, "", "", KKDialog.Type.ALERT_DIALOG, listener);
+		KKServiceDialog dialog = new KKServiceDialog();
+		dialog.setContent(notificationId, title, message, positiveButtonText, "", "", KKServiceDialog.Type.ALERT_DIALOG, listener);
 		return dialog;
 	}
 
-	public static KKDialog createYesOrNoDialog(int notificationId, String title, String message, String positiveButtonText, String negativeButtonText,
+	public static KKServiceDialog createYesOrNoDialog(int notificationId, String title, String message, String positiveButtonText, String negativeButtonText,
 			KKDialogPostExecutionListener listener) {
-		KKDialog dialog = new KKDialog();
-		dialog.setContent(notificationId, title, message, positiveButtonText, negativeButtonText, "", KKDialog.Type.YES_OR_NO_DIALOG,
+		KKServiceDialog dialog = new KKServiceDialog();
+		dialog.setContent(notificationId, title, message, positiveButtonText, negativeButtonText, "", KKServiceDialog.Type.YES_OR_NO_DIALOG,
 				listener);
 		return dialog;
 	}
 
-	public static KKDialog createThreeChoiceDialog(int notificationId, String title, String message, String positiveButtonText, String neutralButtonText,
+	public static KKServiceDialog createThreeChoiceDialog(int notificationId, String title, String message, String positiveButtonText, String neutralButtonText,
 			String negativeButtonText, KKDialogPostExecutionListener listener) {
-		KKDialog dialog = new KKDialog();
+		KKServiceDialog dialog = new KKServiceDialog();
 		dialog.setContent(notificationId, title, message, positiveButtonText, negativeButtonText, neutralButtonText,
-				KKDialog.Type.THREE_CHOICE_DIALOG, listener);
+				KKServiceDialog.Type.THREE_CHOICE_DIALOG, listener);
 		return dialog;
 	}
 
-	public static KKDialog createProgressingDialog(int notificationId, String message, KKDialogPostExecutionListener listener) {
-		KKDialog dialog = new KKDialog();
-		dialog.setContent(notificationId, "", message, "", "", "", KKDialog.Type.PROGRESSING_DIALOG, listener);
+	public static KKServiceDialog createProgressingDialog(int notificationId, String message, KKDialogPostExecutionListener listener) {
+		KKServiceDialog dialog = new KKServiceDialog();
+		dialog.setContent(notificationId, "", message, "", "", "", KKServiceDialog.Type.PROGRESSING_DIALOG, listener);
 		return dialog;
 	}
 }

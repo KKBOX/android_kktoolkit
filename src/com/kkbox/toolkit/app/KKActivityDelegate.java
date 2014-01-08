@@ -22,7 +22,7 @@ import android.support.v4.app.FragmentActivity;
 import com.kkbox.toolkit.KKService;
 import com.kkbox.toolkit.KKServiceListener;
 import com.kkbox.toolkit.R;
-import com.kkbox.toolkit.dialog.KKDialog;
+import com.kkbox.toolkit.dialog.KKServiceDialog;
 import com.kkbox.toolkit.internal.dialog.KKDialogManagerListener;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class KKActivityDelegate {
 	private final ArrayList<KKFragment> activeSubFragments = new ArrayList<KKFragment>();
 
 	private ProgressDialog serviceLoadingDialog;
-	private KKDialog currentDialogFragment;
+	private KKServiceDialog currentDialogFragment;
 	private Intent nextActivityIntent = null;
 	private int nextActivityRequestCode = -1;
 	private boolean finishActivityAfterShowingNotification = false;
@@ -58,7 +58,7 @@ public class KKActivityDelegate {
 		}
 
 		@Override
-		public void onNotification(final KKDialog dialog) {
+		public void onNotification(final KKServiceDialog dialog) {
 			currentDialogFragment = dialog;
 			currentDialogFragment.show(activity.getSupportFragmentManager(), "alertDialog");
 		}
