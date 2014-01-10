@@ -91,13 +91,12 @@ public class KKListViewDelegate {
 
 	private Object movingObject;
 	private ImageView viewDrag;
-	private LinearLayout layoutExpanded;
+	private View layoutExpanded;
 	private WindowManager windowManager;
 	private WindowManager.LayoutParams dragViewParams;
 	private int expandedViewIndex = -1;
 	private int upperBound;
 	private int lowerBound;
-	private int height;
 	private int dragPoint;
 	private int listViewItemHeight;
 	private boolean isLastItem;
@@ -275,8 +274,9 @@ public class KKListViewDelegate {
 		footerViewAdded = false;
 	}
 
-	public void setGrabberId(int resourceId) {
+	public void setGrabberId(Integer resourceId) {
 		grabberId = resourceId;
+		onSizeChanged();
 		setDragView();
 	}
 
@@ -301,7 +301,8 @@ public class KKListViewDelegate {
 		windowManager = (WindowManager)this.context.getSystemService("window");
 	}
 
-	public void onSizeChanged(int height) {
+	public void onSizeChanged() {
+		final int height = this.listView.getHeight();
 		upperBound = height / 3;
 		lowerBound = height * 2 / 3;
 	}
@@ -316,7 +317,7 @@ public class KKListViewDelegate {
 		expandedViewIndex = -1;
 	}
 
-	public boolean onActionUp() {
+	public boolean onDragAndDropActionUp() {
 		if (viewDrag != null) {
 			windowManager.removeViewImmediate(viewDrag);
 			viewDrag = null;
@@ -335,14 +336,17 @@ public class KKListViewDelegate {
 		return false;
 	}
 
-	public boolean onActionDown(MotionEvent ev) {
-		int action = ev.getAction();
+	public boolean onDragAndDropActionDown(MotionEvent ev) {
 		int x = (int)ev.getX();
 		int y = (int)ev.getY();
 		if (viewDrag == null) {
 			int itemIndex = this.listView.pointToPosition(x, y);
 			if (itemIndex != -1) {
 				ViewGroup item = (ViewGroup)this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+				if(item == null) {
+					return false;
+				}
+				final int height = this.listView.getHeight();
 				listViewItemHeight = item.getHeight();
 				dragPoint = (int)ev.getRawY() - y + item.getTop() - y;
 				View dragger = item.findViewById(grabberId);
@@ -360,14 +364,24 @@ public class KKListViewDelegate {
 					upperBound = Math.min(y, height / 3);
 					lowerBound = Math.max(y, height * 2 / 3);
 					if (adapter.getCount() > 0) {
-						if (itemIndex == ((ReorderListAdapter) adapter).getCount()) {
+						if (itemIndex == adapter.getCount()) {
 							itemIndex--;
-							layoutExpanded = (LinearLayout) this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
-							layoutExpanded.setGravity(Gravity.TOP);
+							View childView = this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+							if(childView instanceof RelativeLayout) {
+								((RelativeLayout) childView).setGravity(Gravity.TOP);
+							} else {
+								((LinearLayout) childView).setGravity(Gravity.TOP);
+							}
+							layoutExpanded = childView;
 							isLastItem = true;
 						} else {
-							layoutExpanded = (LinearLayout) this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
-							layoutExpanded.setGravity(Gravity.BOTTOM);
+							View childView = this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+							if(childView instanceof RelativeLayout) {
+								((RelativeLayout) childView).setGravity(Gravity.BOTTOM);
+							} else {
+								((LinearLayout) childView).setGravity(Gravity.BOTTOM);
+							}
+							layoutExpanded = childView;
 							isLastItem = false;
 						}
 						ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
@@ -382,13 +396,13 @@ public class KKListViewDelegate {
 		return false;
 	}
 
-	public boolean onActionMove(MotionEvent ev) {
-		int action = ev.getAction();
+	public boolean onDragAndDropActionMove(MotionEvent ev) {
 		int x = (int)ev.getX();
 		int y = (int)ev.getY();
 		if (viewDrag != null) {
 			int itemIndex = this.listView.pointToPosition(x, y);
 			if (itemIndex != -1) {
+				final int height = this.listView.getHeight();
 				if (y >= height / 3) {
 					upperBound = height / 3;
 				}
@@ -420,14 +434,24 @@ public class KKListViewDelegate {
 					}
 				}
 				if (this.listView.getAdapter().getCount() > 0) {
-					layoutExpanded = (LinearLayout) this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
-					if (layoutExpanded == null) {
+					View childView = this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+					if (childView == null) {
 						itemIndex--;
-						layoutExpanded = (LinearLayout) this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
-						layoutExpanded.setGravity(Gravity.TOP);
+						childView = this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+						if(childView instanceof RelativeLayout) {
+							((RelativeLayout) childView).setGravity(Gravity.TOP);
+						} else {
+							((LinearLayout) childView).setGravity(Gravity.TOP);
+						}
+						layoutExpanded = childView;
 						isLastItem = true;
 					} else {
-						layoutExpanded.setGravity(Gravity.BOTTOM);
+						if(childView instanceof RelativeLayout) {
+							((RelativeLayout) childView).setGravity(Gravity.BOTTOM);
+						} else {
+							((LinearLayout) childView).setGravity(Gravity.BOTTOM);
+						}
+						layoutExpanded = childView;
 						isLastItem = false;
 					}
 					ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();

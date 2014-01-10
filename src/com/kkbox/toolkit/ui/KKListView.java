@@ -72,22 +72,21 @@ public class KKListView extends ListView {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if(delegate.isGrabberIdEmpty()) {
-			delegate.onTouchEvent(event);
-		} else {
+		delegate.onTouchEvent(event);
+		if(!delegate.isGrabberIdEmpty()) {
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_UP:
-					if(delegate.onActionUp()) {
+					if(delegate.onDragAndDropActionUp()) {
 						return true;
 					}
 					break;
 				case MotionEvent.ACTION_DOWN:
-					if(delegate.onActionDown(event)) {
+					if(delegate.onDragAndDropActionDown(event)) {
 						return true;
 					}
 					break;
 				case MotionEvent.ACTION_MOVE:
-					if(delegate.onActionMove(event)) {
+					if(delegate.onDragAndDropActionMove(event)) {
 						return true;
 					}
 					break;
@@ -110,9 +109,10 @@ public class KKListView extends ListView {
 	@Override
 	public void onSizeChanged(int w, int h, int oldw, int oldh) {
 		if(delegate.getGrabberId() != null) {
-			delegate.onSizeChanged(getHeight());
+			delegate.onSizeChanged();
+		} else {
+			super.onSizeChanged(w, h, oldw, oldh);
 		}
-		super.onSizeChanged(w, h, oldw, oldh);
 	}
 
 	public void loadCompleted() {
@@ -123,7 +123,7 @@ public class KKListView extends ListView {
 		delegate.loadMoreFinished();
 	}
 
-	public void setGrabberId(int resourceId) {
+	public void setGrabberId(Integer resourceId) {
 		delegate.setGrabberId(resourceId);
 	}
 }
