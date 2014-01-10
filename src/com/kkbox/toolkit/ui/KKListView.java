@@ -72,7 +72,28 @@ public class KKListView extends ListView {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		delegate.onTouchEvent(event);
+		if(delegate.isGrabberIdEmpty()) {
+			delegate.onTouchEvent(event);
+		} else {
+			switch (event.getAction()) {
+				case MotionEvent.ACTION_UP:
+					if(delegate.onActionUp()) {
+						return true;
+					}
+					break;
+				case MotionEvent.ACTION_DOWN:
+					if(delegate.onActionDown(event)) {
+						return true;
+					}
+					break;
+				case MotionEvent.ACTION_MOVE:
+					if(delegate.onActionMove(event)) {
+						return true;
+					}
+					break;
+			}
+		}
+
 		try {
 			return super.onTouchEvent(event);
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -86,11 +107,23 @@ public class KKListView extends ListView {
 		delegate.setAdapter();
 	}
 
+	@Override
+	public void onSizeChanged(int w, int h, int oldw, int oldh) {
+		if(delegate.getGrabberId() != null) {
+			delegate.onSizeChanged(getHeight());
+		}
+		super.onSizeChanged(w, h, oldw, oldh);
+	}
+
 	public void loadCompleted() {
 		delegate.loadCompleted();
 	}
 
 	public void loadMoreFinished() {
 		delegate.loadMoreFinished();
+	}
+
+	public void setGrabberId(int resourceId) {
+		delegate.setGrabberId(resourceId);
 	}
 }

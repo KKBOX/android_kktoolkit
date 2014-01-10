@@ -15,22 +15,30 @@
 package com.kkbox.toolkit.internal.ui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.PixelFormat;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kkbox.toolkit.R;
+import com.kkbox.toolkit.image.KKImageManager;
+import com.kkbox.toolkit.listview.adapter.ReorderListAdapter;
 import com.kkbox.toolkit.utils.StringUtils;
 
 public class KKListViewDelegate {
@@ -80,6 +88,20 @@ public class KKListViewDelegate {
 	private boolean headerViewIsFirstItem = false;
 	private Context context;
 	private ListView listView;
+
+	private Object movingObject;
+	private ImageView viewDrag;
+	private LinearLayout layoutExpanded;
+	private WindowManager windowManager;
+	private WindowManager.LayoutParams dragViewParams;
+	private int expandedViewIndex = -1;
+	private int upperBound;
+	private int lowerBound;
+	private int height;
+	private int dragPoint;
+	private int listViewItemHeight;
+	private boolean isLastItem;
+	private Integer grabberId;
 
 	public KKListViewDelegate(Context context, ListView listView) {
 		this.context = context;
@@ -164,6 +186,7 @@ public class KKListViewDelegate {
 				if (currentState == State.PULLING_DOWN) {
 					updateState(State.UPDATING);
 				}
+
 				break;
 			case MotionEvent.ACTION_MOVE:
 				if (currentState == State.NORMAL) {
@@ -250,5 +273,173 @@ public class KKListViewDelegate {
 	public void loadMoreFinished() {
 		listView.removeFooterView(footerView);
 		footerViewAdded = false;
+	}
+
+	public void setGrabberId(int resourceId) {
+		grabberId = resourceId;
+		setDragView();
+	}
+
+	public boolean isGrabberIdEmpty() {
+		return grabberId == null;
+	}
+
+	public Integer getGrabberId() {
+		return grabberId;
+	}
+
+	private void setDragView() {
+		dragViewParams = new WindowManager.LayoutParams();
+		dragViewParams.gravity = Gravity.TOP;
+		dragViewParams.x = 0;
+		dragViewParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+		dragViewParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+		dragViewParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+				| WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+		dragViewParams.format = PixelFormat.TRANSLUCENT;
+		dragViewParams.windowAnimations = 0;
+		windowManager = (WindowManager)this.context.getSystemService("window");
+	}
+
+	public void onSizeChanged(int height) {
+		upperBound = height / 3;
+		lowerBound = height * 2 / 3;
+	}
+
+	private void unexpandView() {
+		if (layoutExpanded != null) {
+			ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
+			viewParams.height = listViewItemHeight;
+			layoutExpanded.setLayoutParams(viewParams);
+			layoutExpanded = null;
+		}
+		expandedViewIndex = -1;
+	}
+
+	public boolean onActionUp() {
+		if (viewDrag != null) {
+			windowManager.removeViewImmediate(viewDrag);
+			viewDrag = null;
+			ListAdapter adapter = this.listView.getAdapter();
+			if (isLastItem) {
+				expandedViewIndex++;
+			}
+			if (adapter.getCount() > 0) {
+				((ReorderListAdapter) adapter).addAtPosition(expandedViewIndex, movingObject);
+			} else {
+				((ReorderListAdapter) adapter).addAtPosition(0, movingObject);
+			}
+			unexpandView();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean onActionDown(MotionEvent ev) {
+		int action = ev.getAction();
+		int x = (int)ev.getX();
+		int y = (int)ev.getY();
+		if (viewDrag == null) {
+			int itemIndex = this.listView.pointToPosition(x, y);
+			if (itemIndex != -1) {
+				ViewGroup item = (ViewGroup)this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+				listViewItemHeight = item.getHeight();
+				dragPoint = (int)ev.getRawY() - y + item.getTop() - y;
+				View dragger = item.findViewById(grabberId);
+				if ((dragger.getLeft() < x) && (x < dragger.getRight())) {
+					item.destroyDrawingCache();
+					item.buildDrawingCache();
+					Bitmap bitmap = Bitmap.createBitmap(item.getDrawingCache());
+					dragViewParams.y = y + dragPoint;
+					viewDrag = new ImageView(this.context);
+					viewDrag.setImageBitmap(bitmap);
+					KKImageManager.autoRecycleViewSourceBitmap(viewDrag);
+					windowManager.addView(viewDrag, dragViewParams);
+					ListAdapter adapter = this.listView.getAdapter();
+					movingObject = ((ReorderListAdapter)adapter).removeAtPosition(itemIndex);
+					upperBound = Math.min(y, height / 3);
+					lowerBound = Math.max(y, height * 2 / 3);
+					if (adapter.getCount() > 0) {
+						if (itemIndex == ((ReorderListAdapter) adapter).getCount()) {
+							itemIndex--;
+							layoutExpanded = (LinearLayout) this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+							layoutExpanded.setGravity(Gravity.TOP);
+							isLastItem = true;
+						} else {
+							layoutExpanded = (LinearLayout) this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+							layoutExpanded.setGravity(Gravity.BOTTOM);
+							isLastItem = false;
+						}
+						ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
+						viewParams.height = listViewItemHeight * 2;
+						layoutExpanded.setLayoutParams(viewParams);
+						expandedViewIndex = itemIndex;
+					}
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean onActionMove(MotionEvent ev) {
+		int action = ev.getAction();
+		int x = (int)ev.getX();
+		int y = (int)ev.getY();
+		if (viewDrag != null) {
+			int itemIndex = this.listView.pointToPosition(x, y);
+			if (itemIndex != -1) {
+				if (y >= height / 3) {
+					upperBound = height / 3;
+				}
+				if (y <= height * 2 / 3) {
+					lowerBound = height * 2 / 3;
+				}
+				int speed = 0;
+				if (y > lowerBound) {
+					speed = y > (height + lowerBound) / 2 ? 16 : 4;
+				} else if ((y < upperBound) && (this.listView.getFirstVisiblePosition() != 0)) {
+					speed = y < upperBound / 2 ? -16 : -4;
+				}
+				if (speed != 0) {
+					int ref = this.listView.pointToPosition(x, height / 2);
+					if (ref == -1) {
+						ref = this.listView.pointToPosition(x, height / 2 + this.listView.getDividerHeight());
+					}
+					View v = this.listView.getChildAt(ref - this.listView.getFirstVisiblePosition());
+					this.listView.setSelectionFromTop(ref, v.getTop() - speed);
+				}
+				if (expandedViewIndex != -1) {
+					if (expandedViewIndex != itemIndex) {
+						unexpandView();
+					} else {
+						if (this.listView.pointToPosition(x, y + listViewItemHeight) != itemIndex) {
+							itemIndex++;
+							unexpandView();
+						}
+					}
+				}
+				if (this.listView.getAdapter().getCount() > 0) {
+					layoutExpanded = (LinearLayout) this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+					if (layoutExpanded == null) {
+						itemIndex--;
+						layoutExpanded = (LinearLayout) this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
+						layoutExpanded.setGravity(Gravity.TOP);
+						isLastItem = true;
+					} else {
+						layoutExpanded.setGravity(Gravity.BOTTOM);
+						isLastItem = false;
+					}
+					ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
+					viewParams.height = listViewItemHeight * 2;
+					layoutExpanded.setLayoutParams(viewParams);
+					expandedViewIndex = itemIndex;
+				}
+			}
+			dragViewParams.y = y + dragPoint;
+			windowManager.updateViewLayout(viewDrag, dragViewParams);
+			return true;
+		}
+		return false;
 	}
 }
