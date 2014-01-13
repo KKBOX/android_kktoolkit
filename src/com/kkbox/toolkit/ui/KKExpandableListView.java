@@ -19,6 +19,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ListAdapter;
 
 import com.kkbox.toolkit.internal.ui.KKListViewDelegate;
 import com.kkbox.toolkit.internal.ui.KKListViewOnLoadMoreListener;
@@ -69,12 +70,17 @@ public class KKExpandableListView extends ExpandableListView {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		delegate.onTouchEvent(event);
 		try {
-			return super.onTouchEvent(event);
+			return delegate.onTouchEvent(event) || super.onTouchEvent(event);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public void setAdapter(ListAdapter adapter) {
+		// TODO Auto-generated method stub
+		super.setAdapter(adapter);
 	}
 
 	@Override
@@ -83,11 +89,25 @@ public class KKExpandableListView extends ExpandableListView {
 		delegate.setAdapter();
 	}
 
+	@Override
+	public void onSizeChanged(int w, int h, int oldw, int oldh) {
+		delegate.onSizeChanged();
+		super.onSizeChanged(w, h, oldw, oldh);
+	}
+
 	public void loadCompleted() {
 		delegate.loadCompleted();
 	}
 
 	public void loadMoreFinished() {
 		delegate.loadMoreFinished();
+	}
+
+	public void enableDragAndDrop(Integer resourceId) {
+		delegate.setDragAndDropResourceId(resourceId);
+	}
+
+	public void disableDragAndDrop() {
+		enableDragAndDrop(null);
 	}
 }

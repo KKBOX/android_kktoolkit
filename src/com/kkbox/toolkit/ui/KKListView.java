@@ -72,29 +72,8 @@ public class KKListView extends ListView {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		delegate.onTouchEvent(event);
-		if(!delegate.isGrabberIdEmpty()) {
-			switch (event.getAction()) {
-				case MotionEvent.ACTION_UP:
-					if(delegate.onDragAndDropActionUp()) {
-						return true;
-					}
-					break;
-				case MotionEvent.ACTION_DOWN:
-					if(delegate.onDragAndDropActionDown(event)) {
-						return true;
-					}
-					break;
-				case MotionEvent.ACTION_MOVE:
-					if(delegate.onDragAndDropActionMove(event)) {
-						return true;
-					}
-					break;
-			}
-		}
-
 		try {
-			return super.onTouchEvent(event);
+			return delegate.onTouchEvent(event) || super.onTouchEvent(event);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return false;
 		}
@@ -108,11 +87,8 @@ public class KKListView extends ListView {
 
 	@Override
 	public void onSizeChanged(int w, int h, int oldw, int oldh) {
-		if(delegate.getGrabberId() != null) {
-			delegate.onSizeChanged();
-		} else {
-			super.onSizeChanged(w, h, oldw, oldh);
-		}
+		delegate.onSizeChanged();
+		super.onSizeChanged(w, h, oldw, oldh);
 	}
 
 	public void loadCompleted() {
@@ -123,7 +99,11 @@ public class KKListView extends ListView {
 		delegate.loadMoreFinished();
 	}
 
-	public void setGrabberId(Integer resourceId) {
-		delegate.setGrabberId(resourceId);
+	public void enable(Integer resourceId) {
+		delegate.setDragAndDropResourceId(resourceId);
+	}
+
+	public void disableDragAndDrop() {
+		enable(null);
 	}
 }

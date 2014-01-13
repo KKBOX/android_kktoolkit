@@ -27,6 +27,8 @@ import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -90,6 +92,7 @@ public class KKListViewDelegate {
 	private ListView listView;
 
 	private Object movingObject;
+	private Object movingChildObject;
 	private ImageView viewDrag;
 	private View layoutExpanded;
 	private WindowManager windowManager;
@@ -100,7 +103,7 @@ public class KKListViewDelegate {
 	private int dragPoint;
 	private int listViewItemHeight;
 	private boolean isLastItem;
-	private Integer grabberId;
+	private Integer dragAndDropResourceId;
 
 	public KKListViewDelegate(Context context, ListView listView) {
 		this.context = context;
@@ -175,8 +178,9 @@ public class KKListViewDelegate {
 			actionDownY = event.getY();
 		}
 	}
-	
-	public void onTouchEvent(MotionEvent event) {
+
+	public boolean onTouchEvent(MotionEvent event) {
+
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_UP:
 				if (currentState == State.PULLING) {
@@ -185,7 +189,9 @@ public class KKListViewDelegate {
 				if (currentState == State.PULLING_DOWN) {
 					updateState(State.UPDATING);
 				}
-
+				if(canDragAndDrop()) {
+					return onDragAndDropActionUp();
+				}
 				break;
 			case MotionEvent.ACTION_MOVE:
 				if (currentState == State.NORMAL) {
@@ -209,7 +215,17 @@ public class KKListViewDelegate {
 					}
 					event.setAction(MotionEvent.ACTION_CANCEL);
 				}
+				if(canDragAndDrop()) {
+					return onDragAndDropActionMove(event);
+				}
+				break;
+			case MotionEvent.ACTION_DOWN:
+				if(canDragAndDrop()) {
+					return onDragAndDropActionDown(event);
+				}
+				break;
 		}
+		return false;
 	}
 
 	public void setAdapter() {
@@ -274,18 +290,10 @@ public class KKListViewDelegate {
 		footerViewAdded = false;
 	}
 
-	public void setGrabberId(Integer resourceId) {
-		grabberId = resourceId;
+	public void setDragAndDropResourceId(Integer resourceId) {
+		dragAndDropResourceId = resourceId;
 		onSizeChanged();
 		setDragView();
-	}
-
-	public boolean isGrabberIdEmpty() {
-		return grabberId == null;
-	}
-
-	public Integer getGrabberId() {
-		return grabberId;
 	}
 
 	private void setDragView() {
@@ -302,9 +310,11 @@ public class KKListViewDelegate {
 	}
 
 	public void onSizeChanged() {
-		final int height = this.listView.getHeight();
-		upperBound = height / 3;
-		lowerBound = height * 2 / 3;
+		if(dragAndDropResourceId != null) {
+			final int height = this.listView.getHeight();
+			upperBound = height / 3;
+			lowerBound = height * 2 / 3;
+		}
 	}
 
 	private void unexpandView() {
@@ -321,14 +331,33 @@ public class KKListViewDelegate {
 		if (viewDrag != null) {
 			windowManager.removeViewImmediate(viewDrag);
 			viewDrag = null;
-			ListAdapter adapter = this.listView.getAdapter();
+
+			Object adapter;
+			int counter;
+			if(listView instanceof ExpandableListView) {
+				final ExpandableListAdapter tempAdapter = ((ExpandableListView) listView).getExpandableListAdapter();
+				counter = tempAdapter.getGroupCount();
+				adapter = tempAdapter;
+			} else {
+				final ListAdapter tempAdapter = listView.getAdapter();
+				counter = tempAdapter.getCount();
+				adapter = tempAdapter;
+			}
+
 			if (isLastItem) {
 				expandedViewIndex++;
 			}
-			if (adapter.getCount() > 0) {
+
+			if (counter > 0) {
 				((ReorderListAdapter) adapter).addAtPosition(expandedViewIndex, movingObject);
+				if(isExpandable() && movingChildObject != null) {
+					((ReorderListAdapter) adapter).addExpendChildAtPosition(expandedViewIndex, movingChildObject);
+				}
 			} else {
 				((ReorderListAdapter) adapter).addAtPosition(0, movingObject);
+				if(isExpandable() && movingChildObject != null) {
+					((ReorderListAdapter) adapter).addExpendChildAtPosition(0, movingChildObject);
+				}
 			}
 			unexpandView();
 			return true;
@@ -349,7 +378,7 @@ public class KKListViewDelegate {
 				final int height = this.listView.getHeight();
 				listViewItemHeight = item.getHeight();
 				dragPoint = (int)ev.getRawY() - y + item.getTop() - y;
-				View dragger = item.findViewById(grabberId);
+				View dragger = item.findViewById(dragAndDropResourceId);
 				if ((dragger.getLeft() < x) && (x < dragger.getRight())) {
 					item.destroyDrawingCache();
 					item.buildDrawingCache();
@@ -359,12 +388,29 @@ public class KKListViewDelegate {
 					viewDrag.setImageBitmap(bitmap);
 					KKImageManager.autoRecycleViewSourceBitmap(viewDrag);
 					windowManager.addView(viewDrag, dragViewParams);
-					ListAdapter adapter = this.listView.getAdapter();
+
+					Object adapter;
+					int counter;
+					if(listView instanceof ExpandableListView) {
+						final ExpandableListAdapter tempAdapter = ((ExpandableListView) listView).getExpandableListAdapter();
+						counter = tempAdapter.getGroupCount();
+						adapter = tempAdapter;
+					} else {
+						final ListAdapter tempAdapter = listView.getAdapter();
+						counter = tempAdapter.getCount();
+						adapter = tempAdapter;
+
+					}
+
 					movingObject = ((ReorderListAdapter)adapter).removeAtPosition(itemIndex);
+					if(isExpandable()) {
+						movingChildObject = ((ReorderListAdapter)adapter).removeExpendChildAtPosition(itemIndex);
+					}
+
 					upperBound = Math.min(y, height / 3);
 					lowerBound = Math.max(y, height * 2 / 3);
-					if (adapter.getCount() > 0) {
-						if (itemIndex == adapter.getCount()) {
+					if (counter > 0) {
+						if (itemIndex == counter) {
 							itemIndex--;
 							View childView = this.listView.getChildAt(itemIndex - this.listView.getFirstVisiblePosition());
 							if(childView instanceof RelativeLayout) {
@@ -463,6 +509,25 @@ public class KKListViewDelegate {
 			dragViewParams.y = y + dragPoint;
 			windowManager.updateViewLayout(viewDrag, dragViewParams);
 			return true;
+		}
+		return false;
+	}
+
+	private boolean canDragAndDrop() {
+		return dragAndDropResourceId != null && !haveExpanded();
+	}
+
+	private boolean isExpandable() {
+		return listView instanceof ExpandableListView;
+	}
+
+	private boolean haveExpanded() {
+		if(isExpandable()) {
+			for(int i = 0; i < listView.getCount(); i++) {
+				if(((ExpandableListView) listView).isGroupExpanded(i)) {
+					return true;
+				}
+			}
 		}
 		return false;
 	}
