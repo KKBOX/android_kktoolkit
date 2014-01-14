@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import com.kkbox.toolkit.R;
 import com.kkbox.toolkit.image.KKImageManager;
+import com.kkbox.toolkit.listview.adapter.ReorderExpendableListAdapter;
 import com.kkbox.toolkit.listview.adapter.ReorderListAdapter;
 import com.kkbox.toolkit.utils.StringUtils;
 
@@ -351,12 +352,12 @@ public class KKListViewDelegate {
 			if (counter > 0) {
 				((ReorderListAdapter) adapter).addAtPosition(expandedViewIndex, movingObject);
 				if(isExpandable() && movingChildObject != null) {
-					((ReorderListAdapter) adapter).addExpendChildAtPosition(expandedViewIndex, movingChildObject);
+					((ReorderExpendableListAdapter) adapter).addExpendChildAtGroupPosition(expandedViewIndex, movingChildObject);
 				}
 			} else {
 				((ReorderListAdapter) adapter).addAtPosition(0, movingObject);
 				if(isExpandable() && movingChildObject != null) {
-					((ReorderListAdapter) adapter).addExpendChildAtPosition(0, movingChildObject);
+					((ReorderExpendableListAdapter) adapter).addExpendChildAtGroupPosition(0, movingChildObject);
 				}
 			}
 			unexpandView();
@@ -404,7 +405,7 @@ public class KKListViewDelegate {
 
 					movingObject = ((ReorderListAdapter)adapter).removeAtPosition(itemIndex);
 					if(isExpandable()) {
-						movingChildObject = ((ReorderListAdapter)adapter).removeExpendChildAtPosition(itemIndex);
+						movingChildObject = ((ReorderExpendableListAdapter)adapter).removeExpendChildAtGroupPosition(itemIndex);
 					}
 
 					upperBound = Math.min(y, height / 3);

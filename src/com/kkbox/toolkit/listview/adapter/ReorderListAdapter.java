@@ -24,8 +24,4 @@ public abstract interface ReorderListAdapter {
 	public abstract void addAtPosition(int position, Object object);
 
 	public abstract int getCount();
-
-	public abstract Object removeExpendChildAtPosition(int position);
-
-	public abstract void addExpendChildAtPosition(int position, Object object);
 }
