@@ -79,7 +79,6 @@ public class KKExpandableListView extends ExpandableListView {
 
 	@Override
 	public void setAdapter(ListAdapter adapter) {
-		// TODO Auto-generated method stub
 		super.setAdapter(adapter);
 	}
 
@@ -101,13 +100,5 @@ public class KKExpandableListView extends ExpandableListView {
 
 	public void loadMoreFinished() {
 		delegate.loadMoreFinished();
-	}
-
-	public void enableDragAndDrop(Integer resourceId) {
-		delegate.setDragAndDropResourceId(resourceId);
-	}
-
-	public void disableDragAndDrop() {
-		enableDragAndDrop(null);
 	}
 }

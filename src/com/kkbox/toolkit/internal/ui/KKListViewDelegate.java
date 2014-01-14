@@ -40,7 +40,6 @@ import android.widget.TextView;
 
 import com.kkbox.toolkit.R;
 import com.kkbox.toolkit.image.KKImageManager;
-import com.kkbox.toolkit.listview.adapter.ReorderExpendableListAdapter;
 import com.kkbox.toolkit.listview.adapter.ReorderListAdapter;
 import com.kkbox.toolkit.utils.StringUtils;
 
@@ -351,14 +350,8 @@ public class KKListViewDelegate {
 
 			if (counter > 0) {
 				((ReorderListAdapter) adapter).addAtPosition(expandedViewIndex, movingObject);
-				if(isExpandable() && movingChildObject != null) {
-					((ReorderExpendableListAdapter) adapter).addExpendChildAtGroupPosition(expandedViewIndex, movingChildObject);
-				}
 			} else {
 				((ReorderListAdapter) adapter).addAtPosition(0, movingObject);
-				if(isExpandable() && movingChildObject != null) {
-					((ReorderExpendableListAdapter) adapter).addExpendChildAtGroupPosition(0, movingChildObject);
-				}
 			}
 			unexpandView();
 			return true;
@@ -404,9 +397,6 @@ public class KKListViewDelegate {
 					}
 
 					movingObject = ((ReorderListAdapter)adapter).removeAtPosition(itemIndex);
-					if(isExpandable()) {
-						movingChildObject = ((ReorderExpendableListAdapter)adapter).removeExpendChildAtGroupPosition(itemIndex);
-					}
 
 					upperBound = Math.min(y, height / 3);
 					lowerBound = Math.max(y, height * 2 / 3);
@@ -515,21 +505,6 @@ public class KKListViewDelegate {
 	}
 
 	private boolean canDragAndDrop() {
-		return dragAndDropResourceId != null && !haveExpanded();
-	}
-
-	private boolean isExpandable() {
-		return listView instanceof ExpandableListView;
-	}
-
-	private boolean haveExpanded() {
-		if(isExpandable()) {
-			for(int i = 0; i < listView.getCount(); i++) {
-				if(((ExpandableListView) listView).isGroupExpanded(i)) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return dragAndDropResourceId != null;
 	}
 }
