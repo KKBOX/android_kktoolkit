@@ -92,7 +92,6 @@ public class KKListViewDelegate {
 	private ListView listView;
 
 	private Object movingObject;
-	private Object movingChildObject;
 	private ImageView viewDrag;
 	private View layoutExpanded;
 	private WindowManager windowManager;
