@@ -22,7 +22,7 @@ import android.util.AttributeSet;
 
 public class InfiniteViewPager extends ViewPager {
 
-	public abstract class OnInfiniteViewPagerPageChangeListener {
+	public static abstract class OnInfiniteViewPagerPageChangeListener {
 
 		public abstract void onLoopPageSelected(int position);
 
