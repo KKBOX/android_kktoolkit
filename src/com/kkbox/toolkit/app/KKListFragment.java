@@ -17,12 +17,17 @@ package com.kkbox.toolkit.app;
 import android.view.View;
 
 import com.kkbox.toolkit.internal.app.KKListFragmentDelegate;
+import com.kkbox.toolkit.widget.KKDragAndDropListView;
 import com.kkbox.toolkit.widget.KKListView;
 
 public abstract class KKListFragment extends KKFragment {
 	private KKListFragmentDelegate delegate = new KKListFragmentDelegate();
 
 	public KKListFragment() {}
+
+	public KKDragAndDropListView getKKDragAndDropListView() {
+		return (KKDragAndDropListView)delegate.getListView();
+	}
 
 	public KKListView getKKListView() {
 		return (KKListView)delegate.getListView();
