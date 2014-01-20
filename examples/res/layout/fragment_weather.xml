@@ -1,98 +1,94 @@
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" >
 
-    <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+	<TableLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" >
 
-        <TableRow>
+		<TableRow>
 
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="City"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="City" />
 
-            <TextView
-                    android:id="@+id/city_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-        </TableRow>
+			<TextView
+				android:id="@+id/city_name"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+		</TableRow>
 
-        <TableRow>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Condition"/>
+		<TableRow>
 
-            <TextView
-                    android:id="@+id/condition"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Condition" />
 
-        </TableRow>
+			<TextView
+				android:id="@+id/condition"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+		</TableRow>
 
-        <TableRow>
+		<TableRow>
 
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Description"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Description" />
 
-            <TextView
-                    android:id="@+id/description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+			<TextView
+				android:id="@+id/description"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+		</TableRow>
 
-        </TableRow>
+		<TableRow>
 
-        <TableRow>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Temperature  " />
 
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Temperature  "/>
+			<TextView
+				android:id="@+id/temperature"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+		</TableRow>
 
-            <TextView
-                    android:id="@+id/temperature"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+		<TableRow>
 
-        </TableRow>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="H" />
 
-        <TableRow>
+			<TextView
+				android:id="@+id/max_temp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+		</TableRow>
 
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="H"/>
+		<TableRow>
 
-            <TextView
-                    android:id="@+id/max_temp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="L" />
 
-        </TableRow>
+			<TextView
+				android:id="@+id/min_temp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+		</TableRow>
+	</TableLayout>
 
-        <TableRow>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="L"/>
-
-            <TextView
-                    android:id="@+id/min_temp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-        </TableRow>
-    </TableLayout>
-
-    <com.kkbox.toolkit.ui.KKMessageView
-            android:id="@+id/view_message"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"/>
+	<com.kkbox.toolkit.widget.KKMessageView
+		android:id="@+id/view_message"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:visibility="gone" />
 
 </FrameLayout>

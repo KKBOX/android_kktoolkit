@@ -5,13 +5,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 
+import com.kkbox.toolkit.api.KKAPIListener;
 import com.kkbox.toolkit.example.ExampleActivity;
 import com.kkbox.toolkit.example.R;
 import com.kkbox.toolkit.example.SampleUtil;
 import com.kkbox.toolkit.example.api.ExampleWeatherAPI;
-import com.kkbox.toolkit.api.KKAPIListener;
-import com.kkbox.toolkit.ui.KKListView;
 import com.kkbox.toolkit.utils.KKDebug;
+import com.kkbox.toolkit.widget.KKListView;
 
 public class KKListViewActivity extends ExampleActivity {
 	private static final String TAG = "KKListViewActivity";

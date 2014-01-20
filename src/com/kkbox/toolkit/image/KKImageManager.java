@@ -259,10 +259,13 @@ public class KKImageManager {
 				}
 			}
 		}
-		String cachePath = getTempImagePath(context, url);
-		final File cacheFile = new File(cachePath);
+		File cacheFile = null;
+		if (url != null) {
+			String cachePath = getTempImagePath(context, url);
+			cacheFile = new File(cachePath);
+		}
 		if (defaultResourceId > 0) {
-			if (!cacheFile.exists()) {
+			if (cacheFile == null || !cacheFile.exists()) {
 				if (updateBackground) {
 					view.setBackgroundResource(defaultResourceId);
 				} else {
@@ -278,10 +281,12 @@ public class KKImageManager {
 				}
 			}
 		}
-		request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, view, updateBackground, cipher, saveToLocal);
-		workingList.add(request);
-		fetchList.put(view, request);
-		startFetch();
+		if (url != null) {
+			request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, view, updateBackground, cipher, saveToLocal);
+			workingList.add(request);
+			fetchList.put(view, request);
+			startFetch();
+		}
 	}
 
 	private void startFetch() {

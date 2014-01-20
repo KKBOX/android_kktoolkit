@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kkbox.toolkit.ui.KKFragment;
+import com.kkbox.toolkit.app.KKFragment;
 
 public class ExampleFragment extends KKFragment {
 

@@ -8,10 +8,10 @@ import android.widget.TextView;
 import com.kkbox.toolkit.example.ExampleActivity;
 import com.kkbox.toolkit.example.R;
 import com.kkbox.toolkit.example.SampleUtil;
-import com.kkbox.toolkit.listview.adapter.InfiniteViewPagerAdapter;
-import com.kkbox.toolkit.ui.InfiniteViewPager;
-import com.kkbox.toolkit.ui.OnInfiniteViewPagerPageChangeListener;
 import com.kkbox.toolkit.utils.KKDebug;
+import com.kkbox.toolkit.widget.InfiniteViewPager;
+import com.kkbox.toolkit.widget.InfiniteViewPager.OnInfiniteViewPagerPageChangeListener;
+import com.kkbox.toolkit.widget.InfiniteViewPagerAdapter;
 
 import java.util.ArrayList;
 

@@ -6,8 +6,8 @@ import android.widget.ArrayAdapter;
 
 import com.kkbox.toolkit.example.ExampleActivity;
 import com.kkbox.toolkit.example.R;
-import com.kkbox.toolkit.listview.adapter.ReorderListAdapter;
-import com.kkbox.toolkit.ui.KKDragAndDropListView;
+import com.kkbox.toolkit.widget.KKDragAndDropListView;
+import com.kkbox.toolkit.widget.ReorderListAdapter;
 
 import java.util.ArrayList;
 

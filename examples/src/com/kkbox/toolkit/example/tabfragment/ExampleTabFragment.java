@@ -23,10 +23,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.kkbox.toolkit.app.KKFragment;
+import com.kkbox.toolkit.app.KKTabFragment;
 import com.kkbox.toolkit.example.R;
 import com.kkbox.toolkit.example.fragment.ExampleFragment;
-import com.kkbox.toolkit.ui.KKFragment;
-import com.kkbox.toolkit.ui.KKTabFragment;
 import com.kkbox.toolkit.utils.KKDebug;
 
 public class ExampleTabFragment extends KKTabFragment {
