@@ -22,10 +22,9 @@ import com.kkbox.toolkit.internal.api.KKAPIJsonRequestListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -54,12 +53,16 @@ public class KKAPIJsonRequest extends APIRequest {
 	}
 
 	@Override
+	protected void loadCachedAPIFile(ByteArrayOutputStream data, File cacheFile) throws FileNotFoundException {
+		is = new FileInputStream(cacheFile);
+	}
+
+	@Override
 	protected void readDataFromInputStream(ByteArrayOutputStream data) throws IOException {}
 
 	@Override
 	protected void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, IOException {
-		InputStream inputStream;
-		if (cacheTimeOut > 0) {
+		if (cacheTimeOut > 0 && (System.currentTimeMillis() - cacheFile.lastModified() > cacheTimeOut)) {
 			int readLength;
 			byte[] buffer = new byte[128];
 			FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
@@ -67,10 +70,8 @@ public class KKAPIJsonRequest extends APIRequest {
 				fileOutputStream.write(buffer, 0, readLength);
 			}
 			fileOutputStream.close();
-			inputStream = new FileInputStream(cacheFile);
-		} else {
-			inputStream = is;
+			is = new FileInputStream(cacheFile);
 		}
-		jsonRequestListener.onStreamPreComplete(inputStream);
+		jsonRequestListener.onStreamPreComplete(is);
 	}
 }
