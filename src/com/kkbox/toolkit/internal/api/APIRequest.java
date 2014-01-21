@@ -48,6 +48,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -77,9 +78,9 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 	protected Cipher cipher = null;
 
 	private Context context = null;
-	protected long cacheTimeOut = -1;
+	private long cacheTimeOut = -1;
 
-	protected InputStream is = null;
+	private InputStream is = null;
 	private HttpResponse response;
 
 	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
@@ -176,10 +177,11 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		this.cancel(true);
 	}
 
+	protected abstract void parseInputStream(InputStream inputStream) throws IOException, BadPaddingException, IllegalBlockSizeException;
+
 	@Override
 	public Void doInBackground(Object... params) {
-		int readLength = 0;
-		final ByteArrayOutputStream data = new ByteArrayOutputStream();
+		int readLength;
 		final byte[] buffer = new byte[128];
 		listener = (APIRequestListener) params[0];
 		int retryTimes = 0;
@@ -197,7 +199,13 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		if (context != null && cacheTimeOut > 0 && cacheFile.exists()
 				&& ((System.currentTimeMillis() - cacheFile.lastModified() < cacheTimeOut)
 				|| connectivityManager.getActiveNetworkInfo() == null)) {
-			loadCachedAPIFile(data, cacheFile);
+			try {
+				parseInputStream(new FileInputStream(cacheFile));
+			} catch (IOException e) {
+				isNetworkError = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else {
 			do {
 				try {
@@ -259,7 +267,6 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 							} else {
 								is = response.getEntity().getContent();
 							}
-							readDataFromInputStream(data);
 							isNetworkError = false;
 							break;
 						case 4:
@@ -286,23 +293,26 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 					SystemClock.sleep(1000);
 				}
 			} while (isNetworkError && retryTimes < 3);
+			try {
+				if (!isNetworkError && !isHttpStatusError && listener != null) {
+					if (cacheTimeOut > 0) {
+						FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
+						while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+							fileOutputStream.write(buffer, 0, readLength);
+						}
+						fileOutputStream.close();
+						parseInputStream(new FileInputStream(cacheFile));
+					} else {
+						parseInputStream(is);
+					}
+				}
+				response.getEntity().consumeContent();
+			} catch (IOException e) {
+				isNetworkError = true;
+			} catch (Exception e) {}
 		}
-		try {
-			if (!isNetworkError && !isHttpStatusError && listener != null) {
-				preCompleteAndCachedAPI(data, cacheFile);
-			}
-			response.getEntity().consumeContent();
-		} catch (IOException e) {
-			isNetworkError = true;
-		} catch (Exception e) {}
 		return null;
 	}
-
-	protected abstract void readDataFromInputStream(ByteArrayOutputStream data) throws IOException;
-
-	protected abstract void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, IOException;
-
-	protected abstract void loadCachedAPIFile(ByteArrayOutputStream data, File cacheFile);
 
 	@Override
 	public void onPostExecute(Void v) {

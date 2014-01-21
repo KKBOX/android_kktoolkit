@@ -18,16 +18,10 @@ import android.content.Context;
 
 import com.kkbox.toolkit.internal.api.APIRequest;
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
-import com.kkbox.toolkit.utils.KKDebug;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -56,48 +50,20 @@ public class KKAPIRequest extends APIRequest {
 	}
 
 	@Override
-	protected void loadCachedAPIFile(ByteArrayOutputStream data, File cacheFile) {
-		try {
-			int readLength;
-			byte[] buffer = new byte[128];
-			InputStream inputStream = new FileInputStream(cacheFile);
-			while ((readLength = inputStream.read(buffer, 0, buffer.length)) != -1) {
-				data.write(buffer, 0, readLength);
-			}
-			data.flush();
-			inputStream.close();
-		} catch (IOException e) {
-			KKDebug.e("IOException when Read cache file");
-			e.printStackTrace();
-		}
-	}
-
-	protected void readDataFromInputStream(ByteArrayOutputStream data) throws IOException {
+	protected void parseInputStream(InputStream inputStream) throws IOException, BadPaddingException, IllegalBlockSizeException {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		int readLength;
 		byte[] buffer = new byte[128];
-		while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
-			data.write(buffer, 0, readLength);
+		while ((readLength = inputStream.read(buffer, 0, buffer.length)) != -1) {
+			byteArrayOutputStream.write(buffer, 0, readLength);
 		}
-		data.flush();
-	}
-
-	protected void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException {
+		byteArrayOutputStream.flush();
 		String jsonData;
 		if (cipher != null) {
-			jsonData = new String(cipher.doFinal(data.toByteArray()));
+			jsonData = new String(cipher.doFinal(byteArrayOutputStream.toByteArray()));
 		} else {
-			jsonData = data.toString();
+			jsonData = byteArrayOutputStream.toString();
 		}
 		requestListener.onPreComplete(jsonData);
-		if (cacheTimeOut > 0) {
-			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
-				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-				outputStreamWriter.write(jsonData);
-				outputStreamWriter.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 }
