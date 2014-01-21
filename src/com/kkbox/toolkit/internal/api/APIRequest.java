@@ -75,7 +75,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 	private FileEntity fileEntity;
 	private ByteArrayEntity byteArrayEntity;
 	private InputStreamEntity gzipStreamEntity;
-	protected Cipher cipher = null;
+	private Cipher cipher = null;
 
 	private Context context = null;
 	private long cacheTimeOut = -1;
@@ -177,7 +177,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		this.cancel(true);
 	}
 
-	protected abstract void parseInputStream(InputStream inputStream) throws IOException, BadPaddingException, IllegalBlockSizeException;
+	protected abstract void parseInputStream(InputStream inputStream, Cipher cipher) throws IOException, BadPaddingException, IllegalBlockSizeException;
 
 	@Override
 	public Void doInBackground(Object... params) {
@@ -200,7 +200,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 				&& ((System.currentTimeMillis() - cacheFile.lastModified() < cacheTimeOut)
 				|| connectivityManager.getActiveNetworkInfo() == null)) {
 			try {
-				parseInputStream(new FileInputStream(cacheFile));
+				parseInputStream(new FileInputStream(cacheFile), cipher);
 			} catch (IOException e) {
 				isNetworkError = true;
 			} catch (Exception e) {
@@ -301,9 +301,9 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 							fileOutputStream.write(buffer, 0, readLength);
 						}
 						fileOutputStream.close();
-						parseInputStream(new FileInputStream(cacheFile));
+						parseInputStream(new FileInputStream(cacheFile), cipher);
 					} else {
-						parseInputStream(is);
+						parseInputStream(is, cipher);
 					}
 				}
 				response.getEntity().consumeContent();

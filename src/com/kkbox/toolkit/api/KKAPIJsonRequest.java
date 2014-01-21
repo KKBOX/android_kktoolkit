@@ -50,7 +50,7 @@ public class KKAPIJsonRequest extends APIRequest {
 	}
 
 	@Override
-	protected void parseInputStream(InputStream inputStream) throws IOException, BadPaddingException, IllegalBlockSizeException {
+	protected void parseInputStream(InputStream inputStream, Cipher cipher) throws IOException, BadPaddingException, IllegalBlockSizeException {
 		if (cipher != null) {
 			jsonRequestListener.onStreamPreComplete(new CipherInputStream(inputStream, cipher));
 		} else {

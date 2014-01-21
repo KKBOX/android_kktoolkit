@@ -50,7 +50,7 @@ public class KKAPIRequest extends APIRequest {
 	}
 
 	@Override
-	protected void parseInputStream(InputStream inputStream) throws IOException, BadPaddingException, IllegalBlockSizeException {
+	protected void parseInputStream(InputStream inputStream, Cipher cipher) throws IOException, BadPaddingException, IllegalBlockSizeException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		int readLength;
 		byte[] buffer = new byte[128];
