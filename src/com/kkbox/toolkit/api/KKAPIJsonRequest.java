@@ -21,8 +21,10 @@ import com.kkbox.toolkit.internal.api.KKAPIJsonRequestListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 
 import javax.crypto.BadPaddingException;
@@ -56,22 +58,19 @@ public class KKAPIJsonRequest extends APIRequest {
 
 	@Override
 	protected void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, IOException {
-		jsonRequestListener.onStreamPreComplete(is);
+		InputStream inputStream;
 		if (cacheTimeOut > 0) {
-			try {
-				int readLength;
-				byte[] buffer = new byte[128];
-				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
-					data.write(buffer, 0, readLength);
-				}
-				data.flush();
-				FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
-				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-				outputStreamWriter.write(data.toString());
-				outputStreamWriter.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			int readLength;
+			byte[] buffer = new byte[128];
+			FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
+			while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+				fileOutputStream.write(buffer, 0, readLength);
 			}
+			fileOutputStream.close();
+			inputStream = new FileInputStream(cacheFile);
+		} else {
+			inputStream = is;
 		}
+		jsonRequestListener.onStreamPreComplete(inputStream);
 	}
 }
