@@ -20,11 +20,8 @@ import com.kkbox.toolkit.internal.api.APIRequest;
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.InputStream;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -52,32 +49,21 @@ public class KKAPIRequest extends APIRequest {
 		return super.doInBackground(params);
 	}
 
-	protected void readDataFromInputStream(ByteArrayOutputStream data) throws IOException {
+	@Override
+	protected void parseInputStream(InputStream inputStream, Cipher cipher) throws IOException, BadPaddingException, IllegalBlockSizeException {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		int readLength;
 		byte[] buffer = new byte[128];
-		while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
-			data.write(buffer, 0, readLength);
+		while ((readLength = inputStream.read(buffer, 0, buffer.length)) != -1) {
+			byteArrayOutputStream.write(buffer, 0, readLength);
 		}
-		data.flush();
-	}
-
-	protected void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException {
+		byteArrayOutputStream.flush();
 		String jsonData;
 		if (cipher != null) {
-			jsonData = new String(cipher.doFinal(data.toByteArray()));
+			jsonData = new String(cipher.doFinal(byteArrayOutputStream.toByteArray()));
 		} else {
-			jsonData = data.toString();
+			jsonData = byteArrayOutputStream.toString();
 		}
 		requestListener.onPreComplete(jsonData);
-		if (cacheTimeOut > 0) {
-			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
-				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-				outputStreamWriter.write(jsonData);
-				outputStreamWriter.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 }
