@@ -54,6 +54,9 @@ public class KKAPIJsonRequest extends APIRequest {
 	}
 
 	@Override
+	protected void loadCachedAPIFile(ByteArrayOutputStream data, File cacheFile) {}
+
+	@Override
 	protected void readDataFromInputStream(ByteArrayOutputStream data) throws IOException {}
 
 	@Override

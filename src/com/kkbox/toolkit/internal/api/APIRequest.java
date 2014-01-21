@@ -197,17 +197,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		if (context != null && cacheTimeOut > 0 && cacheFile.exists()
 				&& ((System.currentTimeMillis() - cacheFile.lastModified() < cacheTimeOut)
 				|| connectivityManager.getActiveNetworkInfo() == null)) {
-			try {
-				InputStream inputStream = new FileInputStream(cacheFile);
-				while ((readLength = inputStream.read(buffer, 0, buffer.length)) != -1) {
-					data.write(buffer, 0, readLength);
-				}
-				data.flush();
-				inputStream.close();
-			} catch (IOException e) {
-				KKDebug.e("IOException when Read cache file");
-				e.printStackTrace();
-			}
+			loadCachedAPIFile(data, cacheFile);
 		} else {
 			do {
 				try {
@@ -311,6 +301,8 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 	protected abstract void readDataFromInputStream(ByteArrayOutputStream data) throws IOException;
 
 	protected abstract void preCompleteAndCachedAPI(ByteArrayOutputStream data, File cacheFile) throws BadPaddingException, IllegalBlockSizeException, IOException;
+
+	protected abstract void loadCachedAPIFile(ByteArrayOutputStream data, File cacheFile);
 
 	@Override
 	public void onPostExecute(Void v) {
