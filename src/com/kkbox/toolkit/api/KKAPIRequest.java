@@ -18,14 +18,11 @@ import android.content.Context;
 
 import com.kkbox.toolkit.internal.api.APIRequest;
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
-import com.kkbox.toolkit.utils.KKDebug;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
@@ -53,23 +50,6 @@ public class KKAPIRequest extends APIRequest {
 	public Void doInBackground(Object... params) {
 		requestListener = (KKAPIRequestListener) params[0];
 		return super.doInBackground(params);
-	}
-
-	@Override
-	protected void loadCachedAPIFile(ByteArrayOutputStream data, File cacheFile) {
-		try {
-			int readLength;
-			byte[] buffer = new byte[128];
-			InputStream inputStream = new FileInputStream(cacheFile);
-			while ((readLength = inputStream.read(buffer, 0, buffer.length)) != -1) {
-				data.write(buffer, 0, readLength);
-			}
-			data.flush();
-			inputStream.close();
-		} catch (IOException e) {
-			KKDebug.e("IOException when Read cache file");
-			e.printStackTrace();
-		}
 	}
 
 	protected void readDataFromInputStream(ByteArrayOutputStream data) throws IOException {
