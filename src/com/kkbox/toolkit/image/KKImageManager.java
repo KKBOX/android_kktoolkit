@@ -111,7 +111,7 @@ public class KKImageManager {
 		final File cacheFile = new File(getTempImagePath(context, url));
 		cacheFile.delete();
 	}
-	
+
 	public static void clearCacheFiles(Context context) {
 		File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "image");
 		if (cacheDir.exists()) {
@@ -259,20 +259,34 @@ public class KKImageManager {
 				}
 			}
 		}
-		String cachePath = getTempImagePath(context, url);
-		final File cacheFile = new File(cachePath);
-		if (!cacheFile.exists() && defaultResourceId > 0) {
-			if (updateBackground) {
-				view.setBackgroundResource(defaultResourceId);
+		File cacheFile = null;
+		if (url != null) {
+			String cachePath = getTempImagePath(context, url);
+			cacheFile = new File(cachePath);
+		}
+		if (defaultResourceId > 0) {
+			if (cacheFile == null || !cacheFile.exists()) {
+				if (updateBackground) {
+					view.setBackgroundResource(defaultResourceId);
+				} else {
+					ImageView imageView = (ImageView) view;
+					imageView.setImageResource(defaultResourceId);
+				}
 			} else {
-				ImageView imageView = (ImageView) view;
-				imageView.setImageResource(defaultResourceId);
+				if (updateBackground) {
+					view.setBackgroundResource(0);
+				} else {
+					ImageView imageView = (ImageView) view;
+					imageView.setImageResource(0);
+				}
 			}
 		}
-		request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, view, updateBackground, cipher, saveToLocal);
-		workingList.add(request);
-		fetchList.put(view, request);
-		startFetch();
+		if (url != null) {
+			request = new KKImageRequest(context, url, localPath, onReceiveHttpHeaderListener, view, updateBackground, cipher, saveToLocal);
+			workingList.add(request);
+			fetchList.put(view, request);
+			startFetch();
+		}
 	}
 
 	private void startFetch() {

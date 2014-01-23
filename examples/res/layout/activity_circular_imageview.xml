@@ -4,14 +4,14 @@
 	android:layout_height="match_parent"
 	android:orientation="vertical" >
 
-	<com.kkbox.toolkit.ui.CircularImageView
+	<com.kkbox.toolkit.widget.CircularImageView
 		android:id="@+id/imageview"
 		android:layout_width="100dp"
 		android:layout_height="100dp"
 		android:background="@drawable/ic_launcher"
 		kkbox:maskColor="#FFFFFF"/>
 
-	<com.kkbox.toolkit.ui.CircularImageView
+	<com.kkbox.toolkit.widget.CircularImageView
 		android:id="@+id/imageview1"
 		android:layout_width="100dp"
 		android:layout_height="100dp"

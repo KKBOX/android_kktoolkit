@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
-import com.kkbox.toolkit.ui.KKActivityDelegate;
-import com.kkbox.toolkit.ui.KKFragment;
-import com.kkbox.toolkit.ui.KKServiceActivity;
+import com.kkbox.toolkit.app.KKActivityDelegate;
+import com.kkbox.toolkit.app.KKFragment;
+import com.kkbox.toolkit.app.KKServiceActivity;
 
 public class ExampleActivity extends ActionBarActivity implements KKServiceActivity {
 

@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 
 import com.kkbox.toolkit.example.ExampleActivity;
 import com.kkbox.toolkit.example.R;
-import com.kkbox.toolkit.ui.ResizableView;
+import com.kkbox.toolkit.widget.ResizableView;
 
 public class ResizableViewActivity extends ExampleActivity {
 	Button btnL, btnM, btnS;

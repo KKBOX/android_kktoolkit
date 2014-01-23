@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kkbox.toolkit.example.ExampleActivity;
-import com.kkbox.toolkit.ui.KKMessageView;
+import com.kkbox.toolkit.widget.KKMessageView;
 
 public class KKMessageViewActivity extends ExampleActivity {
 	private KKMessageView mMsg;

@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -33,7 +32,7 @@ import com.kkbox.toolkit.image.KKImageManager;
 public class KKDragAndDropListView extends ListView {
 	private Object movingObject;
 	private ImageView viewDrag;
-	private LinearLayout layoutExpanded;
+	private View layoutExpanded;
 	private WindowManager windowManager;
 	private WindowManager.LayoutParams dragViewParams;
 	private int expandedViewIndex = -1;
@@ -42,6 +41,9 @@ public class KKDragAndDropListView extends ListView {
 	private int height;
 	private int dragPoint;
 	private int listViewItemHeight;
+	private int listViewItemHeightExpanded;
+	private int listViewItemPaddingTop;
+	private int listViewItemPaddingBottom;
 	private boolean isLastItem;
 	private int grabberId;
 
@@ -60,7 +62,7 @@ public class KKDragAndDropListView extends ListView {
 				| WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 		dragViewParams.format = PixelFormat.TRANSLUCENT;
 		dragViewParams.windowAnimations = 0;
-		windowManager = (WindowManager)getContext().getSystemService("window");
+		windowManager = (WindowManager) getContext().getSystemService("window");
 	}
 
 	public void setGrabberId(int resourceId) {
@@ -77,8 +79,8 @@ public class KKDragAndDropListView extends ListView {
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
 		int action = ev.getAction();
-		int x = (int)ev.getX();
-		int y = (int)ev.getY();
+		int x = (int) ev.getX();
+		int y = (int) ev.getY();
 		switch (action) {
 			case MotionEvent.ACTION_UP:
 				if (viewDrag != null) {
@@ -101,9 +103,12 @@ public class KKDragAndDropListView extends ListView {
 				if (viewDrag == null) {
 					int itemIndex = pointToPosition(x, y);
 					if (itemIndex != -1) {
-						ViewGroup item = (ViewGroup)getChildAt(itemIndex - getFirstVisiblePosition());
+						ViewGroup item = (ViewGroup) getChildAt(itemIndex - getFirstVisiblePosition());
 						listViewItemHeight = item.getHeight();
-						dragPoint = (int)ev.getRawY() - y + item.getTop() - y;
+						listViewItemHeightExpanded = listViewItemHeight * 2;
+						listViewItemPaddingTop = item.getPaddingTop();
+						listViewItemPaddingBottom = item.getPaddingBottom();
+						dragPoint = (int) ev.getRawY() - y + item.getTop() - y;
 						View dragger = item.findViewById(grabberId);
 						if ((dragger.getLeft() < x) && (x < dragger.getRight())) {
 							item.destroyDrawingCache();
@@ -115,25 +120,10 @@ public class KKDragAndDropListView extends ListView {
 							KKImageManager.autoRecycleViewSourceBitmap(viewDrag);
 							windowManager.addView(viewDrag, dragViewParams);
 							ListAdapter adapter = getAdapter();
-							movingObject = ((ReorderListAdapter)adapter).removeAtPosition(itemIndex);
+							movingObject = ((ReorderListAdapter) adapter).removeAtPosition(itemIndex);
 							upperBound = Math.min(y, height / 3);
 							lowerBound = Math.max(y, height * 2 / 3);
-							if (adapter.getCount() > 0) {
-								if (itemIndex == ((ReorderListAdapter) adapter).getCount()) {
-									itemIndex--;
-									layoutExpanded = (LinearLayout) getChildAt(itemIndex - getFirstVisiblePosition());
-									layoutExpanded.setGravity(Gravity.TOP);
-									isLastItem = true;
-								} else {
-									layoutExpanded = (LinearLayout) getChildAt(itemIndex - getFirstVisiblePosition());
-									layoutExpanded.setGravity(Gravity.BOTTOM);
-									isLastItem = false;
-								}
-								ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
-								viewParams.height = listViewItemHeight * 2;
-								layoutExpanded.setLayoutParams(viewParams);
-								expandedViewIndex = itemIndex;
-							}
+							createExpandView(itemIndex);
 							return true;
 						} else {
 							break;
@@ -178,22 +168,7 @@ public class KKDragAndDropListView extends ListView {
 								}
 							}
 						}
-						if (getAdapter().getCount() > 0) {
-							layoutExpanded = (LinearLayout) getChildAt(itemIndex - getFirstVisiblePosition());
-							if (layoutExpanded == null) {
-								itemIndex--;
-								layoutExpanded = (LinearLayout) getChildAt(itemIndex - getFirstVisiblePosition());
-								layoutExpanded.setGravity(Gravity.TOP);
-								isLastItem = true;
-							} else {
-								layoutExpanded.setGravity(Gravity.BOTTOM);
-								isLastItem = false;
-							}
-							ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
-							viewParams.height = listViewItemHeight * 2;
-							layoutExpanded.setLayoutParams(viewParams);
-							expandedViewIndex = itemIndex;
-						}
+						createExpandView(itemIndex);
 					}
 					dragViewParams.y = y + dragPoint;
 					windowManager.updateViewLayout(viewDrag, dragViewParams);
@@ -208,8 +183,45 @@ public class KKDragAndDropListView extends ListView {
 			ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
 			viewParams.height = listViewItemHeight;
 			layoutExpanded.setLayoutParams(viewParams);
+			layoutExpanded.setPadding(
+					layoutExpanded.getPaddingLeft(),
+					listViewItemPaddingTop,
+					layoutExpanded.getPaddingRight(),
+					listViewItemPaddingBottom
+			);
 			layoutExpanded = null;
 		}
 		expandedViewIndex = -1;
 	}
+
+	private void createExpandView(int itemIndex) {
+		int count = ((ReorderListAdapter) getAdapter()).getCount();
+		if (count > 0) {
+			layoutExpanded = getChildAt(itemIndex - getFirstVisiblePosition());
+			if (layoutExpanded == null || itemIndex == count) {
+				itemIndex--;
+				layoutExpanded = getChildAt(itemIndex - getFirstVisiblePosition());
+				layoutExpanded.setPadding(
+						layoutExpanded.getPaddingLeft(),
+						listViewItemPaddingTop,
+						layoutExpanded.getPaddingRight(),
+						listViewItemPaddingBottom + listViewItemHeight
+				);
+				isLastItem = true;
+			} else {
+				layoutExpanded.setPadding(
+						layoutExpanded.getPaddingLeft(),
+						listViewItemPaddingTop + listViewItemHeight,
+						layoutExpanded.getPaddingRight(),
+						listViewItemPaddingBottom
+				);
+				isLastItem = false;
+			}
+			ViewGroup.LayoutParams viewParams = layoutExpanded.getLayoutParams();
+			viewParams.height = listViewItemHeightExpanded;
+			layoutExpanded.setLayoutParams(viewParams);
+			expandedViewIndex = itemIndex;
+		}
+	}
+
 }

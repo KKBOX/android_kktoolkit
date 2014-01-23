@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import com.kkbox.toolkit.app.KKListFragment;
 import com.kkbox.toolkit.example.R;
 import com.kkbox.toolkit.example.SampleUtil;
-import com.kkbox.toolkit.ui.KKListFragment;
 
 public class ExampleCityListFragment extends KKListFragment {
 
