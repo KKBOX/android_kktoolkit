@@ -86,7 +86,12 @@ public abstract class APIBase {
 		}
 	}
 
+	//TODO: Use onHttpStatusErrorWithMessage to replace onHttpStatusError
 	protected void onAPIHttpStatusError(int statusCode) {
+		onAPIError(ErrorCode.UNKNOWN_SERVER_ERROR);
+	}
+
+	protected void onAPIHttpStatusErrorWithMessage(int statusCode, String data) {
 		onAPIError(ErrorCode.UNKNOWN_SERVER_ERROR);
 	}
 
