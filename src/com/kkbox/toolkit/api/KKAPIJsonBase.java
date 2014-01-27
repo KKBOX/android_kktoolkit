@@ -56,6 +56,14 @@ public abstract class KKAPIJsonBase extends APIBase {
 		}
 
 		@Override
+		public void onHttpStatusError(int statusCode, String content) {
+			if (!isResponseSilent) {
+				onAPIHttpStatusError(statusCode, content);
+			}
+			isRunning = false;
+		}
+
+		@Override
 		public void onStreamPreComplete(InputStream inputStream) throws UnsupportedEncodingException, IOException {
 			if (Build.VERSION.SDK_INT >= 11) {
 				JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));

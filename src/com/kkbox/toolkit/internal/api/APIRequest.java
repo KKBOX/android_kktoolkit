@@ -67,6 +67,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 	private HttpClient httpclient;
 	private boolean isNetworkError = false;
 	private boolean isHttpStatusError = false;
+	private String httpStatusErrorMessage = "";
 	private int httpStatusCode = 0;
 	private ArrayList<NameValuePair> postParams;
 	private ArrayList<NameValuePair> headerParams;
@@ -179,6 +180,27 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 
 	protected abstract void parseInputStream(InputStream inputStream, Cipher cipher) throws IOException, BadPaddingException, IllegalBlockSizeException;
 
+	private InputStream getInputStreamFromHttpResponse() throws IOException {
+		InputStream inputStream;
+		Header contentEncoding = response.getFirstHeader("Content-Encoding");
+		if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
+			byte[] inputStreamBuffer = new byte[8192];
+			int length;
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(
+					EntityUtils.toByteArray(response.getEntity())));
+			while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
+				byteArrayOutputStream.write(inputStreamBuffer, 0, length);
+			}
+			inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+			gZIPInputStream.close();
+			byteArrayOutputStream.close();
+		} else {
+			inputStream = response.getEntity().getContent();
+		}
+		return inputStream;
+	}
+
 	@Override
 	public Void doInBackground(Object... params) {
 		int readLength;
@@ -251,26 +273,12 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 					int httpStatusType = httpStatusCode / 100;
 					switch (httpStatusType) {
 						case 2:
-							Header contentEncoding = response.getFirstHeader("Content-Encoding");
-							if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
-								byte[] inputStreamBuffer = new byte[8192];
-								int length;
-								ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-								GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(
-										EntityUtils.toByteArray(response.getEntity())));
-								while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
-									byteArrayOutputStream.write(inputStreamBuffer, 0, length);
-								}
-								is = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-								gZIPInputStream.close();
-								byteArrayOutputStream.close();
-							} else {
-								is = response.getEntity().getContent();
-							}
+							is = getInputStreamFromHttpResponse();
 							isNetworkError = false;
 							break;
 						case 4:
 							KKDebug.w("Get client error " + httpStatusCode + " with connection : " + url + getParams);
+							is = getInputStreamFromHttpResponse();
 							isHttpStatusError = true;
 							isNetworkError = false;
 							break;
@@ -293,6 +301,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 					SystemClock.sleep(1000);
 				}
 			} while (isNetworkError && retryTimes < 3);
+
 			try {
 				if (!isNetworkError && !isHttpStatusError && listener != null) {
 					if (cacheTimeOut > 0) {
@@ -305,6 +314,13 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 					} else {
 						parseInputStream(is, cipher);
 					}
+				} else if (isHttpStatusError) {
+					ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+					while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+						byteArrayOutputStream.write(buffer, 0, readLength);
+					}
+					byteArrayOutputStream.flush();
+					httpStatusErrorMessage = byteArrayOutputStream.toString();
 				}
 				response.getEntity().consumeContent();
 			} catch (IOException e) {
@@ -320,6 +336,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 			return;
 		}
 		if (isHttpStatusError) {
+			listener.onHttpStatusError(httpStatusCode, httpStatusErrorMessage);
 			listener.onHttpStatusError(httpStatusCode);
 		} else if (isNetworkError) {
 			listener.onNetworkError();
