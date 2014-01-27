@@ -40,7 +40,6 @@ public abstract class KKAPIBase extends APIBase {
 			isRunning = false;
 		}
 
-		//TODO: Use onHttpStatusErrorWithMessage to replace onHttpStatusError
 		@Override
 		public void onHttpStatusError(int statusCode) {
 			if (!isResponseSilent) {
@@ -50,9 +49,9 @@ public abstract class KKAPIBase extends APIBase {
 		}
 
 		@Override
-		public void onHttpStatusErrorWithMessage(int statusCode, String data) {
+		public void onHttpStatusError(int statusCode, String content) {
 			if (!isResponseSilent) {
-				onAPIHttpStatusErrorWithMessage(statusCode, data);
+				onAPIHttpStatusError(statusCode, content);
 			}
 			isRunning = false;
 		}
