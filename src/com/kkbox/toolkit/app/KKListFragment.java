@@ -27,9 +27,6 @@ public abstract class KKListFragment extends KKFragment {
 	public KKListView getKKListView() {
 		return (KKListView)delegate.getListView();
 	}
-	public KKDragAndDropListView getKKDragAndDropListView() {
-		return (KKDragAndDropListView)delegate.getListView();
-	}
 
 	@Override
 	protected void onLoadUI() {

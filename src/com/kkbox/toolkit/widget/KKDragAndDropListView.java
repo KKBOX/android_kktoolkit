@@ -26,12 +26,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.kkbox.toolkit.image.KKImageManager;
 
-public class KKDragAndDropListView extends ListView {
+public class KKDragAndDropListView extends KKListView {
 	private Object movingObject;
 	private ImageView viewDrag;
 	private View layoutExpanded;
