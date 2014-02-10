@@ -14,33 +14,36 @@
  */
 package com.kkbox.toolkit.dialog;
 
-
 public class KKDialogFactory {
 
-	public static KKServiceDialog createAlertDialog(int notificationId, String title, String message, String positiveButtonText,
-			KKDialogPostExecutionListener listener) {
+	public static KKServiceDialog createAlertDialog(int notificationId, CharSequence title, CharSequence message,
+	                                                CharSequence positiveButtonText,
+	                                                KKDialogPostExecutionListener listener) {
 		KKServiceDialog dialog = new KKServiceDialog();
 		dialog.setContent(notificationId, title, message, positiveButtonText, "", "", KKServiceDialog.Type.ALERT_DIALOG, listener);
 		return dialog;
 	}
 
-	public static KKServiceDialog createYesOrNoDialog(int notificationId, String title, String message, String positiveButtonText, String negativeButtonText,
-			KKDialogPostExecutionListener listener) {
+	public static KKServiceDialog createYesOrNoDialog(int notificationId, CharSequence title, CharSequence message,
+	                                                  CharSequence positiveButtonText, CharSequence negativeButtonText,
+	                                                  KKDialogPostExecutionListener listener) {
 		KKServiceDialog dialog = new KKServiceDialog();
-		dialog.setContent(notificationId, title, message, positiveButtonText, negativeButtonText, "", KKServiceDialog.Type.YES_OR_NO_DIALOG,
-				listener);
+		dialog.setContent(notificationId, title, message, positiveButtonText, negativeButtonText, "",
+				KKServiceDialog.Type.YES_OR_NO_DIALOG, listener);
 		return dialog;
 	}
 
-	public static KKServiceDialog createThreeChoiceDialog(int notificationId, String title, String message, String positiveButtonText, String neutralButtonText,
-			String negativeButtonText, KKDialogPostExecutionListener listener) {
+	public static KKServiceDialog createThreeChoiceDialog(int notificationId, CharSequence title, CharSequence message,
+	                                                      CharSequence positiveButtonText, CharSequence neutralButtonText,
+	                                                      CharSequence negativeButtonText, KKDialogPostExecutionListener listener) {
 		KKServiceDialog dialog = new KKServiceDialog();
 		dialog.setContent(notificationId, title, message, positiveButtonText, negativeButtonText, neutralButtonText,
 				KKServiceDialog.Type.THREE_CHOICE_DIALOG, listener);
 		return dialog;
 	}
 
-	public static KKServiceDialog createProgressingDialog(int notificationId, String message, KKDialogPostExecutionListener listener) {
+	public static KKServiceDialog createProgressingDialog(int notificationId, CharSequence message,
+	                                                      KKDialogPostExecutionListener listener) {
 		KKServiceDialog dialog = new KKServiceDialog();
 		dialog.setContent(notificationId, "", message, "", "", "", KKServiceDialog.Type.PROGRESSING_DIALOG, listener);
 		return dialog;

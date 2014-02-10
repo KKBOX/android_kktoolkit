@@ -20,8 +20,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-
-import com.kkbox.toolkit.KKService;
+import android.view.ContextThemeWrapper;
 
 public class KKDialog extends DialogFragment {
 	public abstract class Type {
@@ -33,12 +32,13 @@ public class KKDialog extends DialogFragment {
 
 	private KKDialogPostExecutionListener listener;
 	private int notificationId;
-	private String title;
-	private String message;
-	private String positiveButtonText;
-	private String negativeButtonText;
-	private String neutralButtonText;
+	private CharSequence title;
+	private CharSequence message;
+	private CharSequence positiveButtonText;
+	private CharSequence negativeButtonText;
+	private CharSequence neutralButtonText;
 	private int dialogType;
+	private int theme = -1;
 
 	public int getNotificationId() {
 		return notificationId;
@@ -46,8 +46,9 @@ public class KKDialog extends DialogFragment {
 
 	public KKDialog() {}
 
-	public void setContent(int notificationId, String title, String message, String positiveButtonText, String negativeButtonText,
-			String neutralButtonText, int dialogType, KKDialogPostExecutionListener listener) {
+	public void setContent(int notificationId, CharSequence title, CharSequence message, CharSequence positiveButtonText,
+	                       CharSequence negativeButtonText, CharSequence neutralButtonText, int dialogType,
+	                       KKDialogPostExecutionListener listener) {
 		this.notificationId = notificationId;
 		this.title = title;
 		this.message = message;
@@ -56,6 +57,10 @@ public class KKDialog extends DialogFragment {
 		this.neutralButtonText = neutralButtonText;
 		this.dialogType = dialogType;
 		this.listener = listener;
+	}
+
+	public void setTheme(int theme) {
+		this.theme = theme;
 	}
 
 	public int getDialogType() {
@@ -107,7 +112,12 @@ public class KKDialog extends DialogFragment {
 
 		switch (dialogType) {
 			case Type.PROGRESSING_DIALOG:
-				ProgressDialog dialog = new ProgressDialog(getActivity());
+				ProgressDialog dialog;
+				if (theme != -1) {
+					dialog = new ProgressDialog(getActivity(), theme);
+				} else {
+					dialog = new ProgressDialog(getActivity());
+				}
 				dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				dialog.setMessage(message);
 				dialog.setIndeterminate(true);
@@ -115,13 +125,22 @@ public class KKDialog extends DialogFragment {
 				dialog.setCancelable(listener != null);
 				return dialog;
 			case Type.ALERT_DIALOG:
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				AlertDialog.Builder builder;
+				if (theme != -1) {
+					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
+				} else {
+					builder = new AlertDialog.Builder(getActivity());
+				}
 				builder.setMessage(message);
 				builder.setTitle(title);
 				builder.setPositiveButton(positiveButtonText, positiveListener);
 				return builder.create();
 			case Type.THREE_CHOICE_DIALOG:
-				builder = new AlertDialog.Builder(getActivity());
+				if (theme != -1) {
+					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
+				} else {
+					builder = new AlertDialog.Builder(getActivity());
+				}
 				builder.setMessage(message);
 				builder.setTitle(title);
 				builder.setPositiveButton(positiveButtonText, positiveListener);
@@ -129,7 +148,11 @@ public class KKDialog extends DialogFragment {
 				builder.setNegativeButton(negativeButtonText, negativeListener);
 				return builder.create();
 			case Type.YES_OR_NO_DIALOG:
-				builder = new AlertDialog.Builder(getActivity());
+				if (theme != -1) {
+					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
+				} else {
+					builder = new AlertDialog.Builder(getActivity());
+				}
 				builder.setMessage(message);
 				builder.setTitle(title);
 				builder.setPositiveButton(positiveButtonText, positiveListener);
