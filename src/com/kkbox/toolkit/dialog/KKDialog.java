@@ -20,7 +20,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
+import android.view.View;
 
 public class KKDialog extends DialogFragment {
 	public abstract class Type {
@@ -28,6 +30,7 @@ public class KKDialog extends DialogFragment {
 		public static final int YES_OR_NO_DIALOG = 1;
 		public static final int THREE_CHOICE_DIALOG = 2;
 		public static final int PROGRESSING_DIALOG = 3;
+		public static final int CUSTOMIZE_DIALOG = 4;
 	}
 
 	private KKDialogPostExecutionListener listener;
@@ -39,6 +42,7 @@ public class KKDialog extends DialogFragment {
 	private CharSequence neutralButtonText;
 	private int dialogType;
 	private int theme = -1;
+	private View customizeView;
 
 	public int getNotificationId() {
 		return notificationId;
@@ -57,6 +61,17 @@ public class KKDialog extends DialogFragment {
 		this.neutralButtonText = neutralButtonText;
 		this.dialogType = dialogType;
 		this.listener = listener;
+	}
+
+	public void setCustomizeDialog(int notificationId, CharSequence positiveButtonText, CharSequence negativeButtonText,
+								CharSequence neutralButtonText, KKDialogPostExecutionListener listener, View customizeView) {
+		this.notificationId = notificationId;
+		this.positiveButtonText = positiveButtonText;
+		this.negativeButtonText = negativeButtonText;
+		this.neutralButtonText = neutralButtonText;
+		this.dialogType = Type.CUSTOMIZE_DIALOG;
+		this.listener = listener;
+		this.customizeView = customizeView;
 	}
 
 	public void setTheme(int theme) {
@@ -157,6 +172,23 @@ public class KKDialog extends DialogFragment {
 				builder.setTitle(title);
 				builder.setPositiveButton(positiveButtonText, positiveListener);
 				builder.setNegativeButton(negativeButtonText, negativeListener);
+				return builder.create();
+			case Type.CUSTOMIZE_DIALOG:
+				if (theme != -1) {
+					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
+				} else {
+					builder = new AlertDialog.Builder(getActivity());
+				}
+				if (!TextUtils.isEmpty(positiveButtonText)) {
+					builder.setPositiveButton(positiveButtonText, positiveListener);
+				}
+				if (!TextUtils.isEmpty(neutralButtonText)) {
+					builder.setNeutralButton(neutralButtonText, neutralListener);
+				}
+				if (!TextUtils.isEmpty(negativeButtonText)) {
+					builder.setNegativeButton(negativeButtonText, negativeListener);
+				}
+				builder.setView(customizeView);
 				return builder.create();
 		}
 		return null;
