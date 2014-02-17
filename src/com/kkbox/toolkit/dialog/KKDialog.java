@@ -200,10 +200,10 @@ public class KKDialog extends DialogFragment {
 				builder.setTitle(title);
 				builder.setSingleChoiceItems(entries, selectedIndex, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						onDialogFinishedByUser();
 						if (listener != null) {
 							listener.onEvent(id);
 						}
+						onDialogFinishedByUser();
 					}
 				});
 				builder.setNegativeButton(negativeButtonText, negativeListener);
