@@ -14,6 +14,7 @@
  */
 package com.kkbox.toolkit.dialog;
 
+import android.support.v4.app.FragmentActivity;
 
 import com.kkbox.toolkit.internal.dialog.KKDialogManagerListener;
 
@@ -67,7 +68,7 @@ public class KKDialogManager {
 		return isDialogOnShown;
 	}
 	
-	void dismissCurrentDialog() {
+	public void dismissCurrentDialog() {
 		isDialogOnShown = false;
 		dialogs.remove(0);
 		showDialog();
@@ -81,5 +82,18 @@ public class KKDialogManager {
 			isDialogOnShown = true;
 			listener.onNotification(dialogs.get(0));
 		}
+	}
+
+	public FragmentActivity getCurrentDialogActivity() {
+		return dialogs.get(0).getActivity();
+	}
+
+	public boolean isNotificationExists(int dialogID) {
+		for (KKDialog dialog : dialogs) {
+			if (dialog.getNotificationId() == dialogID) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
