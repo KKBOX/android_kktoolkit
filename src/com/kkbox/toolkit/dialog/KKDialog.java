@@ -30,7 +30,8 @@ public class KKDialog extends DialogFragment {
 		public static final int YES_OR_NO_DIALOG = 1;
 		public static final int THREE_CHOICE_DIALOG = 2;
 		public static final int PROGRESSING_DIALOG = 3;
-		public static final int CUSTOMIZE_DIALOG = 4;
+		public static final int SELECT_DIALOG = 4;
+		public static final int CUSTOMIZE_DIALOG = 5;
 	}
 
 	private KKDialogPostExecutionListener listener;
@@ -41,6 +42,8 @@ public class KKDialog extends DialogFragment {
 	private CharSequence negativeButtonText;
 	private CharSequence neutralButtonText;
 	private int dialogType;
+	private String[] entries;
+	private int selectedIndex;
 	private int theme = -1;
 	private View customizeView;
 
@@ -63,9 +66,23 @@ public class KKDialog extends DialogFragment {
 		this.listener = listener;
 	}
 
-	public void setCustomizeDialog(int notificationId, CharSequence positiveButtonText, CharSequence negativeButtonText,
+	public void setSelectContent(int notificationId, CharSequence title, CharSequence negativeButtonText,
+	                             String[] entries, int selectedIndex, KKDialogPostExecutionListener listener) {
+		this.notificationId = notificationId;
+		this.title = title;
+		this.positiveButtonText = "";
+		this.negativeButtonText = negativeButtonText;
+		this.neutralButtonText = "";
+		this.dialogType = Type.SELECT_DIALOG;
+		this.listener = listener;
+		this.entries = entries;
+		this.selectedIndex = selectedIndex;
+	}
+
+	public void setCustomizeDialog(int notificationId, CharSequence title, CharSequence positiveButtonText, CharSequence negativeButtonText,
 								CharSequence neutralButtonText, KKDialogPostExecutionListener listener, View customizeView) {
 		this.notificationId = notificationId;
+		this.title = title;
 		this.positiveButtonText = positiveButtonText;
 		this.negativeButtonText = negativeButtonText;
 		this.neutralButtonText = neutralButtonText;
@@ -173,11 +190,34 @@ public class KKDialog extends DialogFragment {
 				builder.setPositiveButton(positiveButtonText, positiveListener);
 				builder.setNegativeButton(negativeButtonText, negativeListener);
 				return builder.create();
+			case Type.SELECT_DIALOG:
+				if (theme != -1) {
+					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
+				} else {
+					builder = new AlertDialog.Builder(getActivity());
+				}
+				builder.setMessage(message);
+				builder.setTitle(title);
+				builder.setSingleChoiceItems(entries, selectedIndex, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						if (listener != null) {
+							listener.onEvent(id);
+						}
+						onDialogFinishedByUser();
+					}
+				});
+				builder.setNegativeButton(negativeButtonText, negativeListener);
+				return builder.create();
 			case Type.CUSTOMIZE_DIALOG:
 				if (theme != -1) {
 					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
 				} else {
 					builder = new AlertDialog.Builder(getActivity());
+				}
+				builder.setView(customizeView);
+
+				if (!TextUtils.isEmpty(title)) {
+					builder.setTitle(title);
 				}
 				if (!TextUtils.isEmpty(positiveButtonText)) {
 					builder.setPositiveButton(positiveButtonText, positiveListener);
@@ -188,7 +228,6 @@ public class KKDialog extends DialogFragment {
 				if (!TextUtils.isEmpty(negativeButtonText)) {
 					builder.setNegativeButton(negativeButtonText, negativeListener);
 				}
-				builder.setView(customizeView);
 				return builder.create();
 		}
 		return null;

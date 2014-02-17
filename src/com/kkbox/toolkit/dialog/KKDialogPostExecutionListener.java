@@ -22,4 +22,6 @@ public abstract class KKDialogPostExecutionListener {
 	public void onNegative() {};
 
 	public void onCancel() {};
+
+	public void onEvent(Object object) {}
 }
