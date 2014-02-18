@@ -259,26 +259,23 @@ public class KKImageManager {
 				}
 			}
 		}
-		File cacheFile = null;
-		if (url != null) {
-			String cachePath = getTempImagePath(context, url);
-			cacheFile = new File(cachePath);
-		}
-		if (defaultResourceId > 0) {
-			if (cacheFile == null || !cacheFile.exists()) {
-				if (updateBackground) {
-					view.setBackgroundResource(defaultResourceId);
-				} else {
-					ImageView imageView = (ImageView) view;
-					imageView.setImageResource(defaultResourceId);
-				}
+		Bitmap bitmap = loadCache(url, localPath);
+		if (bitmap != null) {
+			if (updateBackground) {
+				view.setBackgroundDrawable(new BitmapDrawable(context.getResources(), bitmap));
+				autoRecycleViewBackgroundBitmap(view);
 			} else {
-				if (updateBackground) {
-					view.setBackgroundResource(0);
-				} else {
-					ImageView imageView = (ImageView) view;
-					imageView.setImageResource(0);
-				}
+				ImageView imageView = (ImageView) view;
+				imageView.setImageBitmap(bitmap);
+				autoRecycleViewSourceBitmap(imageView);
+			}
+			return;
+		} else if (defaultResourceId > 0) {
+			if (updateBackground) {
+				view.setBackgroundResource(defaultResourceId);
+			} else {
+				ImageView imageView = (ImageView) view;
+				imageView.setImageResource(defaultResourceId);
 			}
 		}
 		if (url != null) {
