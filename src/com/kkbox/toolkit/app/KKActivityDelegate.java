@@ -66,12 +66,12 @@ public class KKActivityDelegate {
 
 	private final KKServiceListener serviceListener = new KKServiceListener() {
 		@Override
-		public void onStarted() {
-			if (serviceLoadingDialog != null) {
+		public void onRunning(int flag) {
+			if (serviceLoadingDialog != null && serviceLoadingDialog.isShowing()) {
 				serviceLoadingDialog.dismiss();
 			}
 			KKService.getDialogNotificationManager().setListener(dialogNotificationListener);
-			((KKServiceActivity) activity).onServiceStarted();
+			((KKServiceActivity) activity).onServiceStarted(flag);
 		}
 	};
 
@@ -80,7 +80,7 @@ public class KKActivityDelegate {
 	}
 
 	public void startActivityIfNoDialog(Intent intent) {
-		if (!KKService.getDialogNotificationManager().isDialogOnShown()) {
+		if (KKService.getDialogNotificationManager() == null || !KKService.getDialogNotificationManager().isDialogOnShown()) {
 			activity.startActivity(intent);
 		} else {
 			nextActivityIntent = intent;
@@ -89,7 +89,7 @@ public class KKActivityDelegate {
 	}
 
 	public void finishIfNoDialog() {
-		if (!KKService.getDialogNotificationManager().isDialogOnShown()) {
+		if (KKService.getDialogNotificationManager() == null || !KKService.getDialogNotificationManager().isDialogOnShown()) {
 			activity.finish();
 		} else {
 			finishActivityAfterShowingNotification = true;
@@ -97,7 +97,7 @@ public class KKActivityDelegate {
 	}
 
 	public void startActivityForResultIfNoDialog(Intent intent, int requestCode) {
-		if (!KKService.getDialogNotificationManager().isDialogOnShown()) {
+		if (KKService.getDialogNotificationManager() == null || !KKService.getDialogNotificationManager().isDialogOnShown()) {
 			activity.startActivityForResult(intent, requestCode);
 		} else {
 			nextActivityIntent = intent;
@@ -123,6 +123,9 @@ public class KKActivityDelegate {
 	}
 
 	public void onPause() {
+		if (serviceLoadingDialog != null && serviceLoadingDialog.isShowing()) {
+			serviceLoadingDialog.dismiss();
+		}
 		if (KKService.isRunning()) {
 			KKService.getDialogNotificationManager().removeListener();
 		}

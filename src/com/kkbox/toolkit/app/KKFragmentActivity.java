@@ -62,8 +62,11 @@ public class KKFragmentActivity extends FragmentActivity implements KKServiceAct
 	}
 
 	@Override
-	public void onServiceStarted() {}
-	
+	public void onServiceStarted(int flag) {}
+
+	@Override
+	public void onServiceStarting(int flag) {}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

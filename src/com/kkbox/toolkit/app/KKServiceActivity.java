@@ -22,7 +22,9 @@ public interface KKServiceActivity {
 
 	public void deactivateSubFragment(KKFragment fragment);
 
-	public void onServiceStarted();
+	public void onServiceStarted(int flag);
+	
+	public void onServiceStarting(int flag);
 
 	public void sendMessageToActiveSubFragments(Bundle arguments);
 
