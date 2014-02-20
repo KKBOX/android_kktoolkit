@@ -73,6 +73,11 @@ public class KKActivityDelegate {
 			KKService.getDialogNotificationManager().setListener(dialogNotificationListener);
 			((KKServiceActivity) activity).onServiceStarted(flag);
 		}
+		
+		@Override
+		public void onProgress(int flag) {
+			((KKServiceActivity) activity).onServiceStarting(flag);
+		}
 	};
 
 	public KKActivityDelegate(FragmentActivity activity) {
