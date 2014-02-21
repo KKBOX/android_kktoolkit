@@ -203,6 +203,7 @@ public class KKDialog extends DialogFragment {
 						if (listener != null) {
 							listener.onEvent(id);
 						}
+						dismiss();
 						onDialogFinishedByUser();
 					}
 				});
