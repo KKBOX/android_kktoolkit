@@ -65,7 +65,7 @@ public abstract class KKService extends Service {
 		runningFlag = flag;
 	}
 
-	protected abstract void initServiceComponent(int runningFlag, KKEventQueue eventQueue);
+	protected abstract void initServiceComponent(KKEventQueue eventQueue);
 	
 	protected abstract void onPostCreate(int flag);
 
@@ -78,13 +78,13 @@ public abstract class KKService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		dialogNotificationManager = new KKDialogManager();
-		initServiceComponent(runningFlag, eventQueue);
+		initServiceComponent(eventQueue);
 		eventQueue.setListener(eventQueuelistener);
 		eventQueue.start();
 	}
 
 	public void reInitServiceComponent() {
-		initServiceComponent(runningFlag, eventQueue);
+		initServiceComponent(eventQueue);
 		eventQueue.start();
 	}
 
