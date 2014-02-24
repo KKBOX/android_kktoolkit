@@ -59,7 +59,7 @@ public class KKMessageView extends RelativeLayout {
 		setCustomView(view);
 	}
 
-	public void setMultiTextView(String text, String description) {
+	public void setMultiTextView(String text, CharSequence description) {
 		View view = LayoutInflater.from(context).inflate(R.layout.layout_empty_multi_text, null);
 		TextView labelText = (TextView)view.findViewById(R.id.label_text);
 		labelText.setText(text);
