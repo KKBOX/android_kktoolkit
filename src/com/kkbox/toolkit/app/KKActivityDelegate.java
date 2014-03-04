@@ -133,8 +133,8 @@ public class KKActivityDelegate {
 	}
 
 	public void sendMessageToActiveSubFragments(Bundle arguments) {
-		for (KKFragment fragment : activeSubFragments) {
-			fragment.onReceiveMessage(arguments);
+		for (int i = 0; i < activeSubFragments.size(); i++) {
+			activeSubFragments.get(i).onReceiveMessage(arguments);
 		}
 	}
 
