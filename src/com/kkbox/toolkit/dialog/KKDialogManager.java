@@ -70,9 +70,7 @@ public class KKDialogManager {
 	
 	public void dismissCurrentDialog() {
 		isDialogOnShown = false;
-		if (!dialogs.isEmpty()) {
-			dialogs.remove(0);
-		}
+		dialogs.remove(0);
 		showDialog();
 		if (!isDialogOnShown && listener != null) {
 			listener.onAllNotificationEnded();
