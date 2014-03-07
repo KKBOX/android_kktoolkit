@@ -96,8 +96,10 @@ public class KKDebug {
 		runningTimestamp = System.currentTimeMillis();
 	}
 	
-	public static void printRunningTime(Object msg) {
-		KKDebug.i(msg + " running time: " + (System.currentTimeMillis() - runningTimestamp));
+	public static long printRunningTime(Object msg) {
+		long timeLength = System.currentTimeMillis() - runningTimestamp;
+		KKDebug.i(msg + " running time: " + timeLength);
+		return timeLength;
 	}
 
 	private static void writeLog(String msg) {
