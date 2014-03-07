@@ -27,6 +27,22 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class StringUtils {
+
+	private static final String[] NON_PRINTABLE_CHARS = { "\\x00", "\\x01", "\\x02", "\\x03", "\\x04", "\\x05", "\\x06", "\\a",
+														  "\\b",   "\\t",   "\\n",   "\\v",   "\\f",   "\\r",   "\\x0e", "\\x0f",
+														  "\\x10", "\\x11", "\\x12", "\\x13", "\\x14", "\\x15", "\\x16", "\\x17",
+														  "\\x18", "\\x19", "\\x1a", "\\x1b", "\\x1c", "\\x1d", "\\x1e", "\\x1f" };
+
+	public static boolean isPrintableChars(final String string) {
+		for (int i = 0; i < string.length(); i++) {
+			char c = string.charAt(i);
+			if ((c < NON_PRINTABLE_CHARS.length) || (c == '\\')) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static String reverseString(String toReverse) {
 		final StringBuffer buffer = new StringBuffer(toReverse);
 		return buffer.reverse().toString();
