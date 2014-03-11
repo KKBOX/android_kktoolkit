@@ -17,6 +17,7 @@ package com.kkbox.toolkit.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -55,6 +56,10 @@ public class KKListView extends ListView {
 
 	public void setLoadMore(OnLoadMoreListener onLoadMoreListener) {
 		delegate.setLoadMore(onLoadMoreListener);
+	}
+
+	public void setParallaxedHeaderView(View view) {
+		delegate.setParallaxedHeaderView(view);
 	}
 
 	@Override

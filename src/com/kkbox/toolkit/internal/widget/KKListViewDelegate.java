@@ -15,12 +15,14 @@
 package com.kkbox.toolkit.internal.widget;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,6 +44,26 @@ public class KKListViewDelegate {
 		public static final int LOADING_MORE = 4;
 	}
 
+	private ProgressBar progressPullToRefresh;
+	private View refreshHeaderView;
+	private View footerView;
+	private boolean footerViewAdded = false;
+	private TextView labelPullToRefresh;
+	private TextView labelPullToRefreshUpdatedAt;
+	private ImageView viewPullToRefresh;
+	private RotateAnimation animationFlip;
+	private KKListViewOnRefreshListener onRefreshListener;
+	private KKListViewOnLoadMoreListener onLoadMoreListener;
+	private int refreshHeaderhViewOriginHeight = 0;
+	private int firstItemToTopHeight = 0;
+	private float actionDownY = 0;
+	private int currentState = State.NORMAL;
+	private boolean headerViewIsFirstItem = false;
+	private Context context;
+	private ListView listView;
+	private View parallaxedHeaderView;
+	private int parallaxedHeaderViewLastOffset;
+
 	private final ListView.OnScrollListener onScrollListener = new ListView.OnScrollListener() {
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {}
@@ -60,26 +82,27 @@ public class KKListViewDelegate {
 					updateState(State.LOADING_MORE);
 				}
 			}
+			if (parallaxedHeaderView != null && listView.getChildCount() > 0) {
+				int top;
+				if (onRefreshListener != null && firstItemToTopHeight != 0) {
+					top = -listView.getChildAt(1).getTop() + firstItemToTopHeight ;
+				} else {
+					top = -listView.getChildAt(0).getTop() ;
+				}
+				int offset = (int) (top / 1.6f);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+					parallaxedHeaderView.setTranslationY(offset);
+				} else {
+					TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, parallaxedHeaderViewLastOffset, offset);
+					translateAnimation.setDuration(0);
+					translateAnimation.setFillAfter(true);
+					parallaxedHeaderView.setAnimation(translateAnimation);
+					translateAnimation.start();
+					parallaxedHeaderViewLastOffset = offset;
+				}
+			}
 		}
 	};
-
-	private ProgressBar progressPullToRefresh;
-	private View refreshHeaderView;
-	private View footerView;
-	private boolean footerViewAdded = false;
-	private TextView labelPullToRefresh;
-	private TextView labelPullToRefreshUpdatedAt;
-	private ImageView viewPullToRefresh;
-	private RotateAnimation animationFlip;
-	private KKListViewOnRefreshListener onRefreshListener;
-	private KKListViewOnLoadMoreListener onLoadMoreListener;
-	private int refreshHeaderhViewOriginHeight = 0;
-	private int firstItemToTopHeight = 0;
-	private float actionDownY = 0;
-	private int currentState = State.NORMAL;
-	private boolean headerViewIsFirstItem = false;
-	private Context context;
-	private ListView listView;
 
 	public KKListViewDelegate(Context context, ListView listView) {
 		this.context = context;
@@ -115,6 +138,11 @@ public class KKListViewDelegate {
 			footerViewAdded = true;
 		}
 		this.onLoadMoreListener = onLoadMoreListener;
+	}
+
+	public void setParallaxedHeaderView(View headerView) {
+		listView.addHeaderView(headerView);
+		parallaxedHeaderView = headerView;
 	}
 
 	private void updateState(int newState) {
