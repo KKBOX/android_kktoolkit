@@ -89,7 +89,7 @@ public class KKListViewDelegate {
 				} else {
 					top = -listView.getChildAt(0).getTop() ;
 				}
-				int offset = (int) (top / 1.6f);
+				int offset = (int) (top / 2.0f);
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 					parallaxedHeaderView.setTranslationY(offset);
 				} else {
