@@ -92,12 +92,14 @@ public class KKListViewDelegate {
 	public KKListViewDelegate(Context context, ListView listView) {
 		this.context = context;
 		this.listView = listView;
-		listView.setOnScrollListener(onScrollListener);
 	}
 
 	public void setOnScrollListener(ListView.OnScrollListener customScrollListener) {
 		this.customScrollListener = customScrollListener;
-		listView.setOnScrollListener(onScrollListener);
+	}
+
+	public ListView.OnScrollListener getKKScrollListener() {
+		return onScrollListener;
 	}
 
 	public void setPullToRefresh(KKListViewOnRefreshListener onRefreshListener) {
