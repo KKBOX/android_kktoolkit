@@ -47,6 +47,7 @@ public class KKListView extends ListView {
 	public KKListView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		delegate = new KKListViewDelegate(context, this);
+		super.setOnScrollListener(delegate.getKKScrollListener());
 	}
 
 	public void setPullToRefresh(OnRefreshListener onRefreshListener) {
@@ -81,6 +82,11 @@ public class KKListView extends ListView {
 	public void setAdapter(ListAdapter adapter) {
 		super.setAdapter(adapter);
 		delegate.setAdapter();
+	}
+
+	@Override
+	public void setOnScrollListener(OnScrollListener l) {
+		delegate.setOnScrollListener(l);
 	}
 
 	public void loadCompleted() {
