@@ -44,10 +44,17 @@ public class KKListViewDelegate {
 
 	private final ListView.OnScrollListener onScrollListener = new ListView.OnScrollListener() {
 		@Override
-		public void onScrollStateChanged(AbsListView view, int scrollState) {}
+		public void onScrollStateChanged(AbsListView view, int scrollState) {
+			if (customScrollListener != null) {
+				customScrollListener.onScrollStateChanged(view, scrollState);
+			}
+		}
 
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+			if (customScrollListener != null) {
+				customScrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+			}
 			if (onRefreshListener != null) {
 				headerViewIsFirstItem = (firstVisibleItem == 0) ? true : false;
 			}
@@ -80,10 +87,16 @@ public class KKListViewDelegate {
 	private boolean headerViewIsFirstItem = false;
 	private Context context;
 	private ListView listView;
+	private ListView.OnScrollListener customScrollListener;
 
 	public KKListViewDelegate(Context context, ListView listView) {
 		this.context = context;
 		this.listView = listView;
+		listView.setOnScrollListener(onScrollListener);
+	}
+
+	public void setOnScrollListener(ListView.OnScrollListener customScrollListener) {
+		this.customScrollListener = customScrollListener;
 		listView.setOnScrollListener(onScrollListener);
 	}
 

@@ -83,6 +83,10 @@ public class KKListView extends ListView {
 		delegate.setAdapter();
 	}
 
+	public void setKKScrollListener(OnScrollListener l) {
+		delegate.setOnScrollListener(l);
+	}
+
 	public void loadCompleted() {
 		delegate.loadCompleted();
 	}
