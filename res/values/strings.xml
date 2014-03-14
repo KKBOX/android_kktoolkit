@@ -21,8 +21,8 @@
     <string name="loading">Loading...</string>
     <string name="loading_error">An error occurred when retreiving list, please check your connection status.</string>
     <string name="no_data_available">No Data Available</string>
-    <string name="pull_down_to_resort">Pull down to resort …</string>
-    <string name="release_in_order_to_resort">Release in order to resort …</string>
+    <string name="pull_down_to_resort">Pull down to refresh...</string>
+    <string name="release_in_order_to_resort">Release to refresh...</string>
     <string name="updating">Updating...</string>
     <string name="search">Search</string>
 
