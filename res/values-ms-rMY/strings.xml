@@ -17,7 +17,7 @@
 <resources>
 
     <string name="app_name">kkbox_android_toolkit</string>
-    <string name="last_update">Terakhir dikemaskini: %@:</string>
+    <string name="last_update">Terakhir dikemaskini:</string>
     <string name="loading">Sedang dimuat turun</string>
     <string name="loading_error">An error occurred when retreiving list, please check your connection status.</string>
     <string name="no_data_available">No Data Available</string>
