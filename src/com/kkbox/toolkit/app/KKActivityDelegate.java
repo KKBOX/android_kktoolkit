@@ -61,7 +61,7 @@ public class KKActivityDelegate {
 		@Override
 		public void onNotification(final KKServiceDialog dialog) {
 			currentDialogFragment = dialog;
-			currentDialogFragment.show(activity.getSupportFragmentManager(), "alertDialog");
+			activity.getSupportFragmentManager().beginTransaction().add(currentDialogFragment, "alertDialog").commitAllowingStateLoss();
 		}
 	};
 
