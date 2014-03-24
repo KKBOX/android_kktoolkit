@@ -55,6 +55,7 @@ public class KKActivityDelegate {
 		@Override
 		public void onCancelNotification() {
 			currentDialogFragment.dismiss();
+			activity.getSupportFragmentManager().executePendingTransactions();
 		}
 
 		@Override

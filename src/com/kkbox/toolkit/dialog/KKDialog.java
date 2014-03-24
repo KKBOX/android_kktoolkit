@@ -23,6 +23,7 @@ import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 
 public class KKDialog extends DialogFragment {
 	public abstract class Type {
@@ -46,6 +47,7 @@ public class KKDialog extends DialogFragment {
 	private int selectedIndex;
 	private int theme = -1;
 	private View customizeView;
+	private boolean isDismissed = false;
 
 	public int getNotificationId() {
 		return notificationId;
@@ -102,10 +104,13 @@ public class KKDialog extends DialogFragment {
 	@Override
 	public void onCancel(DialogInterface dialog) {
 		super.onCancel(dialog);
-		if (listener != null) {
-			listener.onCancel();
+		if (!isDismissed) {
+			if (listener != null) {
+				listener.onCancel();
+			}
+			onDialogFinishedByUser();
+			isDismissed = true;
 		}
-		onDialogFinishedByUser();
 	}
 
 	protected void onDialogFinishedByUser() {}
@@ -115,30 +120,39 @@ public class KKDialog extends DialogFragment {
 		DialogInterface.OnClickListener positiveListener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
-				if (listener != null) {
-					listener.onPositive();
+				if (!isDismissed) {
+					if (listener != null) {
+						listener.onPositive();
+					}
+					onDialogFinishedByUser();
+					isDismissed = true;
 				}
-				onDialogFinishedByUser();
 			}
 		};
 
 		DialogInterface.OnClickListener neutralListener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
-				if (listener != null) {
-					listener.onNeutral();
+				if (!isDismissed) {
+					if (listener != null) {
+						listener.onNeutral();
+					}
+					onDialogFinishedByUser();
+					isDismissed = true;
 				}
-				onDialogFinishedByUser();
 			}
 		};
 
 		DialogInterface.OnClickListener negativeListener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
-				if (listener != null) {
-					listener.onNegative();
+				if(!isDismissed){
+					if (listener != null) {
+						listener.onNegative();
+					}
+					onDialogFinishedByUser();
+					isDismissed = true;
 				}
-				onDialogFinishedByUser();
 			}
 		};
 
@@ -200,11 +214,14 @@ public class KKDialog extends DialogFragment {
 				builder.setTitle(title);
 				builder.setSingleChoiceItems(entries, selectedIndex, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						if (listener != null) {
-							listener.onEvent(id);
+						if (!isDismissed) {
+							if (listener != null) {
+								listener.onEvent(id);
+							}
+							dismiss();
+							onDialogFinishedByUser();
+							isDismissed = true;
 						}
-						dismiss();
-						onDialogFinishedByUser();
 					}
 				});
 				builder.setNegativeButton(negativeButtonText, negativeListener);
@@ -214,6 +231,9 @@ public class KKDialog extends DialogFragment {
 					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
 				} else {
 					builder = new AlertDialog.Builder(getActivity());
+				}
+				if(customizeView != null && customizeView.getParent() != null) {
+					((ViewGroup)customizeView.getParent()).removeView(customizeView);
 				}
 				builder.setView(customizeView);
 
