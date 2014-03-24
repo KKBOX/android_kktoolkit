@@ -23,6 +23,7 @@ import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 
 public class KKDialog extends DialogFragment {
 	public abstract class Type {
@@ -230,6 +231,9 @@ public class KKDialog extends DialogFragment {
 					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
 				} else {
 					builder = new AlertDialog.Builder(getActivity());
+				}
+				if(customizeView != null && customizeView.getParent() != null) {
+					((ViewGroup)customizeView.getParent()).removeView(customizeView);
 				}
 				builder.setView(customizeView);
 
