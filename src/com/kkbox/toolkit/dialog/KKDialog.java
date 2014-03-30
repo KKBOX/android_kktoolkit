@@ -47,6 +47,7 @@ public class KKDialog extends DialogFragment {
 	private int selectedIndex;
 	private int theme = -1;
 	private View customizeView;
+	private boolean isCanceledOnTouchOutside;
 	private boolean isDismissed = false;
 
 	public int getNotificationId() {
@@ -95,6 +96,10 @@ public class KKDialog extends DialogFragment {
 
 	public void setTheme(int theme) {
 		this.theme = theme;
+	}
+
+	public void setCanceledOnTouchOutside(boolean isCanceledOnTouchOutside) {
+		this.isCanceledOnTouchOutside = isCanceledOnTouchOutside;
 	}
 
 	public int getDialogType() {
@@ -249,7 +254,9 @@ public class KKDialog extends DialogFragment {
 				if (!TextUtils.isEmpty(negativeButtonText)) {
 					builder.setNegativeButton(negativeButtonText, negativeListener);
 				}
-				return builder.create();
+				AlertDialog alertDialog = builder.create();
+				alertDialog.setCanceledOnTouchOutside(isCanceledOnTouchOutside);
+				return alertDialog;
 		}
 		return null;
 	}
