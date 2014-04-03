@@ -15,6 +15,7 @@
 package com.kkbox.toolkit.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,6 +32,7 @@ import com.kkbox.toolkit.widget.KKMessageView;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public abstract class KKFragment extends Fragment {
 
@@ -237,5 +239,16 @@ public abstract class KKFragment extends Fragment {
 	public void onPause() {
 		super.onPause();
 		((KKServiceActivity) activity).deactivateSubFragment(this);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		List<Fragment> fragments = getChildFragmentManager().getFragments();
+		if(fragments != null) {
+			for(Fragment fragment : fragments) {
+				fragment.onActivityResult(requestCode, resultCode, data);
+			}
+		}
 	}
 }
