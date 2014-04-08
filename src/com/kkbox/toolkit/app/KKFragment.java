@@ -242,13 +242,7 @@ public abstract class KKFragment extends Fragment {
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		List<Fragment> fragments = getChildFragmentManager().getFragments();
-		if(fragments != null) {
-			for(Fragment fragment : fragments) {
-				fragment.onActivityResult(requestCode, resultCode, data);
-			}
-		}
+	public void startActivityForResult(Intent intent, int requestCode) {
+		((KKServiceActivity) activity).startActivityForResultKeepFragmentsTag(intent, requestCode, getTag());
 	}
 }

@@ -14,6 +14,7 @@
  */
 package com.kkbox.toolkit.app;
 
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.kkbox.toolkit.dialog.KKServiceDialog;
 import com.kkbox.toolkit.internal.dialog.KKDialogManagerListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class KKActivityDelegate {
 	private static final ArrayList<FragmentActivity> activityList = new ArrayList<FragmentActivity>();
@@ -37,6 +39,7 @@ public class KKActivityDelegate {
 	private int nextActivityRequestCode = -1;
 	private boolean finishActivityAfterShowingNotification = false;
 	private FragmentActivity activity;
+	private String whoFragmentCallStartActivityForResult;
 
 	protected final KKDialogManagerListener dialogNotificationListener = new KKDialogManagerListener() {
 		@Override
@@ -160,5 +163,45 @@ public class KKActivityDelegate {
 
 	public void deactivateSubFragment(KKFragment fragment) {
 		activeSubFragments.remove(fragment);
+	}
+
+	public void startActivityForResultKeepFragmentTag(Intent intent, int requestCode, String who) {
+		this.whoFragmentCallStartActivityForResult = who;
+		activity.startActivityForResult(intent, requestCode);
+	}
+
+	public void onActivityResultToSubFragment(int requestCode, int resultCode, Intent data) {
+		if(whoFragmentCallStartActivityForResult != null) {
+			String who = whoFragmentCallStartActivityForResult;
+			whoFragmentCallStartActivityForResult = null;
+			Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag(who);
+			if(fragment != null) {
+				fragment.onActivityResult(requestCode, resultCode, data);
+			} else {
+				List<Fragment> fragments = activity.getSupportFragmentManager().getFragments();
+				if(fragments != null) {
+					Fragment subFragment = findSubFragment(fragments, who);
+					if(subFragment != null) {
+						subFragment.onActivityResult(requestCode, resultCode, data);
+					}
+				}
+			}
+		}
+	}
+
+	private Fragment findSubFragment(List<Fragment> fragments, String who) {
+		for (Fragment subFragment : fragments) {
+			Fragment childFragment = subFragment.getChildFragmentManager().findFragmentByTag(who);
+			if(childFragment == null) {
+				List<Fragment> childFragments = subFragment.getChildFragmentManager().getFragments();
+				if(childFragments != null) {
+					childFragment = findSubFragment(childFragments, who);
+				}
+			}
+			if(childFragment != null) {
+				return childFragment;
+			}
+		}
+		return null;
 	}
 }

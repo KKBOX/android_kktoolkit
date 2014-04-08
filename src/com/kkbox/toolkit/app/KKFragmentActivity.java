@@ -42,6 +42,11 @@ public class KKFragmentActivity extends FragmentActivity implements KKServiceAct
 	}
 
 	@Override
+	public void startActivityForResultKeepFragmentTag(Intent intent, int requestCode, String who) {
+		delegate.startActivityForResultKeepFragmentTag(intent, requestCode, who);
+	}
+
+	@Override
 	public void sendMessageToActiveSubFragments(Bundle arguments) {
 		delegate.sendMessageToActiveSubFragments(arguments);
 	}
