@@ -32,7 +32,6 @@ import com.kkbox.toolkit.widget.KKMessageView;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
 
 public abstract class KKFragment extends Fragment {
 
@@ -48,6 +47,7 @@ public abstract class KKFragment extends Fragment {
 		public static final int SUCCESS = 1;
 	}
 
+	private static Fragment whoFragment;
 	private static int animationType;
 	private Activity activity;
 	private KKMessageView viewMessage;
@@ -62,6 +62,14 @@ public abstract class KKFragment extends Fragment {
 
 	public static void setAnimation(int type) {
 		animationType = type;
+	}
+
+	public static Fragment getWhoFragment() {
+		return whoFragment;
+	}
+
+	public static void cleanWhoFragment() {
+		whoFragment = null;
 	}
 
 	public void onLoadData() {}
@@ -243,6 +251,7 @@ public abstract class KKFragment extends Fragment {
 
 	@Override
 	public void startActivityForResult(Intent intent, int requestCode) {
-		((KKServiceActivity) activity).startActivityForResultKeepFragmentsTag(intent, requestCode, getTag());
+		activity.startActivityForResult(intent, requestCode);
+		whoFragment = this;
 	}
 }

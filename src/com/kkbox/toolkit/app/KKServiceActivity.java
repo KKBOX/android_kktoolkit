@@ -35,6 +35,4 @@ public interface KKServiceActivity {
 	public void finishIfNoDialog();
 	
 	public void startActivityForResultIfNoDialog(Intent intent, int requestCode);
-
-	public void startActivityForResultKeepFragmentTag(Intent intent, int requestCode, String who);
 }
