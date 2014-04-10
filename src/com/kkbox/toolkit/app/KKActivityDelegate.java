@@ -161,4 +161,8 @@ public class KKActivityDelegate {
 	public void deactivateSubFragment(KKFragment fragment) {
 		activeSubFragments.remove(fragment);
 	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		KKFragment.callbackActivityResult(requestCode, resultCode, data);
+	}
 }
