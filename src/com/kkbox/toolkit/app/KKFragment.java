@@ -64,12 +64,12 @@ public abstract class KKFragment extends Fragment {
 		animationType = type;
 	}
 
-	public static Fragment getWhoFragment() {
-		return whoFragment;
-	}
-
-	public static void cleanWhoFragment() {
+	static void callbackActivityResult(int requestCode, int resultCode, Intent data) {
+		Fragment fragment = whoFragment;
 		whoFragment = null;
+		if(fragment != null) {
+			fragment.onActivityResult(requestCode, resultCode, data);
+		}
 	}
 
 	public void onLoadData() {}

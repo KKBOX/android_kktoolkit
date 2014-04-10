@@ -14,11 +14,9 @@
  */
 package com.kkbox.toolkit.app;
 
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import com.kkbox.toolkit.KKService;
@@ -165,10 +163,6 @@ public class KKActivityDelegate {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Fragment fragment = KKFragment.getWhoFragment();
-		KKFragment.cleanWhoFragment();
-		if(fragment != null) {
-			fragment.onActivityResult(requestCode, resultCode, data);
-		}
+		KKFragment.callbackActivityResult(requestCode, resultCode, data);
 	}
 }
