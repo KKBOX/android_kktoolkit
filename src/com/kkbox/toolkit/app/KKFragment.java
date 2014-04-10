@@ -47,7 +47,7 @@ public abstract class KKFragment extends Fragment {
 		public static final int SUCCESS = 1;
 	}
 
-	private static Fragment whoFragment;
+	private static Fragment activityResultCallbackFragment;
 	private static int animationType;
 	private Activity activity;
 	private KKMessageView viewMessage;
@@ -65,8 +65,8 @@ public abstract class KKFragment extends Fragment {
 	}
 
 	static void callbackActivityResult(int requestCode, int resultCode, Intent data) {
-		Fragment fragment = whoFragment;
-		whoFragment = null;
+		Fragment fragment = activityResultCallbackFragment;
+		activityResultCallbackFragment = null;
 		if(fragment != null) {
 			fragment.onActivityResult(requestCode, resultCode, data);
 		}
@@ -252,6 +252,6 @@ public abstract class KKFragment extends Fragment {
 	@Override
 	public void startActivityForResult(Intent intent, int requestCode) {
 		activity.startActivityForResult(intent, requestCode);
-		whoFragment = this;
+		activityResultCallbackFragment = this;
 	}
 }
