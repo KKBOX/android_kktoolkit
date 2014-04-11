@@ -15,6 +15,7 @@
 package com.kkbox.toolkit.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,6 +47,7 @@ public abstract class KKFragment extends Fragment {
 		public static final int SUCCESS = 1;
 	}
 
+	private static Fragment activityResultCallbackFragment;
 	private static int animationType;
 	private Activity activity;
 	private KKMessageView viewMessage;
@@ -60,6 +62,14 @@ public abstract class KKFragment extends Fragment {
 
 	public static void setAnimation(int type) {
 		animationType = type;
+	}
+
+	static void callbackActivityResult(int requestCode, int resultCode, Intent data) {
+		Fragment fragment = activityResultCallbackFragment;
+		activityResultCallbackFragment = null;
+		if(fragment != null) {
+			fragment.onActivityResult(requestCode, resultCode, data);
+		}
 	}
 
 	public void onLoadData() {}
@@ -237,5 +247,11 @@ public abstract class KKFragment extends Fragment {
 	public void onPause() {
 		super.onPause();
 		((KKServiceActivity) activity).deactivateSubFragment(this);
+	}
+
+	@Override
+	public void startActivityForResult(Intent intent, int requestCode) {
+		activity.startActivityForResult(intent, requestCode);
+		activityResultCallbackFragment = this;
 	}
 }
