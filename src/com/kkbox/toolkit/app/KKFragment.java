@@ -210,9 +210,9 @@ public abstract class KKFragment extends Fragment {
 			}
 		} else if (animationType == AnimationType.FADE_OUT) {
 			if (enter) {
-				animation = AnimationUtils.loadAnimation(activity, R.anim.abc_fade_in);
+				animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
 			} else {
-				animation = AnimationUtils.loadAnimation(activity, R.anim.abc_fade_out);
+				animation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
 			}
 		} else {
 			animation = new Animation() {};
