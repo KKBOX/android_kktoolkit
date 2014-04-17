@@ -82,6 +82,10 @@ public abstract class KKFragment extends Fragment {
 		customLoadingView = view;
 	}
 
+	protected void resetFetchData() {
+		dataFetchedStatus = DataFetchStatus.NONE;
+	}
+
 	protected void startFetchData() {
 		if (viewMessage != null) {
 			if (customLoadingView != null) {
