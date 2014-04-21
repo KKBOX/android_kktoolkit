@@ -47,6 +47,7 @@ public class KKDialog extends DialogFragment {
 	private int selectedIndex;
 	private int theme = -1;
 	private View customizeView;
+	private boolean isAlertDialogCanceledOnTouchOutside;
 	private boolean isDismissed = false;
 
 	public int getNotificationId() {
@@ -95,6 +96,10 @@ public class KKDialog extends DialogFragment {
 
 	public void setTheme(int theme) {
 		this.theme = theme;
+	}
+
+	public void setAlertDialogCanceledOnTouchOutside(boolean isAlertDialogCanceledOnTouchOutside) {
+		this.isAlertDialogCanceledOnTouchOutside = isAlertDialogCanceledOnTouchOutside;
 	}
 
 	public int getDialogType() {
@@ -172,6 +177,7 @@ public class KKDialog extends DialogFragment {
 				return dialog;
 			case Type.ALERT_DIALOG:
 				AlertDialog.Builder builder;
+				AlertDialog alertDialog;
 				if (theme != -1) {
 					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
 				} else {
@@ -180,7 +186,9 @@ public class KKDialog extends DialogFragment {
 				builder.setMessage(message);
 				builder.setTitle(title);
 				builder.setPositiveButton(positiveButtonText, positiveListener);
-				return builder.create();
+				alertDialog = builder.create();
+				alertDialog.setCanceledOnTouchOutside(isAlertDialogCanceledOnTouchOutside);
+				return alertDialog;
 			case Type.THREE_CHOICE_DIALOG:
 				if (theme != -1) {
 					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
@@ -192,7 +200,9 @@ public class KKDialog extends DialogFragment {
 				builder.setPositiveButton(positiveButtonText, positiveListener);
 				builder.setNeutralButton(neutralButtonText, neutralListener);
 				builder.setNegativeButton(negativeButtonText, negativeListener);
-				return builder.create();
+				alertDialog = builder.create();
+				alertDialog.setCanceledOnTouchOutside(isAlertDialogCanceledOnTouchOutside);
+				return alertDialog;
 			case Type.YES_OR_NO_DIALOG:
 				if (theme != -1) {
 					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
@@ -203,7 +213,9 @@ public class KKDialog extends DialogFragment {
 				builder.setTitle(title);
 				builder.setPositiveButton(positiveButtonText, positiveListener);
 				builder.setNegativeButton(negativeButtonText, negativeListener);
-				return builder.create();
+				alertDialog = builder.create();
+				alertDialog.setCanceledOnTouchOutside(isAlertDialogCanceledOnTouchOutside);
+				return alertDialog;
 			case Type.SELECT_DIALOG:
 				if (theme != -1) {
 					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
@@ -225,7 +237,9 @@ public class KKDialog extends DialogFragment {
 					}
 				});
 				builder.setNegativeButton(negativeButtonText, negativeListener);
-				return builder.create();
+				alertDialog = builder.create();
+				alertDialog.setCanceledOnTouchOutside(isAlertDialogCanceledOnTouchOutside);
+				return alertDialog;
 			case Type.CUSTOMIZE_DIALOG:
 				if (theme != -1) {
 					builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), theme));
@@ -249,7 +263,9 @@ public class KKDialog extends DialogFragment {
 				if (!TextUtils.isEmpty(negativeButtonText)) {
 					builder.setNegativeButton(negativeButtonText, negativeListener);
 				}
-				return builder.create();
+				alertDialog = builder.create();
+				alertDialog.setCanceledOnTouchOutside(isAlertDialogCanceledOnTouchOutside);
+				return alertDialog;
 		}
 		return null;
 	}

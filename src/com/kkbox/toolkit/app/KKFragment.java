@@ -39,6 +39,7 @@ public abstract class KKFragment extends Fragment {
 		public static final int NONE = 0;
 		public static final int PUSH = 1;
 		public static final int POP = 2;
+		public static final int FADE_OUT = 3;
 	}
 
 	public static class DataFetchStatus {
@@ -67,7 +68,7 @@ public abstract class KKFragment extends Fragment {
 	static void callbackActivityResult(int requestCode, int resultCode, Intent data) {
 		Fragment fragment = activityResultCallbackFragment;
 		activityResultCallbackFragment = null;
-		if(fragment != null) {
+		if (fragment != null) {
 			fragment.onActivityResult(requestCode, resultCode, data);
 		}
 	}
@@ -211,6 +212,12 @@ public abstract class KKFragment extends Fragment {
 			} else {
 				animation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_left);
 			}
+		} else if (animationType == AnimationType.FADE_OUT) {
+			if (enter) {
+				animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
+			} else {
+				animation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+			}
 		} else {
 			animation = new Animation() {};
 			animation.setDuration(0);
@@ -236,7 +243,7 @@ public abstract class KKFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		KKDebug.i(getClass().getSimpleName() + " onResume");
+		KKDebug.i(((Object) this).getClass().getSimpleName() + " onResume");
 		((KKServiceActivity) activity).activateSubFragment(this);
 		if (autoDataLoading) {
 			if (dataFetchedStatus == DataFetchStatus.SUCCESS) {
