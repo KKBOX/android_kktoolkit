@@ -50,9 +50,6 @@ public class ExampleActivity extends ActionBarActivity implements KKServiceActiv
 	public void deactivateSubFragment(KKFragment fragment) {
 		delegate.deactivateSubFragment(fragment);
 	}
-
-	@Override
-	public void onServiceStarted() {}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,5 +73,13 @@ public class ExampleActivity extends ActionBarActivity implements KKServiceActiv
 	protected void onDestroy() {
 		super.onDestroy();
 		delegate.onDestroy();
+	}
+
+	@Override
+	public void onServiceStarted(int flag) {
+	}
+
+	@Override
+	public void onServiceStarting(int flag) {
 	}
 }

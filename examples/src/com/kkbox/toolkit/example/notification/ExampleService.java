@@ -22,20 +22,15 @@ import android.os.Handler;
 import com.kkbox.toolkit.KKService;
 import com.kkbox.toolkit.dialog.KKDialogFactory;
 import com.kkbox.toolkit.dialog.KKDialogPostExecutionListener;
+import com.kkbox.toolkit.utils.KKEventQueue;
 
 public class ExampleService extends KKService {
-
-	private static Handler handler;
-
-	@Override
-	public void initServiceComponent() {
-		handler = new Handler() {};
-	}
 
 	@Override
 	public void finalize() {}
 
 	public static void postAlertDialogInThreeSec() {
+		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -52,6 +47,7 @@ public class ExampleService extends KKService {
 	}
 
 	public static void postYesNoDialogInThreeSec() {
+		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -68,6 +64,7 @@ public class ExampleService extends KKService {
 	}
 
 	public static void postChoiseDialogInThreeSec() {
+		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -86,6 +83,7 @@ public class ExampleService extends KKService {
 	}
 
 	public static void postProcessingDialogInThreeSec() {
+		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -98,4 +96,11 @@ public class ExampleService extends KKService {
 		}, 3000);
 	}
 
+	@Override
+	protected void initServiceComponent(KKEventQueue eventQueue) {
+	}
+
+	@Override
+	protected void onPostCreate(int flag) {
+	}
 }
