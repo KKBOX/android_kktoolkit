@@ -156,7 +156,7 @@ public class KKListViewDelegate {
 	}
 
 	public void setParallaxedHeaderView(View headerView) {
-		listView.addHeaderView(headerView);
+		listView.addHeaderView(headerView, null ,false);
 		parallaxedHeaderView = headerView;
 	}
 
