@@ -1,35 +1,35 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/weather_table"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+	android:id="@+id/weather_table"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/clear_cache"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="left"
-        android:text="Clear cache" />
+	<Button
+		android:id="@+id/clear_cache"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="left"
+		android:text="Clear cache" />
 
-    <Button
-        android:id="@+id/update_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="left"
-        android:text="@string/auto_update_image" />
+	<Button
+		android:id="@+id/update_view"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="left"
+		android:text="@string/auto_update_image" />
 
-    <Button
-        android:id="@+id/load_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="left"
-        android:text="@string/manual_update_image" />
+	<Button
+		android:id="@+id/load_image"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="left"
+		android:text="@string/manual_update_image" />
 
-    <Button
-        android:id="@+id/download_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="left"
-        android:text="@string/download_and_update_image" />
+	<Button
+		android:id="@+id/download_image"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="left"
+		android:text="@string/download_and_update_image" />
 
 </LinearLayout>
