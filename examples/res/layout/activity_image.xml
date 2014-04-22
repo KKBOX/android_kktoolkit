@@ -32,4 +32,23 @@
 		android:gravity="left"
 		android:text="@string/download_and_update_image" />
 
+	<Button
+		android:id="@+id/button_save_cache"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="left"
+		android:text="@string/create_and_save_cache" />
+
+	<Button
+		android:id="@+id/button_load_cache"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="left"
+		android:text="@string/load_cache" />
+
+	<ImageView
+		android:id="@+id/view_image"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" />
+
 </LinearLayout>

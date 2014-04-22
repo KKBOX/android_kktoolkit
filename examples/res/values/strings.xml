@@ -10,6 +10,8 @@
 	<string name="auto_update_image">Auto Update Image</string>
 	<string name="manual_update_image">Manual Update Image</string>
 	<string name="download_and_update_image">Download and Update Image</string>
+	<string name="create_and_save_cache">Create and Save Cache</string>
+	<string name="load_cache">Load Cache</string>
 	<string name="imageview">Image View</string>
 	<string name="notify_1">Delay Show Alert Dialog</string>
 	<string name="notify_2">Delay Show Notify Dialog</string>

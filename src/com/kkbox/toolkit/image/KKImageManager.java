@@ -28,6 +28,8 @@ import com.kkbox.toolkit.utils.StringUtils;
 import com.kkbox.toolkit.utils.UserTask;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -251,13 +253,20 @@ public class KKImageManager {
 		return updateView(view, url, localPath, defaultResourceId, true, true, listener);
 	}
 
-	public Bitmap loadCache(String url, String localPath) {
+	public Bitmap loadCache(String url) {
 		String cachePath = getTempImagePath(context, url);
 		final File cacheFile = new File(cachePath);
 		if (cacheFile.exists()) {
 			return BitmapFactory.decodeFile(cachePath);
 		}
 		return null;
+	}
+	
+	public void saveCache(String identifier, Bitmap bitmap) throws IOException {
+		FileOutputStream outputStream;
+		outputStream = new FileOutputStream(getTempImagePath(context, identifier));
+		bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+		outputStream.close();
 	}
 
 	private KKImageRequest updateView(View view, String url, String localPath, int defaultResourceId, boolean updateBackground,
@@ -274,7 +283,7 @@ public class KKImageManager {
 				}
 			}
 		}
-		Bitmap bitmap = loadCache(url, localPath);
+		Bitmap bitmap = loadCache(url);
 		if (bitmap != null && !sequentialImageLoadingEnabled) {
 			if (updateBackground) {
 				view.setBackgroundDrawable(new BitmapDrawable(context.getResources(), bitmap));

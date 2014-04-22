@@ -16,10 +16,14 @@ import com.kkbox.toolkit.example.R;
 import com.kkbox.toolkit.example.SampleUtil;
 import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.image.KKImageRequest;
+import com.kkbox.toolkit.utils.KKDebug;
+
+import java.io.IOException;
 
 public class ImageManagerActivity extends ExampleActivity {
 	private ImageView[] viewIcon;
 	private KKImageManager imageManager;
+	private ImageView viewImage;
 
 	class ExampleLoadImageListener implements KKImageManager.OnBitmapReceivedListener {
 		private ImageView imageView;
@@ -63,6 +67,9 @@ public class ImageManagerActivity extends ExampleActivity {
 		Button buttonManualLoad = (Button) findViewById(R.id.button_manual_load);
 		Button buttonDownload = (Button) findViewById(R.id.button_download);
 		Button buttonClearCache = (Button) findViewById(R.id.button_clear_cache);
+		Button buttonSaveCache = (Button) findViewById(R.id.button_save_cache);
+		Button buttonLoadCache = (Button) findViewById(R.id.button_load_cache);
+		viewImage = (ImageView) findViewById(R.id.view_image);
 		imageManager = new KKImageManager(this, null);
 		imageManager.enableSequentialImageLoading(true);
 
@@ -112,6 +119,31 @@ public class ImageManagerActivity extends ExampleActivity {
 			}
 		});
 
+		buttonSaveCache.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				resetIcon();
+				Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.small);
+				try {
+					imageManager.saveCache("example_cache", bitmap);
+				} catch (IOException e) {
+					KKDebug.e("Failed to save image cache");
+				}
+			}
+		});
+
+		buttonLoadCache.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				resetIcon();
+				Bitmap bitmap = imageManager.loadCache("example_cache");
+				if (bitmap == null) {
+					KKDebug.e("No image cache is available");
+				} else {
+					viewImage.setImageBitmap(bitmap);
+				}
+			}
+		});
 	}
 
 	private void resetIcon() {
@@ -120,5 +152,6 @@ public class ImageManagerActivity extends ExampleActivity {
 				imageView.setImageDrawable(null);
 			}
 		}
+		viewImage.setImageDrawable(null);
 	}
 }
