@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,10 +18,8 @@ import com.kkbox.toolkit.image.KKImageManager;
 import com.kkbox.toolkit.image.KKImageRequest;
 
 public class ImageManagerActivity extends ExampleActivity {
-	private LinearLayout mLinearLayout;
-	private Button mAuto, mManual, mClear, mDownload;
-	private ImageView[] mWeatherIcon;
-	private KKImageManager mImageManager;
+	private ImageView[] viewIcon;
+	private KKImageManager imageManager;
 
 	class ExampleLoadImageListener implements KKImageManager.OnBitmapReceivedListener {
 		private ImageView imageView;
@@ -30,6 +30,8 @@ public class ImageManagerActivity extends ExampleActivity {
 
 		@Override
 		public void onBitmapReceived(KKImageRequest request, Bitmap bitmap) {
+			Animation fadeIn = AnimationUtils.loadAnimation(ImageManagerActivity.this, R.anim.fade_in);
+			imageView.startAnimation(fadeIn);
 			imageView.setImageBitmap(bitmap);
 			KKImageManager.autoRecycleViewSourceBitmap(imageView);
 		}
@@ -56,54 +58,53 @@ public class ImageManagerActivity extends ExampleActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_image);
+		LinearLayout linearLayout = (LinearLayout) findViewById(R.id.weather_table);
+		Button buttonAutoLoad = (Button) findViewById(R.id.button_auto_load);
+		Button buttonManualLoad = (Button) findViewById(R.id.button_manual_load);
+		Button buttonDownload = (Button) findViewById(R.id.button_download);
+		Button buttonClearCache = (Button) findViewById(R.id.button_clear_cache);
+		imageManager = new KKImageManager(this, null);
+		imageManager.enableSequentialImageLoading(true);
 
-		mLinearLayout = (LinearLayout) findViewById(R.id.weather_table);
-		mAuto = (Button) findViewById(R.id.update_view);
-		mManual = (Button) findViewById(R.id.load_image);
-		mDownload = (Button) findViewById(R.id.download_image);
-		mClear = (Button) findViewById(R.id.clear_cache);
-
-		mImageManager = new KKImageManager(this, null);
-
-		mWeatherIcon = new ImageView[5];
+		viewIcon = new ImageView[5];
 		for (int i = 0; i < 5; i++) {
-			mWeatherIcon[i] = new ImageView(this);
-			mWeatherIcon[i].setLayoutParams(new ViewGroup.LayoutParams(150, 150));
-			mWeatherIcon[i].setScaleType(ImageView.ScaleType.FIT_CENTER);
-			mLinearLayout.addView(mWeatherIcon[i]);
+			viewIcon[i] = new ImageView(this);
+			viewIcon[i].setLayoutParams(new ViewGroup.LayoutParams(150, 150));
+			viewIcon[i].setScaleType(ImageView.ScaleType.FIT_CENTER);
+			linearLayout.addView(viewIcon[i]);
 		}
-		mAuto.setOnClickListener(new View.OnClickListener() {
+		buttonAutoLoad.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				resetIcon();
 				for (int i = 0; i < SampleUtil.pic_url.length; i++) {
-					mImageManager.updateViewSource(mWeatherIcon[i], SampleUtil.pic_url[i], null, R.drawable.ic_launcher);
+					imageManager.updateViewSource(viewIcon[i], SampleUtil.pic_url[i], null, R.drawable.ic_launcher);
 				}
 			}
 		});
 
-		mManual.setOnClickListener(new View.OnClickListener() {
+		buttonManualLoad.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				resetIcon();
 				for (int i = 0; i < SampleUtil.pic_url.length; i++) {
-					mImageManager.loadBitmap(SampleUtil.pic_url[i], null, new ExampleLoadImageListener(mWeatherIcon[i]));
+					imageManager.loadBitmap(SampleUtil.pic_url[i], null, new ExampleLoadImageListener(viewIcon[i]));
 				}
 			}
 		});
 
-		mDownload.setOnClickListener(new View.OnClickListener() {
+		buttonDownload.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				resetIcon();
 				for (int i = 0; i < SampleUtil.pic_url.length; i++) {
 					String path = KKImageManager.getTempImagePath(ImageManagerActivity.this, SampleUtil.pic_url[i]);
-					mImageManager.downloadBitmap(SampleUtil.pic_url[i], path, new ExampleDownloadImageListener(mWeatherIcon[i], path));
+					imageManager.downloadBitmap(SampleUtil.pic_url[i], path, new ExampleDownloadImageListener(viewIcon[i], path));
 				}
 			}
 		});
 
-		mClear.setOnClickListener(new View.OnClickListener() {
+		buttonClearCache.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				resetIcon();
@@ -114,9 +115,9 @@ public class ImageManagerActivity extends ExampleActivity {
 	}
 
 	private void resetIcon() {
-		for (ImageView v : mWeatherIcon) {
-			if (v != null) {
-				v.setImageDrawable(null);
+		for (ImageView imageView : viewIcon) {
+			if (imageView != null) {
+				imageView.setImageDrawable(null);
 			}
 		}
 	}

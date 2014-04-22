@@ -53,7 +53,7 @@ public class KKImageManager {
 		public static final int UPDATE_VIEW_SOURCE = 3;
 	}
 
-	private static final int MAX_WORKING_COUNT = 10;
+	private static int MAX_WORKING_COUNT = 10;
 	private static final long FATAL_STORAGE_SIZE = 30 * 1024 * 1024;
 	private static final HashMap<WeakReference<View>, Bitmap> viewBackgroundBitmapReference = new HashMap<WeakReference<View>, Bitmap>();
 	private static final HashMap<WeakReference<ImageView>, Bitmap> imageViewSourceBitmapReference = new HashMap<WeakReference<ImageView>, Bitmap>();
@@ -65,6 +65,7 @@ public class KKImageManager {
 	private Context context;
 	private Cipher cipher = null;
 	public static boolean networkEnabled = true;
+	private boolean sequentialImageLoadingEnabled = false;
 
 	protected KKImageRequestListener imageRequestListener = new KKImageRequestListener() {
 		@Override
@@ -209,6 +210,15 @@ public class KKImageManager {
 		gc();
 	}
 
+	public void enableSequentialImageLoading(boolean enabled) {
+		if (enabled) {
+			MAX_WORKING_COUNT = 1;
+		} else {
+			MAX_WORKING_COUNT = 10;
+		}
+		sequentialImageLoadingEnabled = enabled;
+	}
+
 	public KKImageRequest downloadBitmap(String url, String localPath, OnImageDownloadedListener listener) {
 		KKImageRequest request = new KKImageRequest(context, url, localPath, cipher, listener);
 		workingList.add(request);
@@ -265,7 +275,7 @@ public class KKImageManager {
 			}
 		}
 		Bitmap bitmap = loadCache(url, localPath);
-		if (bitmap != null) {
+		if (bitmap != null && !sequentialImageLoadingEnabled) {
 			if (updateBackground) {
 				view.setBackgroundDrawable(new BitmapDrawable(context.getResources(), bitmap));
 				autoRecycleViewBackgroundBitmap(view);
