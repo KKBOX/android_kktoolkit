@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    
     buildTypes {
         release {
             runProguard false
@@ -27,7 +28,12 @@ android {
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }
+    }
 
+    android {
+        lintOptions {
+            abortOnError false
+        }
     }
 
 }
