@@ -115,7 +115,7 @@ public class KKActivityDelegate {
 		activityList.add(activity);
 	}
 
-	public void onResume() {
+	public void onPostResume() {
 		if (!KKService.isRunning()) {
 			serviceLoadingDialog = new ProgressDialog(activity);
 			serviceLoadingDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
