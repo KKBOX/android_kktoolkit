@@ -19,6 +19,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 
+import com.kkbox.toolkit.image.KKImageManager.OnBitmapReceivedListener;
+import com.kkbox.toolkit.image.KKImageManager.OnImageDownloadedListener;
 import com.kkbox.toolkit.internal.image.KKImageRequestListener;
 import com.kkbox.toolkit.utils.UserTask;
 
@@ -47,10 +49,11 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private HttpClient httpclient;
 	private KKImageRequestListener listener;
 	private HttpResponse response;
+	private Header[] headers;
 	private Context context;
 	private View view;
-	private KKImageListener imageListener;
-	private KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener;
+	private OnBitmapReceivedListener onBitmapReceivedListener;
+	private OnImageDownloadedListener onImageDownloadedListener;
 	private String url = "";
 	private String localPath;
 	private String cachePath;
@@ -61,8 +64,9 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private boolean interuptFlag = false;
 	private static ReentrantLock fileLock = new ReentrantLock();
 
-	public KKImageRequest(Context context, String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener,
-			View view, boolean updateBackground, Cipher cipher, boolean saveToLocal) {
+	public KKImageRequest(Context context, String url, String localPath, View view, boolean updateBackground, Cipher cipher,
+			boolean saveToLocal) {
+		// update only
 		this.view = view;
 		this.saveToLocal = saveToLocal;
 		if (updateBackground) {
@@ -70,20 +74,27 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		} else {
 			actionType = KKImageManager.ActionType.UPDATE_VIEW_SOURCE;
 		}
-		this.onReceiveHttpHeaderListener = onReceiveHttpHeaderListener;
 		init(context, url, localPath, cipher);
 	}
 
-	public KKImageRequest(Context context, String url, String localPath, KKImageOnReceiveHttpHeaderListener onReceiveHttpHeaderListener,
-			Cipher cipher) {
+	public KKImageRequest(Context context, String url, String localPath, View view, boolean updateBackground, Cipher cipher,
+			boolean saveToLocal, OnImageDownloadedListener onImageDownloadedListener) {
+		// update and save
+		this(context, url, localPath, view, updateBackground, cipher, saveToLocal);
+		this.onImageDownloadedListener = onImageDownloadedListener;
+	}
+
+	public KKImageRequest(Context context, String url, String localPath, Cipher cipher, OnImageDownloadedListener onImageDownloadedListener) {
+		// download
 		actionType = KKImageManager.ActionType.DOWNLOAD;
-		this.onReceiveHttpHeaderListener = onReceiveHttpHeaderListener;
+		this.onImageDownloadedListener = onImageDownloadedListener;
 		init(context, url, localPath, cipher);
 	}
 
-	public KKImageRequest(Context context, String url, String localPath, KKImageListener imageListener, Cipher cipher) {
-		this.imageListener = imageListener;
+	public KKImageRequest(Context context, String url, String localPath, Cipher cipher, OnBitmapReceivedListener onBitmapReceivedListener) {
+		// callback
 		actionType = KKImageManager.ActionType.CALL_LISTENER;
+		this.onBitmapReceivedListener = onBitmapReceivedListener;
 		init(context, url, localPath, cipher);
 	}
 
@@ -110,16 +121,16 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		return url;
 	}
 
-	public View getView() {
+	public View getView() { // TODO: refactor this
 		return view;
-	}
-
-	public KKImageListener getImageCacheListener() {
-		return imageListener;
 	}
 
 	public int getActionType() {
 		return actionType;
+	}
+
+	public Header[] getHttpResponseHeaders() {
+		return headers;
 	}
 
 	@Override
@@ -138,12 +149,10 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			try {
 				if (cacheFile.exists()) {
 					if (actionType == KKImageManager.ActionType.DOWNLOAD) {
-						if (onReceiveHttpHeaderListener == null) {
-							if (localFile == null || !localFile.exists()) {
-								cryptToFile(cachePath, localPath);
-							}
-							return null;
+						if (localFile == null || !localFile.exists()) {
+							cryptToFile(cachePath, localPath);
 						}
+						return null;
 					} else {
 						bitmap = decodeBitmap(cachePath);
 						if (bitmap != null) {
@@ -178,7 +187,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			final HttpGet httpget = new HttpGet(url);
 			response = httpclient.execute(httpget);
 			final InputStream is = response.getEntity().getContent();
-			publishProgress(response.getAllHeaders());
+			headers = response.getAllHeaders();
 			removeInvalidImageFiles();
 			if (actionType == KKImageManager.ActionType.DOWNLOAD) {
 				RandomAccessFile tempFile = new RandomAccessFile(tempFilePath, "rw");
@@ -231,13 +240,6 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	}
 
 	@Override
-	public void onProgressUpdate(Header[]... data) {
-		if (onReceiveHttpHeaderListener != null) {
-			onReceiveHttpHeaderListener.onReceiveHttpHeader(data[0]);
-		}
-	}
-
-	@Override
 	public synchronized void onPostExecute(Bitmap bitmap) {
 		if (listener == null) {
 			return;
@@ -245,6 +247,12 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		if (isNetworkError || (actionType != KKImageManager.ActionType.DOWNLOAD && bitmap == null)) {
 			listener.onNetworkError(this);
 		} else {
+			if (onBitmapReceivedListener != null) {
+				onBitmapReceivedListener.onBitmapReceived(this, bitmap);
+			}
+			if (onImageDownloadedListener != null) {
+				onImageDownloadedListener.onImageDownloaded(this);
+			}
 			listener.onComplete(this, bitmap);
 		}
 	}

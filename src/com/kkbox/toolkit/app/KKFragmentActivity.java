@@ -74,9 +74,9 @@ public class KKFragmentActivity extends FragmentActivity implements KKServiceAct
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
-		delegate.onResume();
+	protected void onPostResume() {
+		super.onPostResume();
+		delegate.onPostResume();
 	}
 
 	@Override
