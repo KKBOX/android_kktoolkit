@@ -170,6 +170,7 @@ public class KKListViewDelegate {
 				case State.PULLING:
 					labelPullToRefresh.setText(R.string.pull_down_to_resort);
 					progressPullToRefresh.setVisibility(View.GONE);
+					viewPullToRefresh.clearAnimation();
 					viewPullToRefresh.setVisibility(View.VISIBLE);
 					break;
 				case State.PULLING_DOWN:
