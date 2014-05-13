@@ -49,4 +49,8 @@ public abstract class KKListFragment extends KKFragment {
 	public void saveListViewPosition() {
 		delegate.saveListViewPosition();
 	}
+
+	public void resetScrollData() {
+		delegate.resetScrollData();
+	}
 }

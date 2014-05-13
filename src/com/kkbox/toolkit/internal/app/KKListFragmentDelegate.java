@@ -50,4 +50,8 @@ public class KKListFragmentDelegate {
 		}
 	}
 
+	public void resetScrollData() {
+		scrollIndex = 0;
+		scrollPositionToTop = 0;
+	}
 }
