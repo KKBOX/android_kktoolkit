@@ -58,9 +58,9 @@ public class ExampleActivity extends ActionBarActivity implements KKServiceActiv
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
-		delegate.onResume();
+	protected void onPostResume() {
+		super.onPostResume();
+		delegate.onPostResume();
 	}
 
 	@Override
