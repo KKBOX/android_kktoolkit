@@ -24,17 +24,17 @@ public class InfiniteViewPager extends ViewPager {
 
 	public static abstract class OnInfiniteViewPagerPageChangeListener {
 
-		public abstract void onLoopPageSelected(int position, boolean scrolled);
+		public abstract void onLoopPageSelected(int position, boolean isManual);
 
-		public abstract void onPageScrollLeft(boolean scrolled);
+		public abstract void onPageScrolledLeft(boolean isManual);
 
-		public abstract void onPageScrollRight(boolean scrolled);
+		public abstract void onPageScrolledRight(boolean isManual);
 	}
 
 	private OnInfiniteViewPagerPageChangeListener onInfiniteViewPagerPageChangeListener;
 	private OnPageChangeListener listener;
 	private int currentPosition = 0;
-	private boolean scrolled = false;
+	private boolean isManual = false;
 	private boolean isLoopEnable = false;
 
 	public InfiniteViewPager(Context context) {
@@ -111,18 +111,18 @@ public class InfiniteViewPager extends ViewPager {
 			int index = getCurrentItem();
 
 			if (onInfiniteViewPagerPageChangeListener != null) {
-				onInfiniteViewPagerPageChangeListener.onLoopPageSelected(index, scrolled);
+				onInfiniteViewPagerPageChangeListener.onLoopPageSelected(index, isManual);
 			}
 			if ((currentPosition > position) || (isLoopEnable && position == 0)) {
 				if (onInfiniteViewPagerPageChangeListener != null) {
-					onInfiniteViewPagerPageChangeListener.onPageScrollLeft(scrolled);
+					onInfiniteViewPagerPageChangeListener.onPageScrolledLeft(isManual);
 				}
 			} else if ((currentPosition < position) || (isLoopEnable && position == getAdapter().getCount() - 1)) {
 				if (onInfiniteViewPagerPageChangeListener != null) {
-					onInfiniteViewPagerPageChangeListener.onPageScrollRight(scrolled);
+					onInfiniteViewPagerPageChangeListener.onPageScrolledRight(isManual);
 				}
 			}
-			scrolled = false;
+			isManual = false;
 			currentPosition = position;
 			if (listener != null) {
 				listener.onPageSelected(index);
@@ -132,9 +132,9 @@ public class InfiniteViewPager extends ViewPager {
 		@Override
 		public void onPageScrollStateChanged(int state) {
 			if (state == ViewPager.SCROLL_STATE_SETTLING) {
-				scrolled = true;
+				isManual = true;
 			} else if (state == ViewPager.SCROLL_STATE_IDLE) {
-				scrolled = false;
+				isManual = false;
 				if (isLoopEnable) {
 					final int count = getAdapter().getCount();
 					if (currentPosition == count - 1) {
