@@ -108,16 +108,16 @@ public class InfiniteViewPager extends ViewPager {
 
 		@Override
 		public void onPageSelected(int position) {
-			InfiniteViewPagerAdapter adapter = (InfiniteViewPagerAdapter) getAdapter();
+			int index = getCurrentItem();
 
 			if (onInfiniteViewPagerPageChangeListener != null) {
-				onInfiniteViewPagerPageChangeListener.onLoopPageSelected(position, scrolled);
+				onInfiniteViewPagerPageChangeListener.onLoopPageSelected(index, scrolled);
 			}
 			if ((currentPosition > position) || (isLoopEnable && position == 0)) {
 				if (onInfiniteViewPagerPageChangeListener != null) {
 					onInfiniteViewPagerPageChangeListener.onPageScrollLeft(scrolled);
 				}
-			} else if ((currentPosition < position) || (isLoopEnable && position == adapter.getCount() - 1)) {
+			} else if ((currentPosition < position) || (isLoopEnable && position == getAdapter().getCount() - 1)) {
 				if (onInfiniteViewPagerPageChangeListener != null) {
 					onInfiniteViewPagerPageChangeListener.onPageScrollRight(scrolled);
 				}
@@ -125,7 +125,7 @@ public class InfiniteViewPager extends ViewPager {
 			scrolled = false;
 			currentPosition = position;
 			if (listener != null) {
-				listener.onPageSelected(position);
+				listener.onPageSelected(index);
 			}
 		}
 
