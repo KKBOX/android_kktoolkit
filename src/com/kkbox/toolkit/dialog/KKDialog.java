@@ -120,10 +120,6 @@ public class KKDialog extends DialogFragment {
 
 	protected void onDialogFinishedByUser() {}
 
-	public void onDialogFinished() {
-		isDismissed = true;
-	}
-
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		DialogInterface.OnClickListener positiveListener = new DialogInterface.OnClickListener() {
