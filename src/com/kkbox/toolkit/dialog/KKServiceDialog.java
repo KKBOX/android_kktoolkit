@@ -22,6 +22,6 @@ public class KKServiceDialog extends KKDialog {
 
 	@Override
 	protected void onDialogFinishedByUser() {
-		KKService.getDialogNotificationManager().dismissCurrentDialog();
+		KKService.getDialogNotificationManager().dismissCurrentDialog(getNotificationId());
 	}
 }
