@@ -37,6 +37,7 @@ public class KKDialogManager {
 	public void cancelDialog(int notificationId) {
 		if (isDialogOnShown && listener != null && dialogs.get(0).getNotificationId() == notificationId) {
 			listener.onCancelNotification();
+			dialogs.get(0).onDialogFinished();
 			dismissCurrentDialog();
 		} else {
 			for (int i = 0; i < dialogs.size(); i++) {
