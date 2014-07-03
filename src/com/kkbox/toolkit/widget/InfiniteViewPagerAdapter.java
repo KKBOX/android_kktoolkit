@@ -53,6 +53,7 @@ public abstract class InfiniteViewPagerAdapter extends PagerAdapter {
 
 	@Override
 	public int getCount() {
+		//This is maximum of viewPager can access
 		return objects.size();
 	}
 

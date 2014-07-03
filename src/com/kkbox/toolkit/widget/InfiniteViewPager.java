@@ -24,26 +24,27 @@ public class InfiniteViewPager extends ViewPager {
 
 	public static abstract class OnInfiniteViewPagerPageChangeListener {
 
-		public abstract void onLoopPageSelected(int position);
+		public abstract void onLoopPageSelected(int position, boolean isManual);
 
-		public abstract void onPageScrollLeft();
+		public abstract void onPageScrolledLeft(boolean isManual);
 
-		public abstract void onPageScrollRight();
+		public abstract void onPageScrolledRight(boolean isManual);
 	}
-	
+
 	private OnInfiniteViewPagerPageChangeListener onInfiniteViewPagerPageChangeListener;
+	private OnPageChangeListener listener;
 	private int currentPosition = 0;
-	private boolean scrolled = false;
+	private boolean isManual = false;
 	private boolean isLoopEnable = false;
 
 	public InfiniteViewPager(Context context) {
 		super(context);
-		setOnPageChangeListener(onPageChangeListener);
+		super.setOnPageChangeListener(onPageChangeListener);
 	}
 
 	public InfiniteViewPager(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setOnPageChangeListener(onPageChangeListener);
+		super.setOnPageChangeListener(onPageChangeListener);
 	}
 
 	@Override
@@ -88,42 +89,52 @@ public class InfiniteViewPager extends ViewPager {
 		}
 	}
 
-	public void setOnPageChangeListener(OnInfiniteViewPagerPageChangeListener listener) {
+	@Override
+	public void setOnPageChangeListener(OnPageChangeListener listener) {
+		this.listener = listener;
+	}
+
+	public void setOnInfiniteViewPagerPageChangeListener(OnInfiniteViewPagerPageChangeListener listener) {
 		onInfiniteViewPagerPageChangeListener = listener;
 	}
 
 	private OnPageChangeListener onPageChangeListener = new OnPageChangeListener() {
 		@Override
 		public void onPageScrolled(int i, float v, int i2) {
+			if (listener != null) {
+				listener.onPageScrolled(i, v, i2);
+			}
 		}
 
 		@Override
 		public void onPageSelected(int position) {
-			if (scrolled) {
-				InfiniteViewPagerAdapter adapter = (InfiniteViewPagerAdapter) getAdapter();
-				scrolled = false;
+			int index = getCurrentItem();
+
+			if (onInfiniteViewPagerPageChangeListener != null) {
+				onInfiniteViewPagerPageChangeListener.onLoopPageSelected(index, isManual);
+			}
+			if ((currentPosition > position) || (isLoopEnable && position == 0)) {
 				if (onInfiniteViewPagerPageChangeListener != null) {
-					onInfiniteViewPagerPageChangeListener.onLoopPageSelected(position);
+					onInfiniteViewPagerPageChangeListener.onPageScrolledLeft(isManual);
 				}
-				if ((currentPosition > position) || (isLoopEnable && position == 0)) {
-					if (onInfiniteViewPagerPageChangeListener != null) {
-						onInfiniteViewPagerPageChangeListener.onPageScrollLeft();
-					}
-				} else if ((currentPosition < position) || (isLoopEnable && position == adapter.getCount() - 1)) {
-					if (onInfiniteViewPagerPageChangeListener != null) {
-						onInfiniteViewPagerPageChangeListener.onPageScrollRight();
-					}
+			} else if ((currentPosition < position) || (isLoopEnable && position == getAdapter().getCount() - 1)) {
+				if (onInfiniteViewPagerPageChangeListener != null) {
+					onInfiniteViewPagerPageChangeListener.onPageScrolledRight(isManual);
 				}
 			}
+			isManual = false;
 			currentPosition = position;
+			if (listener != null) {
+				listener.onPageSelected(index);
+			}
 		}
 
 		@Override
 		public void onPageScrollStateChanged(int state) {
 			if (state == ViewPager.SCROLL_STATE_SETTLING) {
-				scrolled = true;
+				isManual = true;
 			} else if (state == ViewPager.SCROLL_STATE_IDLE) {
-				scrolled = false;
+				isManual = false;
 				if (isLoopEnable) {
 					final int count = getAdapter().getCount();
 					if (currentPosition == count - 1) {
@@ -136,6 +147,9 @@ public class InfiniteViewPager extends ViewPager {
 						currentPosition = count - 2;
 					}
 				}
+			}
+			if (listener != null) {
+				listener.onPageScrollStateChanged(state);
 			}
 		}
 	};

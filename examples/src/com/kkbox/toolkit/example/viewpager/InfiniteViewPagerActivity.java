@@ -33,20 +33,23 @@ public class InfiniteViewPagerActivity extends ExampleActivity {
 
 		mAdapter = new ViewPagerAdapter(mColorList, true);
 		mViewPager.setAdapter(mAdapter);
-		mViewPager.setOnPageChangeListener(new OnInfiniteViewPagerPageChangeListener() {
+		mViewPager.setOnInfiniteViewPagerPageChangeListener(new OnInfiniteViewPagerPageChangeListener() {
 			@Override
-			public void onLoopPageSelected(int position) {
-				KKDebug.i(SampleUtil.LOG_TAG, "OnInfiniteViewPagerPageChangeListener onLoopPageSelected");
+			public void onLoopPageSelected(int position, boolean isManual) {
+				KKDebug.i(SampleUtil.LOG_TAG, "OnInfiniteViewPagerPageChangeListener onLoopPageSelected"
+						+ " isManual: " + isManual);
 			}
 
 			@Override
-			public void onPageScrollLeft() {
-				KKDebug.i(SampleUtil.LOG_TAG, "OnInfiniteViewPagerPageChangeListener onPageScrollLeft");
+			public void onPageScrollLeft(boolean isManual) {
+				KKDebug.i(SampleUtil.LOG_TAG, "OnInfiniteViewPagerPageChangeListener onPageScrolledLeft"
+						+ " isManual: " + isManual);
 			}
 
 			@Override
-			public void onPageScrollRight() {
-				KKDebug.i(SampleUtil.LOG_TAG, "OnInfiniteViewPagerPageChangeListener onPageScrollRight");
+			public void onPageScrolledRight(boolean isManual) {
+				KKDebug.i(SampleUtil.LOG_TAG, "OnInfiniteViewPagerPageChangeListener onPageScrolledRight"
+						+ " isManual: " + isManual);
 			}
 		});
 
