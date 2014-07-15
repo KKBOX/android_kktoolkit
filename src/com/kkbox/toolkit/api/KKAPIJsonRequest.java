@@ -43,6 +43,10 @@ public class KKAPIJsonRequest extends APIRequest {
 		super(url, cipher, socketTimeout);
 	}
 
+	public KKAPIJsonRequest(String url, Cipher cipher, int socketTimeout, long cacheTimeOut, Context context) {
+		super(url, cipher, socketTimeout, cacheTimeOut, context);
+	}
+
 	@Override
 	public Void doInBackground(Object... params) {
 		jsonRequestListener = (KKAPIJsonRequestListener) params[0];

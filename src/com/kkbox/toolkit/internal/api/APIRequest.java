@@ -84,16 +84,6 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 	private InputStream is = null;
 	private HttpResponse response;
 
-	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
-		this(url, cipher, 10000);
-		this.cacheTimeOut = cacheTimeOut;
-		this.context = context;
-	}
-
-	public APIRequest(String url, Cipher cipher) {
-		this(url, cipher, 10000);
-	}
-
 	public APIRequest(String url, Cipher cipher, int socketTimeout) {
 		BasicHttpParams params = new BasicHttpParams();
 		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
@@ -101,6 +91,20 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		httpclient = new DefaultHttpClient(params);
 		this.url = url;
 		this.cipher = cipher;
+	}
+
+	public APIRequest(String url, Cipher cipher) {
+		this(url, cipher, 10000);
+	}
+
+	public APIRequest(String url, Cipher cipher, int socketTimeout, long cacheTimeOut, Context context) {
+		this(url, cipher, socketTimeout);
+		this.cacheTimeOut = cacheTimeOut;
+		this.context = context;
+	}
+
+	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
+		this(url, cipher, 10000, cacheTimeOut, context);
 	}
 
 	public void addGetParam(String key, String value) {
