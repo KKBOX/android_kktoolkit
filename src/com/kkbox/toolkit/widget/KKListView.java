@@ -59,8 +59,8 @@ public class KKListView extends ListView {
 		delegate.setLoadMore(onLoadMoreListener);
 	}
 
-	public void setParallaxedHeaderView(View view) {
-		delegate.setParallaxedHeaderView(view);
+	public void addParallaxedHeaderView(View view) {
+		delegate.addParallaxedHeaderView(view);
 	}
 
 	@Override

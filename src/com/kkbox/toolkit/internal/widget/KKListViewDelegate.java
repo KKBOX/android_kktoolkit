@@ -33,7 +33,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kkbox.toolkit.R;
+import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.StringUtils;
+
+import java.util.ArrayList;
 
 public class KKListViewDelegate {
 	private static class State {
@@ -63,6 +66,7 @@ public class KKListViewDelegate {
 	private ListView listView;
 	private ListView.OnScrollListener customScrollListener;
 	private View parallaxedHeaderView;
+	private ArrayList<View> parallaxedHeaderViews;
 	private int parallaxedHeaderViewLastOffset;
 
 	private final ListView.OnScrollListener onScrollListener = new ListView.OnScrollListener() {
@@ -90,25 +94,25 @@ public class KKListViewDelegate {
 					updateState(State.LOADING_MORE);
 				}
 			}
-			if (parallaxedHeaderView != null && listView.getChildCount() > 0) {
-				int top;
-				if (onRefreshListener != null && firstItemToTopHeight != 0) {
-					top = -listView.getChildAt(1).getTop() + firstItemToTopHeight ;
-				} else {
-					top = -listView.getChildAt(0).getTop() ;
-				}
-				int offset = (int) (top / 1.6f);
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-					parallaxedHeaderView.setTranslationY(offset);
-				} else {
-					TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, parallaxedHeaderViewLastOffset, offset);
-					translateAnimation.setDuration(0);
-					translateAnimation.setFillAfter(true);
-					parallaxedHeaderView.setAnimation(translateAnimation);
-					translateAnimation.start();
-					parallaxedHeaderViewLastOffset = offset;
+			if (parallaxedHeaderViews != null && listView.getChildCount() > 0 && parallaxedHeaderViews.contains(listView.getChildAt(0))) {
+				if (parallaxedHeaderView == null || !parallaxedHeaderView.equals(listView.getChildAt(0))) {
+					if (parallaxedHeaderView != null) {
+						translateOffset(parallaxedHeaderView, 0);
+					}
+					if (onRefreshListener != null && firstItemToTopHeight != 0) {
+						parallaxedHeaderView = listView.getChildAt(1);
+					} else {
+						parallaxedHeaderView = listView.getChildAt(0);
 					}
 				}
+				int top;
+				if (onRefreshListener != null && firstItemToTopHeight != 0) {
+					top = -listView.getChildAt(1).getTop() + firstItemToTopHeight;
+				} else {
+					top = -listView.getChildAt(0).getTop();
+				}
+				translateOffset(parallaxedHeaderView, (int) (top / 1.6f));
+			}
 		}
 	};
 
@@ -155,9 +159,12 @@ public class KKListViewDelegate {
 		this.onLoadMoreListener = onLoadMoreListener;
 	}
 
-	public void setParallaxedHeaderView(View headerView) {
+	public void addParallaxedHeaderView(View headerView) {
+		if (parallaxedHeaderViews == null) {
+			parallaxedHeaderViews = new ArrayList<View>();
+		}
+		parallaxedHeaderViews.add(headerView);
 		listView.addHeaderView(headerView, null ,false);
-		parallaxedHeaderView = headerView;
 	}
 
 	private void updateState(int newState) {
@@ -238,6 +245,39 @@ public class KKListViewDelegate {
 		loadCompleted();
 	}
 
+	public void loadCompleted() {
+		if (currentState == State.UPDATING) {
+			if (labelPullToRefreshUpdatedAt != null) {
+				String lastUpdatedTime = (String)context.getResources().getText(R.string.last_update) + " "
+						+ StringUtils.timeMillisToString(System.currentTimeMillis(), "yyyy-MM-dd HH:mm");
+				labelPullToRefreshUpdatedAt.setText(lastUpdatedTime);
+			}
+			if (!footerViewAdded && footerView != null) {
+				listView.addFooterView(footerView);
+				footerViewAdded = true;
+			}
+		}
+		updateState(State.NORMAL);
+	}
+
+	public void loadMoreFinished() {
+		listView.removeFooterView(footerView);
+		footerViewAdded = false;
+	}
+
+	private void translateOffset(View view, int offset) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			view.setTranslationY(offset);
+		} else {
+			TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, parallaxedHeaderViewLastOffset, offset);
+			translateAnimation.setDuration(0);
+			translateAnimation.setFillAfter(true);
+			view.setAnimation(translateAnimation);
+			translateAnimation.start();
+			parallaxedHeaderViewLastOffset = offset;
+		}
+	}
+
 	private void setHeaderViewHeight(int height) {
 		firstItemToTopHeight = height;
 		LinearLayout.LayoutParams containerLayoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -274,25 +314,5 @@ public class KKListViewDelegate {
 			};
 			handler.post(runnable);
 		}
-	}
-
-	public void loadCompleted() {
-		if (currentState == State.UPDATING) {
-			if (labelPullToRefreshUpdatedAt != null) {
-				String lastUpdatedTime = (String)context.getResources().getText(R.string.last_update) + " "
-						+ StringUtils.timeMillisToString(System.currentTimeMillis(), "yyyy-MM-dd HH:mm");
-				labelPullToRefreshUpdatedAt.setText(lastUpdatedTime);
-			}
-			if (!footerViewAdded && footerView != null) {
-				listView.addFooterView(footerView);
-				footerViewAdded = true;
-			}
-		}
-		updateState(State.NORMAL);
-	}
-
-	public void loadMoreFinished() {
-		listView.removeFooterView(footerView);
-		footerViewAdded = false;
 	}
 }
