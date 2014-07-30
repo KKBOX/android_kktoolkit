@@ -37,7 +37,7 @@ public class KKDialogManager {
 	public void cancelDialog(int notificationId) {
 		if (isDialogOnShown && listener != null && dialogs.get(0).getNotificationId() == notificationId) {
 			listener.onCancelNotification();
-			dismissCurrentDialog();
+			dismissCurrentDialog(notificationId);
 		} else {
 			for (int i = 0; i < dialogs.size(); i++) {
 				if (dialogs.get(i).getNotificationId() == notificationId) {
@@ -68,9 +68,11 @@ public class KKDialogManager {
 		return isDialogOnShown;
 	}
 	
-	public void dismissCurrentDialog() {
+	public synchronized void dismissCurrentDialog(int notificationId) {
 		isDialogOnShown = false;
-		dialogs.remove(0);
+		if (!dialogs.isEmpty() && dialogs.get(0).getNotificationId() == notificationId) {
+			dialogs.remove(0);
+		}
 		showDialog();
 		if (!isDialogOnShown && listener != null) {
 			listener.onAllNotificationEnded();

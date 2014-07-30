@@ -65,7 +65,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	private static ReentrantLock fileLock = new ReentrantLock();
 
 	public KKImageRequest(Context context, String url, String localPath, View view, boolean updateBackground, Cipher cipher,
-			boolean saveToLocal) {
+			boolean saveToLocal, KKImageRequestListener imageRequestListener) {
 		// update only
 		this.view = view;
 		this.saveToLocal = saveToLocal;
@@ -74,31 +74,33 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		} else {
 			actionType = KKImageManager.ActionType.UPDATE_VIEW_SOURCE;
 		}
-		init(context, url, localPath, cipher);
+		init(context, url, localPath, cipher, imageRequestListener);
 	}
 
 	public KKImageRequest(Context context, String url, String localPath, View view, boolean updateBackground, Cipher cipher,
-			boolean saveToLocal, OnImageDownloadedListener onImageDownloadedListener) {
+			boolean saveToLocal, KKImageRequestListener imageRequestListener, OnImageDownloadedListener onImageDownloadedListener) {
 		// update and save
-		this(context, url, localPath, view, updateBackground, cipher, saveToLocal);
+		this(context, url, localPath, view, updateBackground, cipher, saveToLocal, imageRequestListener);
 		this.onImageDownloadedListener = onImageDownloadedListener;
 	}
 
-	public KKImageRequest(Context context, String url, String localPath, Cipher cipher, OnImageDownloadedListener onImageDownloadedListener) {
+	public KKImageRequest(Context context, String url, String localPath, Cipher cipher, KKImageRequestListener imageRequestListener,
+	        OnImageDownloadedListener onImageDownloadedListener) {
 		// download
 		actionType = KKImageManager.ActionType.DOWNLOAD;
 		this.onImageDownloadedListener = onImageDownloadedListener;
-		init(context, url, localPath, cipher);
+		init(context, url, localPath, cipher, imageRequestListener);
 	}
 
-	public KKImageRequest(Context context, String url, String localPath, Cipher cipher, OnBitmapReceivedListener onBitmapReceivedListener) {
+	public KKImageRequest(Context context, String url, String localPath, Cipher cipher, KKImageRequestListener imageRequestListener,
+	        OnBitmapReceivedListener onBitmapReceivedListener) {
 		// callback
 		actionType = KKImageManager.ActionType.CALL_LISTENER;
 		this.onBitmapReceivedListener = onBitmapReceivedListener;
-		init(context, url, localPath, cipher);
+		init(context, url, localPath, cipher, imageRequestListener);
 	}
 
-	private void init(Context context, String url, String localPath, Cipher cipher) {
+	private void init(Context context, String url, String localPath, Cipher cipher, KKImageRequestListener imageRequestListener) {
 		BasicHttpParams params = new BasicHttpParams();
 		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
 		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 10000);
@@ -107,9 +109,11 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		this.localPath = localPath;
 		this.context = context;
 		this.cipher = cipher;
+		this.listener = imageRequestListener;
 	}
 
 	public synchronized void cancel() {
+		cancel(true);
 		if (listener != null) {
 			listener.onCancelled(this);
 		}
@@ -135,7 +139,6 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 
 	@Override
 	public Bitmap doInBackground(Object... params) {
-		listener = (KKImageRequestListener) params[0];
 		Bitmap bitmap;
 		try {
 			int readLength;

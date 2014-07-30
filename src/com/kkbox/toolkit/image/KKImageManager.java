@@ -100,7 +100,9 @@ public class KKImageManager {
 
 		@Override
 		public void onCancelled(KKImageRequest request) {
-			workingCount--;
+			if (request.getStatus() == UserTask.Status.RUNNING) {
+				workingCount--;
+			}
 			workingList.remove(request);
 			startFetch();
 		}
@@ -222,14 +224,14 @@ public class KKImageManager {
 	}
 
 	public KKImageRequest downloadBitmap(String url, String localPath, OnImageDownloadedListener listener) {
-		KKImageRequest request = new KKImageRequest(context, url, localPath, cipher, listener);
+		KKImageRequest request = new KKImageRequest(context, url, localPath, cipher, imageRequestListener, listener);
 		workingList.add(request);
 		startFetch();
 		return request;
 	}
 
 	public KKImageRequest loadBitmap(String url, String localPath, OnBitmapReceivedListener listener) {
-		KKImageRequest request = new KKImageRequest(context, url, localPath, cipher, listener);
+		KKImageRequest request = new KKImageRequest(context, url, localPath, cipher, imageRequestListener, listener);
 		workingList.add(request);
 		startFetch();
 		return request;
@@ -304,9 +306,9 @@ public class KKImageManager {
 		}
 		if (url != null) {
 			if (listener == null) {
-				request = new KKImageRequest(context, url, localPath, view, updateBackground, cipher, saveToLocal);
+				request = new KKImageRequest(context, url, localPath, view, updateBackground, cipher, saveToLocal, imageRequestListener);
 			} else {
-				request = new KKImageRequest(context, url, localPath, view, updateBackground, cipher, saveToLocal, listener);
+				request = new KKImageRequest(context, url, localPath, view, updateBackground, cipher, saveToLocal, imageRequestListener, listener);
 			}
 			workingList.add(request);
 			fetchList.put(view, request);
@@ -324,7 +326,7 @@ public class KKImageManager {
 					break;
 				}
 				if (workingList.get(i).getStatus() == UserTask.Status.PENDING) {
-					workingList.get(i).execute(imageRequestListener);
+					workingList.get(i).execute();
 					workingCount++;
 				}
 			}
