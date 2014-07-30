@@ -73,8 +73,6 @@ public abstract class KKFragment extends Fragment {
 		}
 	}
 
-	public void onLoadData() {}
-
 	public void setCustomErrorView(View view) {
 		customErrorView = view;
 	}
@@ -87,7 +85,7 @@ public abstract class KKFragment extends Fragment {
 		dataFetchedStatus = DataFetchStatus.NONE;
 	}
 
-	protected void startFetchData() {
+	public void onFetchData() {
 		if (viewMessage != null) {
 			if (customLoadingView != null) {
 				viewMessage.setCustomView(customLoadingView);
@@ -249,7 +247,7 @@ public abstract class KKFragment extends Fragment {
 			if (dataFetchedStatus == DataFetchStatus.SUCCESS) {
 				onLoadUI();
 			} else {
-				onLoadData();
+				onFetchData();
 			}
 		}
 	}
