@@ -11,8 +11,6 @@ import com.kkbox.toolkit.app.KKFragment;
 import com.kkbox.toolkit.example.R;
 import com.kkbox.toolkit.example.api.ExampleWeatherAPI;
 
-import java.lang.Override;
-
 public class ExampleWeatherFragment extends KKFragment {
 
 	TextView mCity;
@@ -56,8 +54,9 @@ public class ExampleWeatherFragment extends KKFragment {
 	}
 
 	@Override
-	public void onFetchData() {
-		super.onFetchData();
+	public void onLoadData() {
+
+		startFetchData(); // Just show message
 		Bundle bundle = getArguments();
 		String city = null;
 		if (bundle != null) {
