@@ -61,6 +61,8 @@ import javax.crypto.IllegalBlockSizeException;
 
 
 public abstract class APIRequest  extends UserTask<Object, Void, Void> {
+	public final static int DEFAULT_RETRY_LIMIT = 3;
+
 	private APIRequestListener listener;
 	private String getParams = "";
 	private final String url;
@@ -83,6 +85,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 
 	private InputStream is = null;
 	private HttpResponse response;
+	private int retryLimit = DEFAULT_RETRY_LIMIT;
 
 	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
 		this(url, cipher, 10000);
@@ -171,6 +174,10 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 			gzipStreamEntity.setContentType("application/x-www-form-urlencoded");
 			gzipStreamEntity.setContentEncoding("gzip");
 		} catch (Exception e) {}
+	}
+
+	public void setRetryCount(int retryLimit) {
+		this.retryLimit = retryLimit;
 	}
 
 	public void cancel() {
@@ -300,7 +307,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 					isNetworkError = true;
 					SystemClock.sleep(1000);
 				}
-			} while (isNetworkError && retryTimes < 3);
+			} while (isNetworkError && retryTimes < retryLimit);
 
 			try {
 				if (!isNetworkError && !isHttpStatusError && listener != null) {
