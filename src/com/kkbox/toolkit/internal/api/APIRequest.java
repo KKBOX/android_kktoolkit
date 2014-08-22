@@ -83,6 +83,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 
 	private Context context = null;
 	private long cacheTimeOut = -1;
+	private boolean postFlag = false;
 
 	private InputStream is = null;
 	private HttpResponse response;
@@ -183,6 +184,10 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		} catch (Exception e) {}
 	}
 
+	public void forceEnablePostRequest(boolean enabled) {
+		postFlag = enabled;
+	}
+
 	public void setRetryCount(int retryLimit) {
 		this.retryLimit = retryLimit;
 	}
@@ -246,8 +251,8 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
-							|| byteArrayEntity != null
-							|| gzipStreamEntity != null || (headerParams != null && postParams != null)) {
+							|| byteArrayEntity != null || gzipStreamEntity != null || (headerParams != null && postParams != null)
+							|| postFlag) {
 						final HttpPost httppost = new HttpPost(url + getParams);
 						if (postParams != null) {
 							httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
