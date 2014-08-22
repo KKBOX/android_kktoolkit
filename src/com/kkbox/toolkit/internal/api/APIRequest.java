@@ -162,7 +162,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 
 	public void addByteArrayPostParam(byte[] data, String contentType) {
 		byteArrayEntity = new ByteArrayEntity(data);
-		if (TextUtils.isEmpty(contentType) ) {
+		if (!TextUtils.isEmpty(contentType) ) {
 			byteArrayEntity.setContentType(contentType);
 		}
 	}
