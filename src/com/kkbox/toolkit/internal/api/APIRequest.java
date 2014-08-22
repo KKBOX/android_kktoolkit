@@ -17,6 +17,7 @@ package com.kkbox.toolkit.internal.api;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.StringUtils;
@@ -159,9 +160,11 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		fileEntity = new FileEntity(new File(path), URLEncodedUtils.CONTENT_TYPE + HTTP.CHARSET_PARAM + HTTP.UTF_8);
 	}
 
-	public void addByteArrayPostParam(byte[] data) {
+	public void addByteArrayPostParam(byte[] data, String contentType) {
 		byteArrayEntity = new ByteArrayEntity(data);
-		byteArrayEntity.setContentType("application/octet-stream");
+		if (!TextUtils.isEmpty(contentType) ) {
+			byteArrayEntity.setContentType(contentType);
+		}
 	}
 
 	public void addGZIPPostParam(String key, String value) {
