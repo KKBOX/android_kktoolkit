@@ -162,7 +162,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 	public void addByteArrayPostParam(byte[] data, String contentType) {
 		byteArrayEntity = new ByteArrayEntity(data);
 		if (contentType != null) {
-			byteArrayEntity.setContentType("application/octet-stream");
+			byteArrayEntity.setContentType(contentType);
 		}
 	}
 
