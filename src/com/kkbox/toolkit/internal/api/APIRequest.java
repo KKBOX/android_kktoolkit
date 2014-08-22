@@ -17,6 +17,7 @@ package com.kkbox.toolkit.internal.api;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.StringUtils;
@@ -161,7 +162,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 
 	public void addByteArrayPostParam(byte[] data, String contentType) {
 		byteArrayEntity = new ByteArrayEntity(data);
-		if (contentType != null) {
+		if (TextUtils.isEmpty(contentType) ) {
 			byteArrayEntity.setContentType(contentType);
 		}
 	}
