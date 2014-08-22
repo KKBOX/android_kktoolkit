@@ -159,9 +159,11 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		fileEntity = new FileEntity(new File(path), URLEncodedUtils.CONTENT_TYPE + HTTP.CHARSET_PARAM + HTTP.UTF_8);
 	}
 
-	public void addByteArrayPostParam(byte[] data) {
+	public void addByteArrayPostParam(byte[] data, String contentType) {
 		byteArrayEntity = new ByteArrayEntity(data);
-		byteArrayEntity.setContentType("application/octet-stream");
+		if (contentType != null) {
+			byteArrayEntity.setContentType("application/octet-stream");
+		}
 	}
 
 	public void addGZIPPostParam(String key, String value) {
