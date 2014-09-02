@@ -248,7 +248,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 
 	@Override
 	public synchronized void onPostExecute(Bitmap bitmap) {
-		if (interuptFlag) {
+		if (interuptFlag || listener == null) {
 			return;
 		}
 		if (isNetworkError || (actionType != KKImageManager.ActionType.DOWNLOAD && bitmap == null)) {
