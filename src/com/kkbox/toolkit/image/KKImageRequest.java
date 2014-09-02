@@ -114,10 +114,14 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 
 	public synchronized void cancel() {
 		cancel(true);
+		interuptFlag = true;
+	}
+
+	@Override
+	public synchronized void onCancelled() {
 		if (listener != null) {
 			listener.onCancelled(this);
 		}
-		interuptFlag = true;
 		listener = null;
 	}
 
@@ -244,7 +248,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 
 	@Override
 	public synchronized void onPostExecute(Bitmap bitmap) {
-		if (listener == null) {
+		if (interuptFlag) {
 			return;
 		}
 		if (isNetworkError || (actionType != KKImageManager.ActionType.DOWNLOAD && bitmap == null)) {
