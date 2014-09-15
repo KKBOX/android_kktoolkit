@@ -111,7 +111,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
 	public void addGetParam(String key, String value) {
 		if (TextUtils.isEmpty(getParams)) {
-			getParams += "?";
+			getParams = "?";
 		} else if (!getParams.endsWith("&")) {
 			getParams += "&";
 		}
