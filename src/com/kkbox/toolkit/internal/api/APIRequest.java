@@ -16,7 +16,9 @@ package com.kkbox.toolkit.internal.api;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.StringUtils;
@@ -60,7 +62,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 
 
-public abstract class APIRequest  extends UserTask<Object, Void, Void> {
+public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	public final static int DEFAULT_RETRY_LIMIT = 3;
 
 	private APIRequestListener listener;
@@ -102,23 +104,24 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
 		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, socketTimeout);
 		httpclient = new DefaultHttpClient(params);
-		this.url = url;
+		getParams = TextUtils.isEmpty(Uri.parse(url).getQuery()) ? "" : "?" + Uri.parse(url).getQuery();
+		this.url = url.split("\\?")[0];
 		this.cipher = cipher;
 	}
 
 	public void addGetParam(String key, String value) {
-		if (getParams == "") {
-			getParams = "?";
-		} else {
+		if (TextUtils.isEmpty(getParams)) {
+			getParams += "?";
+		} else if (!getParams.endsWith("&")) {
 			getParams += "&";
 		}
 		getParams += key + "=" + value;
 	}
 
 	public void addGetParam(String parameter) {
-		if (getParams == "") {
+		if (TextUtils.isEmpty(getParams)) {
 			getParams = "?";
-		} else {
+		} else if (!getParams.endsWith("&")) {
 			getParams += "&";
 		}
 		getParams += parameter;
@@ -238,6 +241,7 @@ public abstract class APIRequest  extends UserTask<Object, Void, Void> {
 		} else {
 			do {
 				try {
+					KKDebug.i("Connect API url " + url + getParams);
 					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
 							|| byteArrayEntity != null
 							|| gzipStreamEntity != null || (headerParams != null && postParams != null)) {
