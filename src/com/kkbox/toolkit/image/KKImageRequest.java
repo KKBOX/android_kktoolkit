@@ -113,7 +113,12 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	}
 
 	public synchronized void cancel() {
-		cancel(true);
+		if (!cancel(true)) {
+			if (listener != null) {
+				listener.onCancelled(this);
+			}
+			listener = null;
+		}
 		interuptFlag = true;
 	}
 
