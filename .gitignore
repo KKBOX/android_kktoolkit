@@ -1,3 +1,36 @@
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# Ignore gradle files
+.gradle/
+build/
+.idea/*
+
+# generated files
+bin/
+gen/
+
+# Eclipse and Android Studio files
+.project
+.classpath
+.settings/
+*.iml
+
+# Local configuration file (sdk path, etc)
+local.properties
+/doc/
+/project.properties
+out/
+.DS_Store
+
+# Examples module
 /examples/.settings
 /examples/bin
 /examples/gen
