@@ -15,6 +15,9 @@
 package com.kkbox.toolkit.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class KKEventQueue {
 	public static class ThreadType {
@@ -28,7 +31,7 @@ public class KKEventQueue {
 		public Runnable postEventRunnable;
 	}
 
-	private final ArrayList<KKEvent> queue = new ArrayList<KKEvent>();
+	private List<KKEvent> queue = Collections.synchronizedList(new CopyOnWriteArrayList<KKEvent>());
 	private KKEventQueueListener listener;
 	private boolean isRunning = false;
 	private ArrayList<Integer> threadUnlockId = new ArrayList<Integer>();
