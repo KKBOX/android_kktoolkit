@@ -33,6 +33,7 @@ public class KKDialog extends DialogFragment {
 		public static final int PROGRESSING_DIALOG = 3;
 		public static final int SELECT_DIALOG = 4;
 		public static final int CUSTOMIZE_DIALOG = 5;
+		public static final int CUSTOMIZE_FULLSCREEN_DIALOG = 6;
 	}
 
 	private KKDialogPostExecutionListener listener;
@@ -91,6 +92,12 @@ public class KKDialog extends DialogFragment {
 		this.neutralButtonText = neutralButtonText;
 		this.dialogType = Type.CUSTOMIZE_DIALOG;
 		this.listener = listener;
+		this.customizeView = customizeView;
+	}
+
+	public void setFullscreenDialog(int notificationId, View customizeView) {
+		this.notificationId = notificationId;
+		this.dialogType = Type.CUSTOMIZE_FULLSCREEN_DIALOG;
 		this.customizeView = customizeView;
 	}
 
@@ -163,18 +170,18 @@ public class KKDialog extends DialogFragment {
 
 		switch (dialogType) {
 			case Type.PROGRESSING_DIALOG:
-				ProgressDialog dialog;
+				ProgressDialog progressDialog;
 				if (theme != -1) {
-					dialog = new ProgressDialog(getActivity(), theme);
+					progressDialog = new ProgressDialog(getActivity(), theme);
 				} else {
-					dialog = new ProgressDialog(getActivity());
+					progressDialog = new ProgressDialog(getActivity());
 				}
-				dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				dialog.setMessage(message);
-				dialog.setIndeterminate(true);
-				dialog.setCanceledOnTouchOutside(false);
-				dialog.setCancelable(listener != null);
-				return dialog;
+				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				progressDialog.setMessage(message);
+				progressDialog.setIndeterminate(true);
+				progressDialog.setCanceledOnTouchOutside(false);
+				progressDialog.setCancelable(listener != null);
+				return progressDialog;
 			case Type.ALERT_DIALOG:
 				AlertDialog.Builder builder;
 				AlertDialog alertDialog;
@@ -266,6 +273,18 @@ public class KKDialog extends DialogFragment {
 				alertDialog = builder.create();
 				alertDialog.setCanceledOnTouchOutside(isAlertDialogCanceledOnTouchOutside);
 				return alertDialog;
+			case Type.CUSTOMIZE_FULLSCREEN_DIALOG:
+				Dialog dialog;
+				if (theme != -1) {
+					dialog = new Dialog(getActivity(), theme);
+				} else {
+					dialog = new Dialog(getActivity(), android.R.style.Theme_NoTitleBar);
+				}
+				if(customizeView != null && customizeView.getParent() != null) {
+					((ViewGroup)customizeView.getParent()).removeView(customizeView);
+				}
+				dialog.setContentView(customizeView);
+				return dialog;
 		}
 		return null;
 	}
