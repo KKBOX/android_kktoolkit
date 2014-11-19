@@ -29,12 +29,14 @@ public abstract class InfiniteViewPagerAdapter extends PagerAdapter {
 	public InfiniteViewPagerAdapter(ArrayList<Object> content, boolean loopEnabled) {
 		super();
 		this.loopEnabled = loopEnabled;
-		if (loopEnabled) {
-			objects.add(0, content.get(content.size() - 1));
-		}
-		objects.addAll(content);
-		if (loopEnabled) {
-			objects.add(content.size() + 1, content.get(0));
+		if (content.size() > 0) {
+			if (loopEnabled) {
+				objects.add(0, content.get(content.size() - 1));
+			}
+			objects.addAll(content);
+			if (loopEnabled) {
+				objects.add(content.size() + 1, content.get(0));
+			}
 		}
 	}
 
