@@ -38,7 +38,7 @@ public class KKActivityDelegate {
 	private boolean finishActivityAfterShowingNotification = false;
 	private FragmentActivity activity;
 
-	protected final KKDialogManagerListener dialogNotificationListener = new KKDialogManagerListener() {
+	private final KKDialogManagerListener dialogNotificationListener = new KKDialogManagerListener() {
 		@Override
 		public void onAllNotificationEnded() {
 			if (nextActivityIntent != null) {
@@ -53,13 +53,13 @@ public class KKActivityDelegate {
 		}
 
 		@Override
-		public void onCancelNotification() {
+		public synchronized void onCancelNotification() {
 			currentDialogFragment.dismiss();
 			activity.getSupportFragmentManager().executePendingTransactions();
 		}
 
 		@Override
-		public void onNotification(final KKServiceDialog dialog) {
+		public synchronized void onNotification(final KKServiceDialog dialog) {
 			currentDialogFragment = dialog;
 			currentDialogFragment.show(activity.getSupportFragmentManager(), "alertDialog");
 		}
