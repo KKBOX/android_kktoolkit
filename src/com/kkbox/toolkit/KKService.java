@@ -47,6 +47,12 @@ public abstract class KKService extends Service {
 		}
 	}
 
+	public static void detachListener(KKServiceListener serviceListener) {
+		if (listener == serviceListener) {
+			listener = null;
+		}
+	}
+
 	public static KKDialogManager getDialogNotificationManager() {
 		return dialogNotificationManager;
 	}
