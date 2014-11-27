@@ -132,6 +132,7 @@ public class KKActivityDelegate {
 		if (serviceLoadingDialog != null && serviceLoadingDialog.isShowing()) {
 			serviceLoadingDialog.dismiss();
 		}
+		KKService.detachListener(serviceListener);
 		if (KKService.isRunning()) {
 			KKService.getDialogNotificationManager().removeListener();
 		}
