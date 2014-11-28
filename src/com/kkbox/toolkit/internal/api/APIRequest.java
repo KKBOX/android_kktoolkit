@@ -341,18 +341,22 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		return null;
 	}
 
-	@Override
 	public void onPostExecute(Void v) {
-		if (listener == null) {
-			return;
-		}
 		if (isHttpStatusError) {
-			listener.onHttpStatusError(httpStatusCode, httpStatusErrorMessage);
-			listener.onHttpStatusError(httpStatusCode);
+			if (listener != null) {
+				listener.onHttpStatusError(httpStatusCode);
+			}
+			if (listener != null) {
+				listener.onHttpStatusError(httpStatusCode, httpStatusErrorMessage);
+			}
 		} else if (isNetworkError) {
-			listener.onNetworkError();
+			if (listener != null) {
+				listener.onNetworkError();
+			}
 		} else {
-			listener.onComplete();
+			if (listener != null) {
+				listener.onComplete();
+			}
 		}
 	}
 }
