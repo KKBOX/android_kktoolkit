@@ -84,7 +84,7 @@ public class KKDialog extends DialogFragment {
 	}
 
 	public void setCustomizeDialog(int notificationId, CharSequence title, CharSequence positiveButtonText, CharSequence negativeButtonText,
-								CharSequence neutralButtonText, KKDialogPostExecutionListener listener, View customizeView) {
+	                               CharSequence neutralButtonText, KKDialogPostExecutionListener listener, View customizeView) {
 		this.notificationId = notificationId;
 		this.title = title;
 		this.positiveButtonText = positiveButtonText;
@@ -95,10 +95,11 @@ public class KKDialog extends DialogFragment {
 		this.customizeView = customizeView;
 	}
 
-	public void setFullscreenDialog(int notificationId, View customizeView) {
+	public void setFullscreenDialog(int notificationId, View customizeView, KKDialogPostExecutionListener listener) {
 		this.notificationId = notificationId;
 		this.dialogType = Type.CUSTOMIZE_FULLSCREEN_DIALOG;
 		this.customizeView = customizeView;
+		this.listener = listener;
 	}
 
 	public void setTheme(int theme) {
