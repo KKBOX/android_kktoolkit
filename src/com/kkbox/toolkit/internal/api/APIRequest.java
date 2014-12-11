@@ -29,8 +29,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.FileEntity;
@@ -63,10 +66,19 @@ import javax.crypto.IllegalBlockSizeException;
 
 
 public abstract class APIRequest extends UserTask<Object, Void, Void> {
+
+	public static class HTTPMethod {
+		public static final int GET = 0;
+		public static final int POST = GET + 1;
+		public static final int PUT = POST + 1;
+		public static final int DELETE = PUT + 1;
+	}
+
 	public final static int DEFAULT_RETRY_LIMIT = 3;
 
 	private APIRequestListener listener;
 	private String getParams = "";
+	private int httpMethod = HTTPMethod.GET;
 	private final String url;
 	private HttpClient httpclient;
 	private boolean isNetworkError = false;
@@ -132,6 +144,10 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		getParams += parameter;
 	}
 
+	public void setHttpMethod(int method) {
+		httpMethod = method;
+	}
+
 	public void addPostParam(String key, String value) {
 		if (postParams == null) {
 			postParams = new ArrayList<NameValuePair>();
@@ -145,6 +161,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		}
 		headerParams.add((new BasicNameValuePair(key, value)));
 	}
+
 
 	public void addMultiPartPostParam(String key, ContentBody contentBody) {
 		if (multipartEntity == null) {
@@ -253,7 +270,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					KKDebug.i("Connect API url " + url + getParams);
-					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
+					if (httpMethod == HTTPMethod.POST || postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
 							|| byteArrayEntity != null || gzipStreamEntity != null || (headerParams != null && postParams != null)
 							|| postFlag) {
 						final HttpPost httppost = new HttpPost(url + getParams);
@@ -283,13 +300,26 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 						}
 						response = httpclient.execute(httppost);
 					} else {
-						final HttpGet httpGet = new HttpGet(url + getParams);
+						HttpRequestBase httpRequest;
+						switch (httpMethod) {
+							case HTTPMethod.PUT:
+								httpRequest = new HttpPut(url + getParams);
+								break;
+							case HTTPMethod.DELETE:
+								httpRequest = new HttpDelete(url + getParams);
+								break;
+							case HTTPMethod.GET:
+								httpRequest = new HttpGet(url + getParams);
+								break;
+							default:
+								httpRequest = new HttpGet(url + getParams);
+						}
 						if (headerParams != null) {
 							for (NameValuePair header : headerParams) {
-								httpGet.setHeader(header.getName(), header.getValue());
+								httpRequest.setHeader(header.getName(), header.getValue());
 							}
 						}
-						response = httpclient.execute(httpGet);
+						response = httpclient.execute(httpRequest);
 					}
 					httpStatusCode = response.getStatusLine().getStatusCode();
 					int httpStatusType = httpStatusCode / 100;
