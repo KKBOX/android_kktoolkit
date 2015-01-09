@@ -333,4 +333,17 @@ public class KKImageManager {
 		}
 		lock.unlock();
 	}
+
+	public void cancelUpdateView(String url) {
+		for (int i = 0; i < workingList.size(); i++) {
+			KKImageRequest request = workingList.get(i);
+			if (request.getUrl().equals(url)) {
+				if (request.getStatus() == UserTask.Status.RUNNING) {
+					request.cancel();
+				} else {
+					workingList.remove(request);
+				}
+			}
+		}
+	}
 }
