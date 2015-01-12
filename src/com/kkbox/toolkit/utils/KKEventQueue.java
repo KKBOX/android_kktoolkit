@@ -58,10 +58,13 @@ public class KKEventQueue {
 		add(new Runnable() {
 			@Override
 			public void run() {
+				KKDebug.i("threadLock runnable lockId == " + lockId);
 				while (!threadUnlockId.contains(lockId) && !threadUnlockFlag) {
 					try {
 						synchronized (threadLock) {
+							KKDebug.i("wait lockId == " + lockId);
 							threadLock.wait();
+							KKDebug.i("unlock lockId == " + lockId);
 						}
 					} catch (final InterruptedException e) {}
 				}
@@ -74,6 +77,7 @@ public class KKEventQueue {
 		synchronized (threadLock) {
 			threadUnlockId.add(lockId);
 			threadLock.notifyAll();
+			KKDebug.i("unlockEvent lockId == " + lockId);
 		}
 	}
 
