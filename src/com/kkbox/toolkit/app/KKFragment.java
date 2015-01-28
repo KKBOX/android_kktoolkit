@@ -58,8 +58,11 @@ public abstract class KKFragment extends Fragment {
 	private boolean uiLoaded = false;
 	private boolean animationEnded = false;
 	private boolean autoDataLoading = true;
+	private int customEnterAnimation = 0;
+	private int customExitAnimation = 0;
 
-	public KKFragment() {}
+	public KKFragment() {
+	}
 
 	public static void setAnimation(int type) {
 		animationType = type;
@@ -73,7 +76,8 @@ public abstract class KKFragment extends Fragment {
 		}
 	}
 
-	public void onLoadData() {}
+	public void onLoadData() {
+	}
 
 	public void setCustomErrorView(View view) {
 		customErrorView = view;
@@ -121,16 +125,18 @@ public abstract class KKFragment extends Fragment {
 		// workaround for sdk < 4.2 Orz
 		if (Build.VERSION.SDK_INT < 17) {
 			try {
-				int CREATED = 1;          // Created.
-				int ACTIVITY_CREATED = 2; // The activity has finished its creation.
-				int STOPPED = 3;          // Fully created, not started.
-				int STARTED = 4;          // Created and started, not resumed.
-				int RESUMED = 5;          // Created started and resumed.
+				int CREATED = 1; // Created.
+				int ACTIVITY_CREATED = 2; // The activity has finished its
+											// creation.
+				int STOPPED = 3; // Fully created, not started.
+				int STARTED = 4; // Created and started, not resumed.
+				int RESUMED = 5; // Created started and resumed.
 				Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
 				Field mState = Fragment.class.getDeclaredField("mState");
 				Method dispatchResumeMethod = childFragmentManager.getType().getDeclaredMethod("dispatchResume", null);
 				Method dispatchStartMethod = childFragmentManager.getType().getDeclaredMethod("dispatchStart", null);
-				Method dispatchActivityCreatedMethod = childFragmentManager.getType().getDeclaredMethod("dispatchActivityCreated", null);
+				Method dispatchActivityCreatedMethod = childFragmentManager.getType().getDeclaredMethod(
+						"dispatchActivityCreated", null);
 				Method dispatchCreateMethod = childFragmentManager.getType().getDeclaredMethod("dispatchCreate", null);
 				mState.setAccessible(true);
 				childFragmentManager.setAccessible(true);
@@ -140,8 +146,7 @@ public abstract class KKFragment extends Fragment {
 				} else if (state >= STARTED) {
 					dispatchStartMethod.invoke(childFragmentManager.get(this), null);
 				} else if (state >= ACTIVITY_CREATED) {
-					dispatchActivityCreatedMethod
-							.invoke(childFragmentManager.get(this), null);
+					dispatchActivityCreatedMethod.invoke(childFragmentManager.get(this), null);
 				} else if (state >= CREATED) {
 					dispatchCreateMethod.invoke(childFragmentManager.get(this), null);
 				}
@@ -170,7 +175,8 @@ public abstract class KKFragment extends Fragment {
 		activity = getActivity();
 	}
 
-	public void onReceiveMessage(Bundle arguments) {}
+	public void onReceiveMessage(Bundle arguments) {
+	}
 
 	protected void initView(View view) {
 		viewMessage = (KKMessageView) view.findViewById(R.id.view_message);
@@ -196,11 +202,20 @@ public abstract class KKFragment extends Fragment {
 		fragmentManager.executePendingTransactions();
 	}
 
+	public void setCustomAnimation(int enterAnimation, int exitAnimation) {
+		customEnterAnimation = enterAnimation;
+		customExitAnimation = exitAnimation;
+	}
+
 	@Override
 	public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
 		animationEnded = false;
-		Animation animation;
-		if (animationType == AnimationType.POP) {
+		Animation animation = null;
+		if (enter && customEnterAnimation != 0) {
+			animation = AnimationUtils.loadAnimation(activity, customEnterAnimation);
+		} else if (!enter && customExitAnimation != 0) {
+			animation = AnimationUtils.loadAnimation(activity, customExitAnimation);
+		} else if (animationType == AnimationType.POP) {
 			if (enter) {
 				animation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_left);
 			} else {
@@ -218,8 +233,9 @@ public abstract class KKFragment extends Fragment {
 			} else {
 				animation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
 			}
-		} else {
-			animation = new Animation() {};
+		} else if (animation == null) {
+			animation = new Animation() {
+			};
 			animation.setDuration(0);
 		}
 		animation.setAnimationListener(new AnimationListener() {
@@ -232,10 +248,12 @@ public abstract class KKFragment extends Fragment {
 			}
 
 			@Override
-			public void onAnimationStart(Animation a) {}
+			public void onAnimationStart(Animation a) {
+			}
 
 			@Override
-			public void onAnimationRepeat(Animation a) {}
+			public void onAnimationRepeat(Animation a) {
+			}
 		});
 		return animation;
 	}
