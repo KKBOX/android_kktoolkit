@@ -14,10 +14,11 @@
 */
 package com.kkbox.toolkit.api;
 
+import android.text.TextUtils;
+
 import com.kkbox.toolkit.internal.api.APIBase;
 import com.kkbox.toolkit.internal.api.APIRequestListener;
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
-
 
 public abstract class KKAPIBase extends APIBase {
 
@@ -33,9 +34,13 @@ public abstract class KKAPIBase extends APIBase {
 		}
 
 		@Override
-		public void onNetworkError() {
+		public void onNetworkError(String content) {
 			if (!isResponseSilent) {
-				onAPINetworkError();
+				if (TextUtils.isEmpty(content)) {
+					onAPINetworkError();
+				} else {
+					onAPINetworkError(content);
+				}
 			}
 			isRunning = false;
 		}

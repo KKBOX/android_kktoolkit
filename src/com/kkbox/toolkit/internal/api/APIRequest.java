@@ -60,7 +60,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-
+import javax.net.ssl.SSLException;
 
 public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	public final static int DEFAULT_RETRY_LIMIT = 3;
@@ -71,7 +71,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private HttpClient httpclient;
 	private boolean isNetworkError = false;
 	private boolean isHttpStatusError = false;
-	private String httpStatusErrorMessage = "";
+	private String errorMessage = "";
 	private int httpStatusCode = 0;
 	private ArrayList<NameValuePair> postParams;
 	private ArrayList<NameValuePair> headerParams;
@@ -306,6 +306,11 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 							SystemClock.sleep(1000);
 							break;
 					}
+				} catch (final SSLException e) {
+					KKDebug.w("connection to " + url + getParams + " failed with " + e.getClass().getName());
+					isNetworkError = true;
+					errorMessage = e.getClass().getName();
+					return null;
 				} catch (final Exception e) {
 					KKDebug.w("connection to " + url + getParams + " failed!");
 					retryTimes++;
@@ -332,7 +337,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 						byteArrayOutputStream.write(buffer, 0, readLength);
 					}
 					byteArrayOutputStream.flush();
-					httpStatusErrorMessage = byteArrayOutputStream.toString();
+					errorMessage = byteArrayOutputStream.toString();
 				}
 				response.getEntity().consumeContent();
 			} catch (IOException e) {
@@ -348,11 +353,11 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 				listener.onHttpStatusError(httpStatusCode);
 			}
 			if (listener != null) {
-				listener.onHttpStatusError(httpStatusCode, httpStatusErrorMessage);
+				listener.onHttpStatusError(httpStatusCode, errorMessage);
 			}
 		} else if (isNetworkError) {
 			if (listener != null) {
-				listener.onNetworkError();
+				listener.onNetworkError(errorMessage);
 			}
 		} else {
 			if (listener != null) {

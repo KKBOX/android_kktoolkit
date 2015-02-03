@@ -15,6 +15,7 @@
 package com.kkbox.toolkit.api;
 
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.JsonReader;
 
 import com.kkbox.toolkit.internal.api.APIBase;
@@ -40,9 +41,13 @@ public abstract class KKAPIJsonBase extends APIBase {
 		}
 
 		@Override
-		public void onNetworkError() {
+		public void onNetworkError(String content) {
 			if (!isResponseSilent) {
-				onAPINetworkError();
+				if (TextUtils.isEmpty(content)) {
+					onAPINetworkError();
+				} else {
+					onAPINetworkError(content);
+				}
 			}
 			isRunning = false;
 		}
