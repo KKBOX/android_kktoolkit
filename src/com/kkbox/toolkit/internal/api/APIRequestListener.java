@@ -23,5 +23,5 @@ public abstract interface APIRequestListener {
 
 	abstract public void onHttpStatusError(int statusCode, String content);
 
-	abstract public void onNetworkError();
+	abstract public void onNetworkError(String content);
 }
