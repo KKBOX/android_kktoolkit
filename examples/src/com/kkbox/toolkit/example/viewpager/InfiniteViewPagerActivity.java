@@ -41,7 +41,7 @@ public class InfiniteViewPagerActivity extends ExampleActivity {
 			}
 
 			@Override
-			public void onPageScrollLeft(boolean isManual) {
+			public void onPageScrolledLeft(boolean isManual) {
 				KKDebug.i(SampleUtil.LOG_TAG, "OnInfiniteViewPagerPageChangeListener onPageScrolledLeft"
 						+ " isManual: " + isManual);
 			}
