@@ -265,4 +265,11 @@ public abstract class KKFragment extends Fragment {
 		activity.startActivityForResult(intent, requestCode);
 		activityResultCallbackFragment = this;
 	}
+
+	/**
+	 * Return false to allow normal fragment processing to proceed, true to consume it here.
+	 **/
+	public boolean onBackPressed() {
+		return false;
+	}
 }
