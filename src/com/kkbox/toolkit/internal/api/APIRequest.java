@@ -336,6 +336,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 							break;
 						case 5:
 							KKDebug.w("Get server error " + httpStatusCode + " with connection : " + url + getParams);
+							is = getInputStreamFromHttpResponse();
 							isHttpStatusError = true;
 							isNetworkError = false;
 							break;
