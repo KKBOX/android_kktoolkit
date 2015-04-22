@@ -18,9 +18,6 @@ public abstract interface APIRequestListener {
 
 	abstract public void onComplete();
 
-	//TODO: Remove this listener after all project replace with new listener
-	abstract public void onHttpStatusError(int statusCode);
-
 	abstract public void onHttpStatusError(int statusCode, String content);
 
 	abstract public void onNetworkError();

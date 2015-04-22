@@ -41,14 +41,6 @@ public abstract class KKAPIBase extends APIBase {
 		}
 
 		@Override
-		public void onHttpStatusError(int statusCode) {
-			if (!isResponseSilent) {
-				onAPIHttpStatusError(statusCode);
-			}
-			isRunning = false;
-		}
-
-		@Override
 		public void onHttpStatusError(int statusCode, String content) {
 			if (!isResponseSilent) {
 				onAPIHttpStatusError(statusCode, content);
