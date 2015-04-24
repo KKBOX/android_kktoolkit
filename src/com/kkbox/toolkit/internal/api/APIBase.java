@@ -72,6 +72,10 @@ public abstract class APIBase {
 		}
 	}
 
+	protected void onAPINetworkError(String content) {
+		onAPINetworkError();
+	}
+
 	protected void onAPIError(int errorCode) {
 		KKDebug.i(getClass().getSimpleName() + " completed with errorCode: " + errorCode);
 		if (apiListener != null) {

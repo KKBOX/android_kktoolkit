@@ -16,6 +16,7 @@ import com.kkbox.toolkit.widget.KKListView;
 public class KKListViewActivity extends ExampleActivity {
 	private static final String TAG = "KKListViewActivity";
 	private KKListView mListView;
+	private ArrayAdapter<String> mAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class KKListViewActivity extends ExampleActivity {
 		root.addView(mListView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 		String[] mTestItem = getResources().getStringArray(R.array.city);
-		ArrayAdapter<String> mAdapter = new ArrayAdapter(KKListViewActivity.this, android.R.layout.simple_list_item_1, mTestItem);
+		mAdapter = new ArrayAdapter(KKListViewActivity.this, android.R.layout.simple_list_item_1, mTestItem);
 		mListView.setAdapter(mAdapter);
 
 	}
@@ -49,24 +50,29 @@ public class KKListViewActivity extends ExampleActivity {
 		}
 	};
 
-	private void loadForecastData(final boolean more) {
+	private void loadForecastData(final boolean usedLoadMore) {
 		ExampleWeatherAPI mAPI = new ExampleWeatherAPI();
 		mAPI.setAPIListener(new KKAPIListener() {
 			@Override
 			public void onAPIComplete() {
-				if (more) {
-					mListView.loadMoreFinished();
-				} else {
-					mListView.loadCompleted();
-				}
+				refreshUI(usedLoadMore);
 			}
 
 			@Override
 			public void onAPIError(int errorCode) {
 				KKDebug.e("KKListViewActivity", "onAPIError");
+				refreshUI(usedLoadMore);
 			}
 		});
-
 		mAPI.start(SampleUtil.test_item[0]);
+	}
+	
+	private void refreshUI(boolean usedLoadMore) {
+		if (usedLoadMore) {
+			mListView.loadMoreFinished();
+		} else {
+			mListView.loadCompleted();
+		}
+		mListView.setAdapter(mAdapter);	
 	}
 }
