@@ -90,4 +90,10 @@ public class KKFragmentActivity extends FragmentActivity implements KKServiceAct
 		super.onDestroy();
 		delegate.onDestroy();
 	}
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        delegate.onActivityResult(requestCode, resultCode, data);
+    }
 }
