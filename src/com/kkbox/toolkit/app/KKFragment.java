@@ -40,6 +40,7 @@ public abstract class KKFragment extends Fragment {
 		public static final int PUSH = 1;
 		public static final int POP = 2;
 		public static final int FADE_OUT = 3;
+		public static final int UP = 4;
 	}
 
 	public static class DataFetchStatus {
@@ -126,8 +127,7 @@ public abstract class KKFragment extends Fragment {
 		if (Build.VERSION.SDK_INT < 17) {
 			try {
 				int CREATED = 1; // Created.
-				int ACTIVITY_CREATED = 2; // The activity has finished its
-											// creation.
+				int ACTIVITY_CREATED = 2; // The activity has finished its creation.
 				int STOPPED = 3; // Fully created, not started.
 				int STARTED = 4; // Created and started, not resumed.
 				int RESUMED = 5; // Created started and resumed.
@@ -232,6 +232,12 @@ public abstract class KKFragment extends Fragment {
 				animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
 			} else {
 				animation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+			}
+		} else if (animationType == AnimationType.UP) {
+			if (enter) {
+				animation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_up);
+			} else {
+				animation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_down);
 			}
 		} else if (animation == null) {
 			animation = new Animation() {
