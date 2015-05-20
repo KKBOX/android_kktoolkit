@@ -31,16 +31,16 @@ public class KKAPIRequest extends APIRequest {
 
 	KKAPIRequestListener requestListener;
 
-	public KKAPIRequest(String url, Cipher cipher, long reloadPeriod, Context context) {
-		super(url, cipher, reloadPeriod, context);
+	public KKAPIRequest(HttpMethod httpMethod, String url, Cipher cipher, long reloadPeriod, Context context) {
+		super(httpMethod, url, cipher, reloadPeriod, context);
 	}
 
-	public KKAPIRequest(String url, Cipher cipher) {
-		super(url, cipher);
+	public KKAPIRequest(HttpMethod httpMethod, String url, Cipher cipher) {
+		super(httpMethod, url, cipher);
 	}
 
-	public KKAPIRequest(String url, Cipher cipher, int socketTimeout) {
-		super(url, cipher, socketTimeout);
+	public KKAPIRequest(HttpMethod httpMethod, String url, Cipher cipher, int socketTimeout) {
+		super(httpMethod, url, cipher, socketTimeout);
 	}
 
 	@Override

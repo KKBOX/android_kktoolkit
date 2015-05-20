@@ -32,15 +32,15 @@ public class KKAPIJsonRequest extends APIRequest {
 	private KKAPIJsonRequestListener jsonRequestListener;
 
 	public KKAPIJsonRequest(String url, Cipher cipher, long reloadPeriod, Context context) {
-		super(url, cipher, reloadPeriod, context);
+		super(HttpMethod.GET, url, cipher, reloadPeriod, context);
 	}
 
 	public KKAPIJsonRequest(String url, Cipher cipher) {
-		super(url, cipher);
+		super(HttpMethod.GET, url, cipher);
 	}
 
 	public KKAPIJsonRequest(String url, Cipher cipher, int socketTimeout) {
-		super(url, cipher, socketTimeout);
+		super(HttpMethod.GET, url, cipher, socketTimeout);
 	}
 
 	@Override

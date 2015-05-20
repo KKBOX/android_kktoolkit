@@ -29,8 +29,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.FileEntity;
@@ -65,6 +69,11 @@ import javax.net.ssl.SSLException;
 public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	public final static int DEFAULT_RETRY_LIMIT = 3;
 
+	public enum HttpMethod {
+		GET, POST, PUT, DELETE;
+	}
+
+	private HttpMethod httpMethod = HttpMethod.GET;
 	private APIRequestListener listener;
 	private String getParams = "";
 	private final String url;
@@ -89,22 +98,23 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private HttpResponse response;
 	private int retryLimit = DEFAULT_RETRY_LIMIT;
 
-	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
-		this(url, cipher, 10000);
+	public APIRequest(HttpMethod httpMethod, String url, Cipher cipher, long cacheTimeOut, Context context) {
+		this(httpMethod, url, cipher, 10000);
 		this.cacheTimeOut = cacheTimeOut;
 		this.context = context;
 	}
 
-	public APIRequest(String url, Cipher cipher) {
-		this(url, cipher, 10000);
+	public APIRequest(HttpMethod httpMethod, String url, Cipher cipher) {
+		this(httpMethod, url, cipher, 10000);
 	}
 
-	public APIRequest(String url, Cipher cipher, int socketTimeout) {
+	public APIRequest(HttpMethod httpMethod, String url, Cipher cipher, int socketTimeout) {
 		BasicHttpParams params = new BasicHttpParams();
 		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
 		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, socketTimeout);
 		httpclient = new DefaultHttpClient(params);
 		getParams = TextUtils.isEmpty(Uri.parse(url).getQuery()) ? "" : "?" + Uri.parse(url).getQuery();
+		this.httpMethod = httpMethod;
 		this.url = url.split("\\?")[0];
 		this.cipher = cipher;
 	}
@@ -242,43 +252,45 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					KKDebug.i("Connect API url " + url + getParams);
-					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
+
+					if ((httpMethod == HttpMethod.POST || httpMethod == httpMethod.PUT) && (
+							postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
 							|| byteArrayEntity != null
-							|| gzipStreamEntity != null || (headerParams != null && postParams != null)) {
-						final HttpPost httppost = new HttpPost(url + getParams);
+							|| gzipStreamEntity != null || (headerParams != null && postParams != null))) {
+						final HttpEntityEnclosingRequestBase httpBase =  httpMethod == HttpMethod.POST ? new HttpPost(url + getParams) : new HttpPut(url + getParams);
 						if (postParams != null) {
-							httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+							httpBase.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
 						}
 						if (multipartEntity != null) {
-							httppost.setEntity(multipartEntity);
+							httpBase.setEntity(multipartEntity);
 						}
 						if (stringEntity != null) {
-							httppost.setEntity(stringEntity);
+							httpBase.setEntity(stringEntity);
 						}
 						if (fileEntity != null) {
-							httppost.setEntity(fileEntity);
+							httpBase.setEntity(fileEntity);
 						}
 						if (byteArrayEntity != null) {
-							httppost.setEntity(byteArrayEntity);
+							httpBase.setEntity(byteArrayEntity);
 						}
 						if (gzipStreamEntity != null) {
-							httppost.setHeader("Accept-Encoding", "gzip");
-							httppost.setEntity(gzipStreamEntity);
+							httpBase.setHeader("Accept-Encoding", "gzip");
+							httpBase.setEntity(gzipStreamEntity);
 						}
 						if (headerParams != null) {
 							for (NameValuePair header : headerParams) {
-								httppost.setHeader(header.getName(), header.getValue());
+								httpBase.setHeader(header.getName(), header.getValue());
 							}
 						}
-						response = httpclient.execute(httppost);
+						response = httpclient.execute(httpBase);
 					} else {
-						final HttpGet httpGet = new HttpGet(url + getParams);
+						final HttpRequestBase httpBase = httpMethod == HttpMethod.GET ? new HttpGet(url + getParams) : new HttpDelete(url + getParams);
 						if (headerParams != null) {
 							for (NameValuePair header : headerParams) {
-								httpGet.setHeader(header.getName(), header.getValue());
+								httpBase.setHeader(header.getName(), header.getValue());
 							}
 						}
-						response = httpclient.execute(httpGet);
+						response = httpclient.execute(httpBase);
 					}
 					httpStatusCode = response.getStatusLine().getStatusCode();
 					int httpStatusType = httpStatusCode / 100;

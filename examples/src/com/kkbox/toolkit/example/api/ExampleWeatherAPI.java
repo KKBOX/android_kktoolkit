@@ -2,6 +2,7 @@ package com.kkbox.toolkit.example.api;
 
 import com.kkbox.toolkit.api.KKAPIBase;
 import com.kkbox.toolkit.api.KKAPIRequest;
+import com.kkbox.toolkit.internal.api.APIRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +45,7 @@ public class ExampleWeatherAPI extends KKAPIBase {
 	public void start(String cityName) {
 
 		String inputURL = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName;
-		mRequest = new KKAPIRequest(inputURL, null);
+		mRequest = new KKAPIRequest(APIRequest.HttpMethod.GET, inputURL, null);
 
 		execute(mRequest);
 
