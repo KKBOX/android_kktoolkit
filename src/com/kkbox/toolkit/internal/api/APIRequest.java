@@ -56,7 +56,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -67,19 +72,11 @@ import javax.crypto.IllegalBlockSizeException;
 
 public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
-	public static class HTTPMethod {
-		public static final int GET = 0;
-		public static final int POST = GET + 1;
-		public static final int PUT = POST + 1;
-		public static final int DELETE = PUT + 1;
-	}
-
 	public final static int DEFAULT_RETRY_LIMIT = 3;
-
+	private final String url;
 	private APIRequestListener listener;
 	private String getParams = "";
 	private int httpMethod = HTTPMethod.GET;
-	private final String url;
 	private HttpClient httpclient;
 	private boolean isNetworkError = false;
 	private boolean isHttpStatusError = false;
@@ -93,11 +90,9 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private ByteArrayEntity byteArrayEntity;
 	private InputStreamEntity gzipStreamEntity;
 	private Cipher cipher = null;
-
 	private Context context = null;
 	private long cacheTimeOut = -1;
 	private boolean postFlag = false;
-
 	private InputStream is = null;
 	private HttpResponse response;
 	private int retryLimit = DEFAULT_RETRY_LIMIT;
@@ -162,7 +157,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		headerParams.add((new BasicNameValuePair(key, value)));
 	}
 
-
 	public void addMultiPartPostParam(String key, ContentBody contentBody) {
 		if (multipartEntity == null) {
 			multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -173,7 +167,9 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	public void addStringPostParam(String data) {
 		try {
 			stringEntity = new StringEntity(data, HTTP.UTF_8);
-		} catch (Exception e) {};
+		} catch (Exception e) {
+		}
+		;
 	}
 
 	public void addFilePostParam(String path) {
@@ -182,7 +178,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
 	public void addByteArrayPostParam(byte[] data, String contentType) {
 		byteArrayEntity = new ByteArrayEntity(data);
-		if (!TextUtils.isEmpty(contentType) ) {
+		if (!TextUtils.isEmpty(contentType)) {
 			byteArrayEntity.setContentType(contentType);
 		}
 	}
@@ -200,7 +196,8 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			gzipStreamEntity = new InputStreamEntity(new ByteArrayInputStream(byteDataForGZIP), byteDataForGZIP.length);
 			gzipStreamEntity.setContentType("application/x-www-form-urlencoded");
 			gzipStreamEntity.setContentEncoding("gzip");
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 	}
 
 	public void forceEnablePostRequest(boolean enabled) {
@@ -209,6 +206,25 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
 	public void setRetryCount(int retryLimit) {
 		this.retryLimit = retryLimit;
+	}
+
+	public long getResponseTime() {
+		String dateTag = "Date";
+		if (response != null
+				&& response.getHeaders(dateTag) != null
+				&& response.getHeaders(dateTag).length != 0) {
+			SimpleDateFormat inputFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
+			inputFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			try {
+				Date date = inputFormat.parse(response.getHeaders(dateTag)[0].getValue());
+				return date.getTime();
+			} catch (ParseException e) {
+				e.printStackTrace();
+				return 0;
+			}
+		} else {
+			return 0;
+		}
 	}
 
 	public void cancel() {
@@ -378,7 +394,8 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 				response.getEntity().consumeContent();
 			} catch (IOException e) {
 				isNetworkError = true;
-			} catch (Exception e) {}
+			} catch (Exception e) {
+			}
 		}
 		return null;
 	}
@@ -395,5 +412,12 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		} else {
 			listener.onComplete();
 		}
+	}
+
+	public static class HTTPMethod {
+		public static final int GET = 0;
+		public static final int POST = GET + 1;
+		public static final int PUT = POST + 1;
+		public static final int DELETE = PUT + 1;
 	}
 }
