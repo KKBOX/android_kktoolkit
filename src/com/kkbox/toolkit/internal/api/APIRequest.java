@@ -253,10 +253,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 				try {
 					KKDebug.i("Connect API url " + url + getParams);
 
-					if ((httpMethod == HttpMethod.POST || httpMethod == httpMethod.PUT) && (
-							postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
-							|| byteArrayEntity != null
-							|| gzipStreamEntity != null || (headerParams != null && postParams != null))) {
+					if (httpMethod == HttpMethod.POST || httpMethod == httpMethod.PUT) {
 						final HttpEntityEnclosingRequestBase httpBase =  httpMethod == HttpMethod.POST ? new HttpPost(url + getParams) : new HttpPut(url + getParams);
 						if (postParams != null) {
 							httpBase.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
