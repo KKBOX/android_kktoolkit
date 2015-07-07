@@ -43,6 +43,10 @@ public class KKAPIRequest extends APIRequest {
 		super(url, cipher, socketTimeout);
 	}
 
+	public KKAPIRequest(String url, Cipher cipher, long cacheTimeOut, String cachePath, Context context) {
+		super(url, cipher, cacheTimeOut, cachePath, context);
+	}
+
 	public KKAPIRequest(String url, Cipher cipher, int socketTimeout, long cacheTimeOut, Context context) {
 		super(url, cipher, socketTimeout, cacheTimeOut, context);
 	}

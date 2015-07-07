@@ -103,6 +103,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private InputStream is = null;
 	private HttpResponse response;
 	private int retryLimit = DEFAULT_RETRY_LIMIT;
+	private String cachePath;
 
 	public APIRequest(String url, Cipher cipher, int socketTimeout) {
 		BasicHttpParams params = new BasicHttpParams();
@@ -126,6 +127,11 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
 	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
 		this(url, cipher, 10000, cacheTimeOut, context);
+	}
+
+	public APIRequest(String url, Cipher cipher, long cacheTimeOut, String cachePath, Context context) {
+		this(url, cipher, 10000, cacheTimeOut, context);
+		this.cachePath = cachePath;
 	}
 
 	public void addGetParam(String key, String value) {
@@ -275,7 +281,10 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			if (!cacheDir.exists()) {
 				cacheDir.mkdir();
 			}
-			cacheFile = new File(cacheDir.getAbsolutePath() + File.separator + StringUtils.getMd5Hash(url + getParams));
+			if (TextUtils.isEmpty(cachePath)) {
+				cachePath = StringUtils.getMd5Hash(url + getParams);
+			}
+			cacheFile = new File(cacheDir.getAbsolutePath() + File.separator + cachePath);
 			connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
 		}
 
