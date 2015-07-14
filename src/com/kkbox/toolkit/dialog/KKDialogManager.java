@@ -34,6 +34,16 @@ public class KKDialogManager {
 		showDialog();
 	}
 
+	public void cancelAllDialog() {
+		if (isDialogOnShown && listener != null && !dialogs.isEmpty()) {
+			isDialogOnShown = false;
+			listener.onCancelNotification();
+			dialogs.remove(0);
+		}
+		dialogs.clear();
+		notificationEnded();
+	}
+
 	public void cancelDialog(int notificationId) {
 		if (isDialogOnShown && listener != null && dialogs.get(0).getNotificationId() == notificationId) {
 			listener.onCancelNotification();
@@ -74,6 +84,10 @@ public class KKDialogManager {
 			dialogs.remove(0);
 		}
 		showDialog();
+		notificationEnded();
+	}
+
+	private void notificationEnded() {
 		if (!isDialogOnShown && listener != null) {
 			listener.onAllNotificationEnded();
 		}
