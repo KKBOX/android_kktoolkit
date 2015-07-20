@@ -256,7 +256,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(
 					EntityUtils.toByteArray(response.getEntity())));
-			while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
+			while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0 && !isCancelled()) {
 				byteArrayOutputStream.write(inputStreamBuffer, 0, length);
 			}
 			inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
@@ -391,7 +391,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 				if (!isNetworkError && !isHttpStatusError && listener != null) {
 					if (cacheTimeOut > 0) {
 						FileOutputStream fileOutputStream = new FileOutputStream(cacheFile);
-						while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+						while ((readLength = is.read(buffer, 0, buffer.length)) != -1  && !isCancelled()) {
 							fileOutputStream.write(buffer, 0, readLength);
 						}
 						fileOutputStream.close();
@@ -401,7 +401,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 					}
 				} else if (isHttpStatusError) {
 					ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-					while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+					while ((readLength = is.read(buffer, 0, buffer.length)) != -1  && !isCancelled()) {
 						byteArrayOutputStream.write(buffer, 0, readLength);
 					}
 					byteArrayOutputStream.flush();
