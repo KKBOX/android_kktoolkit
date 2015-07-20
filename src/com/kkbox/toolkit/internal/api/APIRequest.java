@@ -276,6 +276,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		int retryTimes = 0;
 		File cacheFile = null;
 		ConnectivityManager connectivityManager = null;
+		Thread.currentThread().setName(url + getParams);
 		if (context != null) {
 			final File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "api");
 			if (!cacheDir.exists()) {
