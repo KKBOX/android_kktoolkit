@@ -133,22 +133,22 @@ public abstract class KKFragment extends Fragment {
 				int RESUMED = 5; // Created started and resumed.
 				Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
 				Field mState = Fragment.class.getDeclaredField("mState");
-				Method dispatchResumeMethod = childFragmentManager.getType().getDeclaredMethod("dispatchResume", null);
-				Method dispatchStartMethod = childFragmentManager.getType().getDeclaredMethod("dispatchStart", null);
+				Method dispatchResumeMethod = childFragmentManager.getType().getDeclaredMethod("dispatchResume");
+				Method dispatchStartMethod = childFragmentManager.getType().getDeclaredMethod("dispatchStart");
 				Method dispatchActivityCreatedMethod = childFragmentManager.getType().getDeclaredMethod(
-						"dispatchActivityCreated", null);
-				Method dispatchCreateMethod = childFragmentManager.getType().getDeclaredMethod("dispatchCreate", null);
+						"dispatchActivityCreated");
+				Method dispatchCreateMethod = childFragmentManager.getType().getDeclaredMethod("dispatchCreate");
 				mState.setAccessible(true);
 				childFragmentManager.setAccessible(true);
 				int state = mState.getInt(this);
 				if (state >= RESUMED) {
-					dispatchResumeMethod.invoke(childFragmentManager.get(this), null);
+					dispatchResumeMethod.invoke(childFragmentManager.get(this));
 				} else if (state >= STARTED) {
-					dispatchStartMethod.invoke(childFragmentManager.get(this), null);
+					dispatchStartMethod.invoke(childFragmentManager.get(this));
 				} else if (state >= ACTIVITY_CREATED) {
-					dispatchActivityCreatedMethod.invoke(childFragmentManager.get(this), null);
+					dispatchActivityCreatedMethod.invoke(childFragmentManager.get(this));
 				} else if (state >= CREATED) {
-					dispatchCreateMethod.invoke(childFragmentManager.get(this), null);
+					dispatchCreateMethod.invoke(childFragmentManager.get(this));
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);
