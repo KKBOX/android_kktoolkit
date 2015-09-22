@@ -23,70 +23,52 @@ import android.text.TextUtils;
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.StringUtils;
 import com.kkbox.toolkit.utils.UserTask;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.net.ssl.SSLException;
 
-public abstract class APIRequest extends UserTask<Object, Void, Void> {
-	public final static int DEFAULT_RETRY_LIMIT = 3;
+import okio.BufferedSink;
+import okio.GzipSink;
+import okio.Okio;
 
+public abstract class APIRequest extends UserTask<Object, Void, Void> {
+
+	public final static int DEFAULT_RETRY_LIMIT = 3;
 	private APIRequestListener listener;
 	private String getParams = "";
 	private final String url;
-	private HttpClient httpclient;
+	private static OkHttpClient httpClient = new OkHttpClient();
 	private boolean isNetworkError = false;
 	private boolean isHttpStatusError = false;
 	private String errorMessage = "";
 	private int httpStatusCode = 0;
-	private ArrayList<NameValuePair> postParams;
-	private ArrayList<NameValuePair> headerParams;
-	private MultipartEntity multipartEntity;
-	private StringEntity stringEntity;
-	private FileEntity fileEntity;
-	private ByteArrayEntity byteArrayEntity;
-	private InputStreamEntity gzipStreamEntity;
+	private Request.Builder requestBuilder;
+	private FormEncodingBuilder requestBodyBuilder;
+	private MultipartBuilder multipartBuilder;
 	private Cipher cipher = null;
-
 	private Context context = null;
 	private long cacheTimeOut = -1;
-
 	private InputStream is = null;
-	private HttpResponse response;
+	private Response response;
 	private int retryLimit = DEFAULT_RETRY_LIMIT;
 
 	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
@@ -100,22 +82,21 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public APIRequest(String url, Cipher cipher, int socketTimeout) {
-		BasicHttpParams params = new BasicHttpParams();
-		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
-		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, socketTimeout);
-		httpclient = new DefaultHttpClient(params);
+		httpClient.setConnectTimeout(10, TimeUnit.SECONDS);
+		httpClient.setReadTimeout(socketTimeout, TimeUnit.MILLISECONDS);
+		requestBuilder = new Request.Builder();
 		getParams = TextUtils.isEmpty(Uri.parse(url).getQuery()) ? "" : "?" + Uri.parse(url).getQuery();
 		this.url = url.split("\\?")[0];
 		this.cipher = cipher;
 	}
 
-	public void addGetParam(String key, String value) {
+	public void addGetParam(String name, String value) {
 		if (TextUtils.isEmpty(getParams)) {
 			getParams = "?";
 		} else if (!getParams.endsWith("&")) {
 			getParams += "&";
 		}
-		getParams += key + "=" + value;
+		getParams += name + "=" + value;
 	}
 
 	public void addGetParam(String parameter) {
@@ -127,55 +108,78 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		getParams += parameter;
 	}
 
-	public void addPostParam(String key, String value) {
-		if (postParams == null) {
-			postParams = new ArrayList<NameValuePair>();
+	public void addPostParam(String name, String value) {
+		if (requestBodyBuilder == null) {
+			requestBodyBuilder = new FormEncodingBuilder();
 		}
-		postParams.add((new BasicNameValuePair(key, value)));
+		requestBodyBuilder.add(name, value);
 	}
 
-	public void addHeaderParam(String key, String value) {
-		if (headerParams == null) {
-			headerParams = new ArrayList<NameValuePair>();
-		}
-		headerParams.add((new BasicNameValuePair(key, value)));
+	public void addHeaderParam(String name, String value) {
+		requestBuilder.addHeader(name, value);
 	}
 
-	public void addMultiPartPostParam(String key, ContentBody contentBody) {
-		if (multipartEntity == null) {
-			multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+	public void addMultiPartPostParam(String name, String fileName, RequestBody requestBody) {
+		if (multipartBuilder == null) {
+			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
 		}
-		multipartEntity.addPart(key, contentBody);
+		multipartBuilder.addFormDataPart(name, fileName, requestBody);
+	}
+
+	public void addMultiPartPostParam(String name, String value) {
+		if (multipartBuilder == null) {
+			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
+		}
+		multipartBuilder.addFormDataPart(name, value);
 	}
 
 	public void addStringPostParam(String data) {
-		try {
-			stringEntity = new StringEntity(data, HTTP.UTF_8);
-		} catch (Exception e) {};
+		MediaType mediaType = MediaType.parse("text/plain");
+		requestBuilder.post(RequestBody.create(mediaType, data));
 	}
 
 	public void addFilePostParam(String path) {
-		fileEntity = new FileEntity(new File(path), URLEncodedUtils.CONTENT_TYPE + HTTP.CHARSET_PARAM + HTTP.UTF_8);
+		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=UTF-8");
+		requestBuilder.post(RequestBody.create(mediaType, new File(path)));
 	}
 
-	public void addByteArrayPostParam(byte[] data) {
-		byteArrayEntity = new ByteArrayEntity(data);
-		byteArrayEntity.setContentType("application/octet-stream");
+	public void addByteArrayPostParam(final byte[] data) {
+		MediaType mediaType = MediaType.parse("application/octet-stream");
+		RequestBody requestBody = RequestBody.create(mediaType, data);
+		requestBuilder.post(requestBody);
 	}
 
-	public void addGZIPPostParam(String key, String value) {
+	public void addJSONPostParam(String name, JSONObject jsonObject) {
+		MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+		RequestBody requestBody = RequestBody.create(mediaType, jsonObject.toString());
+		requestBuilder.post(requestBody);
+	}
+
+	public void addGZIPPostParam(String name, String value) {
 		try {
-			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-			ArrayList<NameValuePair> postParams = new ArrayList<NameValuePair>();
-			postParams.add((new BasicNameValuePair(key, value)));
-			GZIPOutputStream gZIPOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-			gZIPOutputStream.write(EntityUtils.toByteArray(new UrlEncodedFormEntity(postParams, HTTP.UTF_8)));
-			gZIPOutputStream.close();
-			byte[] byteDataForGZIP = byteArrayOutputStream.toByteArray();
-			byteArrayOutputStream.close();
-			gzipStreamEntity = new InputStreamEntity(new ByteArrayInputStream(byteDataForGZIP), byteDataForGZIP.length);
-			gzipStreamEntity.setContentType("application/x-www-form-urlencoded");
-			gzipStreamEntity.setContentEncoding("gzip");
+			FormEncodingBuilder requestBodyBuilder = new FormEncodingBuilder();
+			requestBodyBuilder.add(name, value);
+			final RequestBody originalRequestBody = requestBodyBuilder.build();
+			RequestBody requestBody = new RequestBody() {
+				@Override
+				public MediaType contentType() {
+					return originalRequestBody.contentType();
+				}
+
+				@Override
+				public long contentLength() throws IOException {
+					return -1;
+				}
+
+				@Override
+				public void writeTo(BufferedSink sink) throws IOException {
+					BufferedSink gzipSink = Okio.buffer(new GzipSink(sink));
+					originalRequestBody.writeTo(gzipSink);
+					gzipSink.close();
+				}
+			};
+			requestBuilder.header("Content-Encoding", "gzip");
+			requestBuilder.post(requestBody);
 		} catch (Exception e) {}
 	}
 
@@ -189,27 +193,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	protected abstract void parseInputStream(InputStream inputStream, Cipher cipher) throws IOException, BadPaddingException, IllegalBlockSizeException;
-
-	private InputStream getInputStreamFromHttpResponse() throws IOException {
-		InputStream inputStream;
-		Header contentEncoding = response.getFirstHeader("Content-Encoding");
-		if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
-			byte[] inputStreamBuffer = new byte[8192];
-			int length;
-			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-			GZIPInputStream gZIPInputStream = new GZIPInputStream(new ByteArrayInputStream(
-					EntityUtils.toByteArray(response.getEntity())));
-			while ((length = gZIPInputStream.read(inputStreamBuffer)) >= 0) {
-				byteArrayOutputStream.write(inputStreamBuffer, 0, length);
-			}
-			inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-			gZIPInputStream.close();
-			byteArrayOutputStream.close();
-		} else {
-			inputStream = response.getEntity().getContent();
-		}
-		return inputStream;
-	}
 
 	@Override
 	public Void doInBackground(Object... params) {
@@ -242,60 +225,34 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					KKDebug.i("Connect API url " + url + getParams);
-					if (postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
-							|| byteArrayEntity != null
-							|| gzipStreamEntity != null || (headerParams != null && postParams != null)) {
-						final HttpPost httppost = new HttpPost(url + getParams);
-						if (postParams != null) {
-							httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
-						}
-						if (multipartEntity != null) {
-							httppost.setEntity(multipartEntity);
-						}
-						if (stringEntity != null) {
-							httppost.setEntity(stringEntity);
-						}
-						if (fileEntity != null) {
-							httppost.setEntity(fileEntity);
-						}
-						if (byteArrayEntity != null) {
-							httppost.setEntity(byteArrayEntity);
-						}
-						if (gzipStreamEntity != null) {
-							httppost.setHeader("Accept-Encoding", "gzip");
-							httppost.setEntity(gzipStreamEntity);
-						}
-						if (headerParams != null) {
-							for (NameValuePair header : headerParams) {
-								httppost.setHeader(header.getName(), header.getValue());
-							}
-						}
-						response = httpclient.execute(httppost);
-					} else {
-						final HttpGet httpGet = new HttpGet(url + getParams);
-						if (headerParams != null) {
-							for (NameValuePair header : headerParams) {
-								httpGet.setHeader(header.getName(), header.getValue());
-							}
-						}
-						response = httpclient.execute(httpGet);
+					if (requestBodyBuilder != null) {
+						requestBuilder.post(requestBodyBuilder.build());
 					}
-					httpStatusCode = response.getStatusLine().getStatusCode();
+					if (multipartBuilder != null) {
+						requestBuilder.post(multipartBuilder.build());
+					}
+					if (TextUtils.isEmpty(getParams)) {
+						requestBuilder.url(url);
+					} else {
+						requestBuilder.url(url + getParams);
+					}
+					response = httpClient.newCall(requestBuilder.build()).execute();
+					httpStatusCode = response.code();
 					int httpStatusType = httpStatusCode / 100;
 					switch (httpStatusType) {
 						case 2:
-							is = getInputStreamFromHttpResponse();
+							is = response.body().byteStream();
 							isNetworkError = false;
 							break;
 						case 4:
 							KKDebug.w("Get client error " + httpStatusCode + " with connection : " + url + getParams);
-							is = getInputStreamFromHttpResponse();
+							is = response.body().byteStream();
 							isHttpStatusError = true;
 							isNetworkError = false;
 							break;
 						case 5:
 							KKDebug.w("Get server error " + httpStatusCode + " with connection : " + url + getParams);
-							is = getInputStreamFromHttpResponse();
+							is = response.body().byteStream();
 							isHttpStatusError = true;
 							isNetworkError = false;
 							break;
@@ -339,7 +296,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 					byteArrayOutputStream.flush();
 					errorMessage = byteArrayOutputStream.toString();
 				}
-				response.getEntity().consumeContent();
 			} catch (IOException e) {
 				isNetworkError = true;
 			} catch (Exception e) {}

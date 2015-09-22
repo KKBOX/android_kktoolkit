@@ -23,14 +23,10 @@ import com.kkbox.toolkit.image.KKImageManager.OnBitmapReceivedListener;
 import com.kkbox.toolkit.image.KKImageManager.OnImageDownloadedListener;
 import com.kkbox.toolkit.internal.image.KKImageRequestListener;
 import com.kkbox.toolkit.utils.UserTask;
-
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
+import com.squareup.okhttp.Headers;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,17 +35,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.crypto.Cipher;
 
-public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
+public class KKImageRequest extends UserTask<Object, Headers, Bitmap> {
 	private final int BUFFER_SIZE = 1024;
 	private byte[] buffer = new byte[BUFFER_SIZE];
-	private HttpClient httpclient;
+	private OkHttpClient httpClient = new OkHttpClient();
+	private Response response;
 	private KKImageRequestListener listener;
-	private HttpResponse response;
-	private Header[] headers;
+	private Headers headers;
 	private Context context;
 	private View view;
 	private OnBitmapReceivedListener onBitmapReceivedListener;
@@ -101,10 +98,8 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 	}
 
 	private void init(Context context, String url, String localPath, Cipher cipher, KKImageRequestListener imageRequestListener) {
-		BasicHttpParams params = new BasicHttpParams();
-		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
-		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 10000);
-		httpclient = new DefaultHttpClient(params);
+		httpClient.setConnectTimeout(10000, TimeUnit.MILLISECONDS);
+		httpClient.setReadTimeout(10000, TimeUnit.MILLISECONDS);
 		this.url = url;
 		this.localPath = localPath;
 		this.context = context;
@@ -142,7 +137,7 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 		return actionType;
 	}
 
-	public Header[] getHttpResponseHeaders() {
+	public Headers getHttpResponseHeaders() {
 		return headers;
 	}
 
@@ -196,10 +191,12 @@ public class KKImageRequest extends UserTask<Object, Header[], Bitmap> {
 			if (!KKImageManager.networkEnabled) {
 				return null;
 			}
-			final HttpGet httpget = new HttpGet(url);
-			response = httpclient.execute(httpget);
-			final InputStream is = response.getEntity().getContent();
-			headers = response.getAllHeaders();
+			response = httpClient.newCall(new Request.Builder().url(url).build()).execute();
+			if (!response.isSuccessful()) {
+				throw new Exception("Unexpected code " + response);
+			}
+			final InputStream is = response.body().byteStream();
+			headers = response.headers();
 			removeInvalidImageFiles();
 			if (actionType == KKImageManager.ActionType.DOWNLOAD) {
 				RandomAccessFile tempFile = new RandomAccessFile(tempFilePath, "rw");
