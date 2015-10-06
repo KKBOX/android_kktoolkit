@@ -90,13 +90,13 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		this.cipher = cipher;
 	}
 
-	public void addGetParam(String name, String value) {
+	public void addGetParam(String key, String value) {
 		if (TextUtils.isEmpty(getParams)) {
 			getParams = "?";
 		} else if (!getParams.endsWith("&")) {
 			getParams += "&";
 		}
-		getParams += name + "=" + value;
+		getParams += key + "=" + value;
 	}
 
 	public void addGetParam(String parameter) {
@@ -108,29 +108,29 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		getParams += parameter;
 	}
 
-	public void addPostParam(String name, String value) {
+	public void addPostParam(String key, String value) {
 		if (requestBodyBuilder == null) {
 			requestBodyBuilder = new FormEncodingBuilder();
 		}
-		requestBodyBuilder.add(name, value);
+		requestBodyBuilder.add(key, value);
 	}
 
-	public void addHeaderParam(String name, String value) {
-		requestBuilder.addHeader(name, value);
+	public void addHeaderParam(String key, String value) {
+		requestBuilder.addHeader(key, value);
 	}
 
-	public void addMultiPartPostParam(String name, String fileName, RequestBody requestBody) {
+	public void addMultiPartPostParam(String key, String fileName, RequestBody requestBody) {
 		if (multipartBuilder == null) {
 			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
 		}
-		multipartBuilder.addFormDataPart(name, fileName, requestBody);
+		multipartBuilder.addFormDataPart(key, fileName, requestBody);
 	}
 
-	public void addMultiPartPostParam(String name, String value) {
+	public void addMultiPartPostParam(String key, String value) {
 		if (multipartBuilder == null) {
 			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
 		}
-		multipartBuilder.addFormDataPart(name, value);
+		multipartBuilder.addFormDataPart(key, value);
 	}
 
 	public void addStringPostParam(String data) {
@@ -149,16 +149,16 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		requestBuilder.post(requestBody);
 	}
 
-	public void addJSONPostParam(String name, JSONObject jsonObject) {
+	public void addJSONPostParam(JSONObject jsonObject) {
 		MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
 		RequestBody requestBody = RequestBody.create(mediaType, jsonObject.toString());
 		requestBuilder.post(requestBody);
 	}
 
-	public void addGZIPPostParam(String name, String value) {
+	public void addGZIPPostParam(String key, String value) {
 		try {
 			FormEncodingBuilder requestBodyBuilder = new FormEncodingBuilder();
-			requestBodyBuilder.add(name, value);
+			requestBodyBuilder.add(key, value);
 			final RequestBody originalRequestBody = requestBodyBuilder.build();
 			RequestBody requestBody = new RequestBody() {
 				@Override
