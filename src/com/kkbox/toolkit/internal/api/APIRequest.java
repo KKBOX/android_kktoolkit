@@ -46,10 +46,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.net.ssl.SSLException;
 
-import okio.BufferedSink;
-import okio.GzipSink;
-import okio.Okio;
-
 public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
 	public final static int DEFAULT_RETRY_LIMIT = 3;
@@ -153,34 +149,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
 		RequestBody requestBody = RequestBody.create(mediaType, jsonObject.toString());
 		requestBuilder.post(requestBody);
-	}
-
-	public void addGZIPPostParam(String key, String value) {
-		try {
-			FormEncodingBuilder requestBodyBuilder = new FormEncodingBuilder();
-			requestBodyBuilder.add(key, value);
-			final RequestBody originalRequestBody = requestBodyBuilder.build();
-			RequestBody requestBody = new RequestBody() {
-				@Override
-				public MediaType contentType() {
-					return originalRequestBody.contentType();
-				}
-
-				@Override
-				public long contentLength() throws IOException {
-					return -1;
-				}
-
-				@Override
-				public void writeTo(BufferedSink sink) throws IOException {
-					BufferedSink gzipSink = Okio.buffer(new GzipSink(sink));
-					originalRequestBody.writeTo(gzipSink);
-					gzipSink.close();
-				}
-			};
-			requestBuilder.header("Content-Encoding", "gzip");
-			requestBuilder.post(requestBody);
-		} catch (Exception e) {}
 	}
 
 	public void setRetryCount(int retryLimit) {
