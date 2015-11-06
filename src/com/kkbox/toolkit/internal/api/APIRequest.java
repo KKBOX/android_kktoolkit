@@ -159,10 +159,16 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
 	public void cancel() {
 		listener = null;
-		if (call != null) {
-			call.cancel();
-			call = null;
-		}
+		// TODO: https://github.com/square/okhttp/issues/1592
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (call != null) {
+					call.cancel();
+					call = null;
+				}
+			}
+		}).start();
 		this.cancel(true);
 	}
 
