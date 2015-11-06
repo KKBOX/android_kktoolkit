@@ -157,6 +157,8 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
 	public void cancel() {
 		listener = null;
+		// TODO: OkHttp 'Call' cancel function
+		// https://github.com/square/okhttp/issues/1592
 		this.cancel(true);
 	}
 
