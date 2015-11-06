@@ -23,7 +23,6 @@ import android.text.TextUtils;
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.StringUtils;
 import com.kkbox.toolkit.utils.UserTask;
-import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -66,7 +65,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private long cacheTimeOut = -1;
 	private InputStream is = null;
 	private Response response;
-	private Call call;
 	private int retryLimit = DEFAULT_RETRY_LIMIT;
 
 	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
@@ -159,16 +157,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
 	public void cancel() {
 		listener = null;
-		// TODO: https://github.com/square/okhttp/issues/1592
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				if (call != null) {
-					call.cancel();
-					call = null;
-				}
-			}
-		}).start();
 		this.cancel(true);
 	}
 
@@ -216,8 +204,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 					} else {
 						requestBuilder.url(url + getParams);
 					}
-					call = httpClient.newCall(requestBuilder.build());
-					response = call.execute();
+					response = httpClient.newCall(requestBuilder.build()).execute();
 					httpStatusCode = response.code();
 					int httpStatusType = httpStatusCode / 100;
 					switch (httpStatusType) {
