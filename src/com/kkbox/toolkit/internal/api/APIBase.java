@@ -105,5 +105,9 @@ public abstract class APIBase {
 		request.execute(getRequestListener());
 	}
 
+	protected String getResponseHeader(String key) {
+		return request == null ? null : request.getResponseHeader(key);
+	}
+
 	protected abstract APIRequestListener getRequestListener();
 }
