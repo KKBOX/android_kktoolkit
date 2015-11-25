@@ -153,6 +153,10 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		requestBuilder.post(requestBody);
 	}
 
+	public String getResponseHeader(String key) {
+		return response == null ? null : response.header(key);
+	}
+
 	public void setRetryCount(int retryLimit) {
 		this.retryLimit = retryLimit;
 	}
