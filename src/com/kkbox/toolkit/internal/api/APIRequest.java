@@ -151,6 +151,8 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		getParams += parameter;
 	}
 
+	//setHttpMethod should be called after adding parameter to ensure
+	// request can execute by this method instead override by other function
 	public void setHttpMethod(int method) {
 		httpMethod = method;
 	}
@@ -317,27 +319,25 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 							default:
 								httpRequest = new HttpPost(url + getParams);
 						}
-						if (httpRequest instanceof HttpEntityEnclosingRequestBase) {
-							HttpEntityEnclosingRequestBase httpEntityEnclosingRequest = (HttpEntityEnclosingRequestBase) httpRequest;
-							if (postParams != null) {
-								httpEntityEnclosingRequest.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
-							}
-							if (multipartEntity != null) {
-								httpEntityEnclosingRequest.setEntity(multipartEntity);
-							}
-							if (stringEntity != null) {
-								httpEntityEnclosingRequest.setEntity(stringEntity);
-							}
-							if (fileEntity != null) {
-								httpEntityEnclosingRequest.setEntity(fileEntity);
-							}
-							if (byteArrayEntity != null) {
-								httpEntityEnclosingRequest.setEntity(byteArrayEntity);
-							}
-							if (gzipStreamEntity != null) {
-								httpEntityEnclosingRequest.setHeader("Accept-Encoding", "gzip");
-								httpEntityEnclosingRequest.setEntity(gzipStreamEntity);
-							}
+						HttpEntityEnclosingRequestBase httpEntityEnclosingRequest = (HttpEntityEnclosingRequestBase) httpRequest;
+						if (postParams != null) {
+							httpEntityEnclosingRequest.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+						}
+						if (multipartEntity != null) {
+							httpEntityEnclosingRequest.setEntity(multipartEntity);
+						}
+						if (stringEntity != null) {
+							httpEntityEnclosingRequest.setEntity(stringEntity);
+						}
+						if (fileEntity != null) {
+							httpEntityEnclosingRequest.setEntity(fileEntity);
+						}
+						if (byteArrayEntity != null) {
+							httpEntityEnclosingRequest.setEntity(byteArrayEntity);
+						}
+						if (gzipStreamEntity != null) {
+							httpEntityEnclosingRequest.setHeader("Accept-Encoding", "gzip");
+							httpEntityEnclosingRequest.setEntity(gzipStreamEntity);
 						}
 
 					} else {
