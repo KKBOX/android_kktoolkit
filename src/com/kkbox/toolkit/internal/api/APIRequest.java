@@ -73,6 +73,13 @@ import javax.crypto.IllegalBlockSizeException;
 
 public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
+	public static class HTTPMethod {
+		public static final int GET = 0;
+		public static final int POST = GET + 1;
+		public static final int PUT = POST + 1;
+		public static final int DELETE = PUT + 1;
+	}
+
 	public final static int DEFAULT_RETRY_LIMIT = 3;
 	private final String url;
 	private APIRequestListener listener;
@@ -436,12 +443,5 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		} else {
 			listener.onComplete();
 		}
-	}
-
-	public static class HTTPMethod {
-		public static final int GET = 0;
-		public static final int POST = GET + 1;
-		public static final int PUT = POST + 1;
-		public static final int DELETE = PUT + 1;
 	}
 }
