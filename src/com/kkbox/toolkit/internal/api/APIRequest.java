@@ -30,6 +30,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -99,12 +100,10 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private Cipher cipher = null;
 	private Context context = null;
 	private long cacheTimeOut = -1;
-	private boolean postFlag = false;
 	private InputStream is = null;
 	private HttpResponse response;
 	private int retryLimit = DEFAULT_RETRY_LIMIT;
 	private String cachePath;
-
 	public APIRequest(String url, Cipher cipher, int socketTimeout) {
 		BasicHttpParams params = new BasicHttpParams();
 		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 10000);
@@ -152,6 +151,8 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		getParams += parameter;
 	}
 
+	//setHttpMethod should be called after adding parameter to ensure
+	// request can execute by this method instead override by other function
 	public void setHttpMethod(int method) {
 		httpMethod = method;
 	}
@@ -161,6 +162,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			postParams = new ArrayList<NameValuePair>();
 		}
 		postParams.add((new BasicNameValuePair(key, value)));
+		httpMethod = HTTPMethod.POST;
 	}
 
 	public void addHeaderParam(String key, String value) {
@@ -175,18 +177,21 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 		}
 		multipartEntity.addPart(key, contentBody);
+		httpMethod = HTTPMethod.POST;
 	}
 
 	public void addStringPostParam(String data) {
 		try {
 			stringEntity = new StringEntity(data, HTTP.UTF_8);
+			httpMethod = HTTPMethod.POST;
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		;
 	}
 
 	public void addFilePostParam(String path) {
 		fileEntity = new FileEntity(new File(path), URLEncodedUtils.CONTENT_TYPE + HTTP.CHARSET_PARAM + HTTP.UTF_8);
+		httpMethod = HTTPMethod.POST;
 	}
 
 	public void addByteArrayPostParam(byte[] data, String contentType) {
@@ -194,6 +199,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		if (!TextUtils.isEmpty(contentType)) {
 			byteArrayEntity.setContentType(contentType);
 		}
+		httpMethod = HTTPMethod.POST;
 	}
 
 	public void addGZIPPostParam(String key, String value) {
@@ -209,12 +215,10 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			gzipStreamEntity = new InputStreamEntity(new ByteArrayInputStream(byteDataForGZIP), byteDataForGZIP.length);
 			gzipStreamEntity.setContentType("application/x-www-form-urlencoded");
 			gzipStreamEntity.setContentEncoding("gzip");
+			httpMethod = HTTPMethod.POST;
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
-	}
-
-	public void forceEnablePostRequest(boolean enabled) {
-		postFlag = enabled;
 	}
 
 	public void setRetryCount(int retryLimit) {
@@ -303,57 +307,61 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					KKDebug.i("Connect API url " + url + getParams);
-					if (httpMethod == HTTPMethod.POST || postParams != null || multipartEntity != null || stringEntity != null || fileEntity != null
-							|| byteArrayEntity != null || gzipStreamEntity != null || (headerParams != null && postParams != null)
-							|| postFlag) {
-						final HttpPost httppost = new HttpPost(url + getParams);
-						if (postParams != null) {
-							httppost.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
-						}
-						if (multipartEntity != null) {
-							httppost.setEntity(multipartEntity);
-						}
-						if (stringEntity != null) {
-							httppost.setEntity(stringEntity);
-						}
-						if (fileEntity != null) {
-							httppost.setEntity(fileEntity);
-						}
-						if (byteArrayEntity != null) {
-							httppost.setEntity(byteArrayEntity);
-						}
-						if (gzipStreamEntity != null) {
-							httppost.setHeader("Accept-Encoding", "gzip");
-							httppost.setEntity(gzipStreamEntity);
-						}
-						if (headerParams != null) {
-							for (NameValuePair header : headerParams) {
-								httppost.setHeader(header.getName(), header.getValue());
-							}
-						}
-						response = httpclient.execute(httppost);
-					} else {
-						HttpRequestBase httpRequest;
+					HttpRequestBase httpRequest;
+					if (httpMethod != HTTPMethod.GET && httpMethod != HTTPMethod.DELETE) {
 						switch (httpMethod) {
+							case HTTPMethod.POST:
+								httpRequest = new HttpPost(url + getParams);
+								break;
 							case HTTPMethod.PUT:
 								httpRequest = new HttpPut(url + getParams);
+								break;
+							default:
+								httpRequest = new HttpPost(url + getParams);
+						}
+						HttpEntityEnclosingRequestBase httpEntityEnclosingRequest = (HttpEntityEnclosingRequestBase) httpRequest;
+						if (postParams != null) {
+							httpEntityEnclosingRequest.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+						}
+						if (multipartEntity != null) {
+							httpEntityEnclosingRequest.setEntity(multipartEntity);
+						}
+						if (stringEntity != null) {
+							httpEntityEnclosingRequest.setEntity(stringEntity);
+						}
+						if (fileEntity != null) {
+							httpEntityEnclosingRequest.setEntity(fileEntity);
+						}
+						if (byteArrayEntity != null) {
+							httpEntityEnclosingRequest.setEntity(byteArrayEntity);
+						}
+						if (gzipStreamEntity != null) {
+							httpEntityEnclosingRequest.setHeader("Accept-Encoding", "gzip");
+							httpEntityEnclosingRequest.setEntity(gzipStreamEntity);
+						}
+
+					} else {
+
+						switch (httpMethod) {
+							case HTTPMethod.GET:
+								httpRequest = new HttpGet(url + getParams);
 								break;
 							case HTTPMethod.DELETE:
 								httpRequest = new HttpDelete(url + getParams);
 								break;
-							case HTTPMethod.GET:
-								httpRequest = new HttpGet(url + getParams);
-								break;
 							default:
 								httpRequest = new HttpGet(url + getParams);
 						}
-						if (headerParams != null) {
-							for (NameValuePair header : headerParams) {
-								httpRequest.setHeader(header.getName(), header.getValue());
-							}
-						}
-						response = httpclient.execute(httpRequest);
 					}
+
+
+					if (headerParams != null) {
+						for (NameValuePair header : headerParams) {
+							httpRequest.setHeader(header.getName(), header.getValue());
+						}
+					}
+					response = httpclient.execute(httpRequest);
+
 					httpStatusCode = response.getStatusLine().getStatusCode();
 					int httpStatusType = httpStatusCode / 100;
 					switch (httpStatusType) {
