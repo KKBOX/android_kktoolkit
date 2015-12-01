@@ -219,12 +219,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		}
 	}
 
-	public void forceEnablePostRequest(boolean enabled) {
-		if (enabled) {
-			httpMethod = HTTPMethod.POST;
-		}
-	}
-
 	public void setRetryCount(int retryLimit) {
 		this.retryLimit = retryLimit;
 	}
