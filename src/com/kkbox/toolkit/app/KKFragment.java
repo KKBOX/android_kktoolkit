@@ -115,6 +115,7 @@ public abstract class KKFragment extends Fragment {
 	}
 
 	protected void finishFetchData() {
+		uiLoaded = false;
 		dataFetchedStatus = DataFetchStatus.SUCCESS;
 		if (animationEnded) {
 			onLoadUI();
