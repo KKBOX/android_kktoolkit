@@ -40,6 +40,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
 import javax.crypto.BadPaddingException;
@@ -85,6 +87,14 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
     }
 
     public APIRequest(HttpMethod httpMethod, String url, Cipher cipher, int socketTimeout) {
+        try {
+            httpClient.setSslSocketFactory(new TLSSocketFactory());
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
         httpClient.setConnectTimeout(10, TimeUnit.SECONDS);
         httpClient.setReadTimeout(socketTimeout, TimeUnit.MILLISECONDS);
         requestBuilder = new Request.Builder();
