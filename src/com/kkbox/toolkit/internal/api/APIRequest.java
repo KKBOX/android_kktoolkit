@@ -290,9 +290,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	public void onPostExecute(Void v) {
 		if (isHttpStatusError) {
 			if (listener != null) {
-				listener.onHttpStatusError(httpStatusCode);
-			}
-			if (listener != null) {
 				listener.onHttpStatusError(httpStatusCode, errorMessage);
 			}
 		} else if (isNetworkError) {
