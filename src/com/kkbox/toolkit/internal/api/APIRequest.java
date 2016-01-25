@@ -95,6 +95,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		getParams = TextUtils.isEmpty(Uri.parse(url).getQuery()) ? "" : "?" + Uri.parse(url).getQuery();
 		this.url = url.split("\\?")[0];
 		this.cipher = cipher;
+		this.method = Method.GET;
 	}
 
 	public void addGetParam(String key, String value) {
