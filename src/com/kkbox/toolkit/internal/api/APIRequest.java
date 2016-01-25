@@ -79,31 +79,22 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private int method;
 
 	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
-		this(Method.GET, url, cipher, 10000);
+		this(url, cipher, 10000);
 		this.cacheTimeOut = cacheTimeOut;
 		this.context = context;
 	}
 
 	public APIRequest(String url, Cipher cipher) {
-		this(Method.GET, url, cipher, 10000);
+		this(url, cipher, 10000);
 	}
 
 	public APIRequest(String url, Cipher cipher, int socketTimeout) {
-		this(Method.GET, url, cipher, socketTimeout);
-	}
-
-	public APIRequest(int method, String url, Cipher cipher) {
-		this(method, url, cipher, 10000);
-	}
-
-	public APIRequest(int method, String url, Cipher cipher, int socketTimeout) {
 		httpClient.setConnectTimeout(10, TimeUnit.SECONDS);
 		httpClient.setReadTimeout(socketTimeout, TimeUnit.MILLISECONDS);
 		requestBuilder = new Request.Builder();
 		getParams = TextUtils.isEmpty(Uri.parse(url).getQuery()) ? "" : "?" + Uri.parse(url).getQuery();
 		this.url = url.split("\\?")[0];
 		this.cipher = cipher;
-		this.method = method;
 	}
 
 	public void addGetParam(String key, String value) {
@@ -125,7 +116,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addPostParam(String key, String value) {
-		method = Method.POST;
+		setGetToPostMethod();
 		if (requestBodyBuilder == null) {
 			requestBodyBuilder = new FormEncodingBuilder();
 		}
@@ -137,7 +128,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addMultiPartPostParam(String key, String fileName, RequestBody requestBody) {
-		method = Method.POST;
+		setGetToPostMethod();
 		if (multipartBuilder == null) {
 			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
 		}
@@ -145,7 +136,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addMultiPartPostParam(String key, String value) {
-		method = Method.POST;
+		setGetToPostMethod();
 		if (multipartBuilder == null) {
 			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
 		}
@@ -153,26 +144,26 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addStringPostParam(String data) {
-		method = Method.POST;
+		setGetToPostMethod();
 		MediaType mediaType = MediaType.parse("text/plain");
 		requestBuilder.post(RequestBody.create(mediaType, data));
 	}
 
 	public void addFilePostParam(String path) {
-		method = Method.POST;
+		setGetToPostMethod();
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=UTF-8");
 		requestBuilder.post(RequestBody.create(mediaType, new File(path)));
 	}
 
 	public void addByteArrayPostParam(final byte[] data) {
-		method = Method.POST;
+		setGetToPostMethod();
 		MediaType mediaType = MediaType.parse("application/octet-stream");
 		RequestBody requestBody = RequestBody.create(mediaType, data);
 		requestBuilder.post(requestBody);
 	}
 
 	public void addJSONPostParam(JSONObject jsonObject) {
-		method = Method.POST;
+		setGetToPostMethod();
 		MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
 		RequestBody requestBody = RequestBody.create(mediaType, jsonObject.toString());
 		requestBuilder.post(requestBody);
@@ -198,6 +189,16 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			}
 		});
 		this.cancel(true);
+	}
+
+	public void setMethod(int method) {
+		this.method = method;
+	}
+
+	private void setGetToPostMethod() {
+		if (method == Method.GET) {
+			method = Method.POST;
+		}
 	}
 
 	protected abstract void parseInputStream(InputStream inputStream, Cipher cipher) throws IOException, BadPaddingException, IllegalBlockSizeException;
@@ -239,7 +240,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 					} else if (requestBodyBuilder != null) {
 						requestBody = requestBodyBuilder.build();
 					} else if (method != Method.GET) {
-						// TODO: workaround for http request methods
 						requestBodyBuilder = new FormEncodingBuilder();
 						requestBody = requestBodyBuilder.build();
 					}
