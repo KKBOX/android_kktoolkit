@@ -49,6 +49,14 @@ import javax.net.ssl.SSLException;
 
 public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
+	public static class Method {
+		public static final int GET = 0;
+		public static final int POST = 1;
+		public static final int PUT = 2;
+		public static final int PATCH = 3;
+		public static final int DELETE = 4;
+	}
+
 	public final static int DEFAULT_RETRY_LIMIT = 3;
 	private APIRequestListener listener;
 	private String getParams = "";
@@ -68,24 +76,34 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private Response response;
 	private Call call;
 	private int retryLimit = DEFAULT_RETRY_LIMIT;
+	private int method;
 
 	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
-		this(url, cipher, 10000);
+		this(Method.GET, url, cipher, 10000);
 		this.cacheTimeOut = cacheTimeOut;
 		this.context = context;
 	}
 
 	public APIRequest(String url, Cipher cipher) {
-		this(url, cipher, 10000);
+		this(Method.GET, url, cipher, 10000);
 	}
 
 	public APIRequest(String url, Cipher cipher, int socketTimeout) {
+		this(Method.GET, url, cipher, socketTimeout);
+	}
+
+	public APIRequest(int method, String url, Cipher cipher) {
+		this(method, url, cipher, 10000);
+	}
+
+	public APIRequest(int method, String url, Cipher cipher, int socketTimeout) {
 		httpClient.setConnectTimeout(10, TimeUnit.SECONDS);
 		httpClient.setReadTimeout(socketTimeout, TimeUnit.MILLISECONDS);
 		requestBuilder = new Request.Builder();
 		getParams = TextUtils.isEmpty(Uri.parse(url).getQuery()) ? "" : "?" + Uri.parse(url).getQuery();
 		this.url = url.split("\\?")[0];
 		this.cipher = cipher;
+		this.method = method;
 	}
 
 	public void addGetParam(String key, String value) {
@@ -107,6 +125,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addPostParam(String key, String value) {
+		method = Method.POST;
 		if (requestBodyBuilder == null) {
 			requestBodyBuilder = new FormEncodingBuilder();
 		}
@@ -118,6 +137,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addMultiPartPostParam(String key, String fileName, RequestBody requestBody) {
+		method = Method.POST;
 		if (multipartBuilder == null) {
 			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
 		}
@@ -125,6 +145,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addMultiPartPostParam(String key, String value) {
+		method = Method.POST;
 		if (multipartBuilder == null) {
 			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
 		}
@@ -132,22 +153,26 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addStringPostParam(String data) {
+		method = Method.POST;
 		MediaType mediaType = MediaType.parse("text/plain");
 		requestBuilder.post(RequestBody.create(mediaType, data));
 	}
 
 	public void addFilePostParam(String path) {
+		method = Method.POST;
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=UTF-8");
 		requestBuilder.post(RequestBody.create(mediaType, new File(path)));
 	}
 
 	public void addByteArrayPostParam(final byte[] data) {
+		method = Method.POST;
 		MediaType mediaType = MediaType.parse("application/octet-stream");
 		RequestBody requestBody = RequestBody.create(mediaType, data);
 		requestBuilder.post(requestBody);
 	}
 
 	public void addJSONPostParam(JSONObject jsonObject) {
+		method = Method.POST;
 		MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
 		RequestBody requestBody = RequestBody.create(mediaType, jsonObject.toString());
 		requestBuilder.post(requestBody);
@@ -208,11 +233,31 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					KKDebug.i("Connect API url " + url + getParams);
-					if (requestBodyBuilder != null) {
-						requestBuilder.post(requestBodyBuilder.build());
-					}
+					RequestBody requestBody = null;
 					if (multipartBuilder != null) {
-						requestBuilder.post(multipartBuilder.build());
+						requestBody = multipartBuilder.build();
+					} else if (requestBodyBuilder != null) {
+						requestBody = requestBodyBuilder.build();
+					} else if (method != Method.GET) {
+						// TODO: workaround for http request methods
+						requestBodyBuilder = new FormEncodingBuilder();
+						requestBody = requestBodyBuilder.build();
+					}
+					if (requestBody != null) {
+						switch (method) {
+							case Method.POST:
+								requestBuilder.post(requestBody);
+								break;
+							case Method.PUT:
+								requestBuilder.put(requestBody);
+								break;
+							case Method.PATCH:
+								requestBuilder.patch(requestBody);
+								break;
+							case Method.DELETE:
+								requestBuilder.delete(requestBody);
+								break;
+						}
 					}
 					if (TextUtils.isEmpty(getParams)) {
 						requestBuilder.url(url);
