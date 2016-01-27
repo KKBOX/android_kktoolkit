@@ -68,6 +68,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private int httpStatusCode = 0;
 	private Request.Builder requestBuilder;
 	private FormEncodingBuilder requestBodyBuilder;
+	private RequestBody requestBody;
 	private MultipartBuilder multipartBuilder;
 	private Cipher cipher = null;
 	private Context context = null;
@@ -117,7 +118,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addPostParam(String key, String value) {
-		setGetToPostMethod();
 		if (requestBodyBuilder == null) {
 			requestBodyBuilder = new FormEncodingBuilder();
 		}
@@ -129,7 +129,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addMultiPartPostParam(String key, String fileName, RequestBody requestBody) {
-		setGetToPostMethod();
 		if (multipartBuilder == null) {
 			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
 		}
@@ -137,7 +136,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addMultiPartPostParam(String key, String value) {
-		setGetToPostMethod();
 		if (multipartBuilder == null) {
 			multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
 		}
@@ -145,29 +143,23 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addStringPostParam(String data) {
-		setGetToPostMethod();
 		MediaType mediaType = MediaType.parse("text/plain");
-		requestBuilder.post(RequestBody.create(mediaType, data));
+		requestBody = RequestBody.create(mediaType, data);
 	}
 
 	public void addFilePostParam(String path) {
-		setGetToPostMethod();
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=UTF-8");
-		requestBuilder.post(RequestBody.create(mediaType, new File(path)));
+		requestBody = RequestBody.create(mediaType, new File(path));
 	}
 
 	public void addByteArrayPostParam(final byte[] data) {
-		setGetToPostMethod();
 		MediaType mediaType = MediaType.parse("application/octet-stream");
-		RequestBody requestBody = RequestBody.create(mediaType, data);
-		requestBuilder.post(requestBody);
+		requestBody = RequestBody.create(mediaType, data);
 	}
 
 	public void addJSONPostParam(JSONObject jsonObject) {
-		setGetToPostMethod();
 		MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-		RequestBody requestBody = RequestBody.create(mediaType, jsonObject.toString());
-		requestBuilder.post(requestBody);
+		requestBody = RequestBody.create(mediaType, jsonObject.toString());
 	}
 
 	public String getResponseHeader(String key) {
@@ -194,12 +186,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 
 	public void setMethod(int method) {
 		this.method = method;
-	}
-
-	private void setGetToPostMethod() {
-		if (method == Method.GET) {
-			method = Method.POST;
-		}
 	}
 
 	protected abstract void parseInputStream(InputStream inputStream, Cipher cipher) throws IOException, BadPaddingException, IllegalBlockSizeException;
@@ -235,16 +221,15 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					KKDebug.i("Connect API url " + url + getParams);
-					RequestBody requestBody = null;
-					if (multipartBuilder != null) {
+					if (requestBodyBuilder != null) {
+						requestBody = requestBodyBuilder.build();
+					} else if (multipartBuilder != null) {
 						requestBody = multipartBuilder.build();
-					} else if (requestBodyBuilder != null) {
-						requestBody = requestBodyBuilder.build();
-					} else if (method != Method.GET) {
-						requestBodyBuilder = new FormEncodingBuilder();
-						requestBody = requestBodyBuilder.build();
 					}
 					if (requestBody != null) {
+						if (method == Method.GET) {
+							setMethod(Method.POST);
+						}
 						switch (method) {
 							case Method.POST:
 								requestBuilder.post(requestBody);
