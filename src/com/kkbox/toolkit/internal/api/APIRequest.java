@@ -124,6 +124,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		requestBodyBuilder.add(key, value);
 	}
 
+	// TODO: support multipart request
 	public void addHeaderParam(String key, String value) {
 		requestBuilder.addHeader(key, value);
 	}
@@ -221,10 +222,11 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			do {
 				try {
 					KKDebug.i("Connect API url " + url + getParams);
-					if (requestBodyBuilder != null) {
-						requestBody = requestBodyBuilder.build();
-					} else if (multipartBuilder != null) {
+					// TODO: Check multipart and post parameters request
+					if (multipartBuilder != null) {
 						requestBody = multipartBuilder.build();
+					} else if (requestBodyBuilder != null) {
+						requestBody = requestBodyBuilder.build();
 					}
 					if (requestBody != null) {
 						if (method == Method.GET) {
