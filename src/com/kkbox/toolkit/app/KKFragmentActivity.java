@@ -17,8 +17,9 @@ package com.kkbox.toolkit.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
-public class KKFragmentActivity extends FragmentActivity implements KKServiceActivity {
+public class KKFragmentActivity extends AppCompatActivity implements KKServiceActivity {
 
 	private KKActivityDelegate delegate;
 

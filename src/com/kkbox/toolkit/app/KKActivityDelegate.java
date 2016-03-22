@@ -17,7 +17,7 @@ package com.kkbox.toolkit.app;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.kkbox.toolkit.KKService;
 import com.kkbox.toolkit.KKServiceListener;
@@ -28,15 +28,15 @@ import com.kkbox.toolkit.internal.dialog.KKDialogManagerListener;
 import java.util.ArrayList;
 
 public class KKActivityDelegate {
-	private static final ArrayList<FragmentActivity> activityList = new ArrayList<FragmentActivity>();
-	private final ArrayList<KKFragment> activeSubFragments = new ArrayList<KKFragment>();
+	private static final ArrayList<AppCompatActivity> activityList = new ArrayList<>();
+	private final ArrayList<KKFragment> activeSubFragments = new ArrayList<>();
 
 	private ProgressDialog serviceLoadingDialog;
 	private KKServiceDialog currentDialogFragment;
 	private Intent nextActivityIntent = null;
 	private int nextActivityRequestCode = -1;
 	private boolean finishActivityAfterShowingNotification = false;
-	private FragmentActivity activity;
+	private AppCompatActivity activity;
 
 	private final KKDialogManagerListener dialogNotificationListener = new KKDialogManagerListener() {
 		@Override
@@ -83,7 +83,7 @@ public class KKActivityDelegate {
 		}
 	};
 
-	public KKActivityDelegate(FragmentActivity activity) {
+	public KKActivityDelegate(AppCompatActivity activity) {
 		this.activity = activity;
 	}
 
@@ -151,7 +151,7 @@ public class KKActivityDelegate {
 	}
 
 	public void finishAllKKActivity() {
-		for (FragmentActivity activity : activityList) {
+		for (AppCompatActivity activity : activityList) {
 			activity.finish();
 		}
 		activityList.clear();
