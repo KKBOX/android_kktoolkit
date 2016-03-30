@@ -19,9 +19,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.kkbox.toolkit.api.KKAPIListener;
+import com.kkbox.toolkit.internal.api.lock.CallbackLocker;
+import com.kkbox.toolkit.internal.api.lock.UnlockListener;
 import com.kkbox.toolkit.utils.KKDebug;
 
-public abstract class APIBase {
+public abstract class APIBase implements UnlockListener {
 
 	public static class ErrorCode {
 		public static final int NO_ERROR = 0;
@@ -32,13 +34,14 @@ public abstract class APIBase {
 
 	private APIRequest request;
 	private KKAPIListener apiListener;
+	private CallbackLocker callbackLocker;
 
 	protected int errorCode;
 	protected boolean isRunning = false;
 	protected boolean isResponseSilent = false;
 
 	public static boolean isNetworkAvailable(Context context) {
-		ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 		if (networkInfo != null) {
 			return networkInfo.isAvailable();
@@ -78,15 +81,21 @@ public abstract class APIBase {
 
 	protected void onAPIError(int errorCode) {
 		KKDebug.i(getClass().getSimpleName() + " completed with errorCode: " + errorCode);
-		if (apiListener != null) {
-			apiListener.onAPIError(errorCode);
-		}
+		this.errorCode = errorCode;
+		onApiCallback();
 	}
 
 	protected void onAPIComplete() {
 		KKDebug.i(getClass().getSimpleName() + " completed");
-		if (apiListener != null) {
-			apiListener.onAPIComplete();
+		this.errorCode = ErrorCode.NO_ERROR;
+		onApiCallback();
+	}
+
+	private void onApiCallback(){
+		if (callbackLocker != null) {
+			callbackLocker.triggerToUnlock(this);
+		} else {
+			onCompleteCallback();
 		}
 	}
 
@@ -105,4 +114,26 @@ public abstract class APIBase {
 	}
 
 	protected abstract APIRequestListener getRequestListener();
+
+	public void bindCallbackLocker(CallbackLocker callbackLocker) {
+		if (callbackLocker != null) {
+			callbackLocker.registerUnlockCallback(this);
+		}
+		this.callbackLocker = callbackLocker;
+	}
+
+	@Override
+	public void onUnlock() {
+		onCompleteCallback();
+	}
+
+	private void onCompleteCallback() {
+		if (apiListener != null) {
+			if (errorCode == ErrorCode.NO_ERROR) {
+				apiListener.onAPIComplete();
+			} else {
+				apiListener.onAPIError(errorCode);
+			}
+		}
+	}
 }
