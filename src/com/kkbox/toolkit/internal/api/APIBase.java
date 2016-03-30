@@ -82,18 +82,18 @@ public abstract class APIBase implements UnlockListener {
 	protected void onAPIError(int errorCode) {
 		KKDebug.i(getClass().getSimpleName() + " completed with errorCode: " + errorCode);
 		this.errorCode = errorCode;
-		if (callbackLocker != null) {
-			callbackLocker.triggerToUnlock();
-		} else {
-			onCompleteCallback();
-		}
+		onApiCallback();
 	}
 
 	protected void onAPIComplete() {
 		KKDebug.i(getClass().getSimpleName() + " completed");
 		this.errorCode = ErrorCode.NO_ERROR;
+		onApiCallback();
+	}
+
+	private void onApiCallback(){
 		if (callbackLocker != null) {
-			callbackLocker.triggerToUnlock();
+			callbackLocker.triggerToUnlock(this);
 		} else {
 			onCompleteCallback();
 		}
