@@ -116,7 +116,9 @@ public abstract class APIBase implements UnlockListener {
 	protected abstract APIRequestListener getRequestListener();
 
 	public void bindCallbackLocker(CallbackLocker callbackLocker) {
-		callbackLocker.registerUnlockCallback(this);
+		if (callbackLocker != null) {
+			callbackLocker.registerUnlockCallback(this);
+		}
 		this.callbackLocker = callbackLocker;
 	}
 
