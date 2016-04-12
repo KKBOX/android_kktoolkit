@@ -65,5 +65,7 @@ public class KKAPIRequest extends APIRequest {
 			jsonData = byteArrayOutputStream.toString();
 		}
 		requestListener.onPreComplete(jsonData);
+
+        byteArrayOutputStream.close();
 	}
 }
