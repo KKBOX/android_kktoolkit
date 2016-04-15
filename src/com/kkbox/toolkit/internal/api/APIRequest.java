@@ -19,6 +19,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.StringUtils;
@@ -315,7 +316,9 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 				}
 			} catch (IOException e) {
 				isNetworkError = true;
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				KKDebug.e(Log.getStackTraceString(e));
+			}
 		}
 		return null;
 	}
