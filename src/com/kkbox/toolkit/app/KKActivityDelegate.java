@@ -116,7 +116,11 @@ public class KKActivityDelegate {
 	}
 
 	public void onPostResume() {
-		if (!KKService.isRunning()) {
+		onPostResume(true);
+	}
+
+	public void onPostResume(boolean showServiceLoadingProgress) {
+		if (!KKService.isRunning() && showServiceLoadingProgress) {
 			serviceLoadingDialog = new ProgressDialog(activity);
 			serviceLoadingDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			serviceLoadingDialog.setMessage(activity.getString(R.string.loading));
@@ -125,6 +129,7 @@ public class KKActivityDelegate {
 			serviceLoadingDialog.setCancelable(false);
 			serviceLoadingDialog.show();
 		}
+
 		KKService.attachListener(serviceListener);
 	}
 
