@@ -119,6 +119,13 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	}
 
 	public void addPostParam(String key, String value) {
+		if (key == null) {
+			throw new NullPointerException("addPostParam with null key ");
+		}
+		if (value == null) {
+			value = "";
+			KKDebug.e("addPostParam key " + key + " with null value");
+		}
 		if (requestBodyBuilder == null) {
 			requestBodyBuilder = new FormEncodingBuilder();
 		}
