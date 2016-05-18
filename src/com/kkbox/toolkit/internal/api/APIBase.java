@@ -76,6 +76,7 @@ public abstract class APIBase implements UnlockListener {
 	}
 
 	protected void onAPINetworkError(String content) {
+		KKDebug.i(getClass().getSimpleName() + " completed with network error content = " + content);
 		onAPINetworkError();
 	}
 
@@ -100,6 +101,7 @@ public abstract class APIBase implements UnlockListener {
 	}
 
 	protected void onAPIHttpStatusError(int statusCode, String content) {
+		KKDebug.i(getClass().getSimpleName() + " completed with http status error statusCode = " + statusCode + ", content = " + content);
 		onAPIError(ErrorCode.UNKNOWN_SERVER_ERROR);
 	}
 
