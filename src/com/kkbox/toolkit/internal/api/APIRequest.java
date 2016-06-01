@@ -81,9 +81,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private int method;
 
 	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
-		this(url, cipher, 10000);
-		this.cacheTimeOut = cacheTimeOut;
-		this.context = context;
+		this(url, cipher, 10000, cacheTimeOut, context);
 	}
 
 	public APIRequest(String url, Cipher cipher) {
@@ -98,6 +96,12 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		this.url = url.split("\\?")[0];
 		this.cipher = cipher;
 		this.method = Method.GET;
+	}
+
+	public APIRequest(String url, Cipher cipher, int socketTimeout, long cacheTimeOut, Context context) {
+		this(url, cipher, socketTimeout);
+		this.cacheTimeOut = cacheTimeOut;
+		this.context = context;
 	}
 
 	public void addGetParam(String key, String value) {
