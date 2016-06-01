@@ -23,87 +23,88 @@ import com.kkbox.toolkit.utils.KKDebug;
 
 public abstract class APIBase {
 
-	public static class ErrorCode {
-		public static final int NO_ERROR = 0;
-		public static final int NETWORK_NOT_AVAILABLE = -101;
-		public static final int UNKNOWN_SERVER_ERROR = -102;
-		public static final int INVALID_API_FORMAT = -103;
-	}
+    protected int errorCode;
+    protected boolean isRunning = false;
+    protected boolean isResponseSilent = false;
+    private APIRequest request;
+    private KKAPIListener apiListener;
 
-	private APIRequest request;
-	private KKAPIListener apiListener;
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null) {
+            return networkInfo.isAvailable();
+        } else {
+            return false;
+        }
+    }
 
-	protected int errorCode;
-	protected boolean isRunning = false;
-	protected boolean isResponseSilent = false;
+    public void cancel() {
+        if (request != null) {
+            request.cancel();
+        }
+    }
 
-	public static boolean isNetworkAvailable(Context context) {
-		ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-		if (networkInfo != null) {
-			return networkInfo.isAvailable();
-		} else {
-			return false;
-		}
-	}
+    public APIBase setResponseSilent(boolean isResponseSilent) {
+        this.isResponseSilent = isResponseSilent;
+        return this;
+    }
 
-	public void cancel() {
-		if (request != null) {
-			request.cancel();
-		}
-	}
+    public boolean isRunning() {
+        return isRunning;
+    }
 
-	public void setResponseSilent(boolean isResponseSilent) {
-		this.isResponseSilent = isResponseSilent;
-	}
+    public APIBase setAPIListener(KKAPIListener listener) {
+        apiListener = listener;
+        return this;
+    }
 
-	public boolean isRunning() {
-		return isRunning;
-	}
+    protected void onAPINetworkError() {
+        KKDebug.i(getClass().getSimpleName() + " completed with network error");
+        if (apiListener != null) {
+            apiListener.onAPIError(ErrorCode.NETWORK_NOT_AVAILABLE);
+        }
+    }
 
-	public void setAPIListener(KKAPIListener listener) {
-		apiListener = listener;
-	}
+    protected void onAPINetworkError(String content) {
+        onAPINetworkError();
+    }
 
-	protected void onAPINetworkError() {
-		KKDebug.i(getClass().getSimpleName() + " completed with network error");
-		if (apiListener != null) {
-			apiListener.onAPIError(ErrorCode.NETWORK_NOT_AVAILABLE);
-		}
-	}
+    protected void onAPIError(int errorCode) {
+        KKDebug.i(getClass().getSimpleName() + " completed with errorCode: " + errorCode);
+        if (apiListener != null) {
+            apiListener.onAPIError(errorCode);
+        }
+    }
 
-	protected void onAPINetworkError(String content) {
-		onAPINetworkError();
-	}
+    protected void onAPIComplete() {
+        KKDebug.i(getClass().getSimpleName() + " completed");
+        if (apiListener != null) {
+            apiListener.onAPIComplete();
+        }
+    }
 
-	protected void onAPIError(int errorCode) {
-		KKDebug.i(getClass().getSimpleName() + " completed with errorCode: " + errorCode);
-		if (apiListener != null) {
-			apiListener.onAPIError(errorCode);
-		}
-	}
+    //TODO: Remove this call back after all project replace with new listener
+    protected void onAPIHttpStatusError(int statusCode) {
+        onAPIError(ErrorCode.UNKNOWN_SERVER_ERROR);
+    }
 
-	protected void onAPIComplete() {
-		KKDebug.i(getClass().getSimpleName() + " completed");
-		if (apiListener != null) {
-			apiListener.onAPIComplete();
-		}
-	}
+    protected void onAPIHttpStatusError(int statusCode, String content) {
+        onAPIError(ErrorCode.UNKNOWN_SERVER_ERROR);
+    }
 
-	//TODO: Remove this call back after all project replace with new listener
-	protected void onAPIHttpStatusError(int statusCode) {
-		onAPIError(ErrorCode.UNKNOWN_SERVER_ERROR);
-	}
+    protected void execute(APIRequest request) {
+        this.request = request;
+        isRunning = true;
+        request.execute(getRequestListener());
+    }
 
-	protected void onAPIHttpStatusError(int statusCode, String content) {
-		onAPIError(ErrorCode.UNKNOWN_SERVER_ERROR);
-	}
+    protected abstract APIRequestListener getRequestListener();
 
-	protected void execute(APIRequest request) {
-		this.request = request;
-		isRunning = true;
-		request.execute(getRequestListener());
-	}
-
-	protected abstract APIRequestListener getRequestListener();
+    public static class ErrorCode {
+        public static final int NO_ERROR = 0;
+        public static final int NETWORK_NOT_AVAILABLE = -101;
+        public static final int UNKNOWN_SERVER_ERROR = -102;
+        public static final int INVALID_API_FORMAT = -103;
+    }
 }
