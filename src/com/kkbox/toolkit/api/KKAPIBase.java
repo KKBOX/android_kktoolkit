@@ -20,7 +20,7 @@ import com.kkbox.toolkit.internal.api.APIBase;
 import com.kkbox.toolkit.internal.api.APIRequestListener;
 import com.kkbox.toolkit.internal.api.KKAPIRequestListener;
 
-public abstract class KKAPIBase extends APIBase {
+public abstract class KKAPIBase<T> extends APIBase<T> {
 
 	private KKAPIRequestListener apiRequestListener = new KKAPIRequestListener() {
 		@Override

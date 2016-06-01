@@ -21,7 +21,7 @@ import android.net.NetworkInfo;
 import com.kkbox.toolkit.api.KKAPIListener;
 import com.kkbox.toolkit.utils.KKDebug;
 
-public abstract class APIBase {
+public abstract class APIBase<T> {
 
     protected int errorCode;
     protected boolean isRunning = false;
@@ -45,18 +45,18 @@ public abstract class APIBase {
         }
     }
 
-    public APIBase setResponseSilent(boolean isResponseSilent) {
+    public T setResponseSilent(boolean isResponseSilent) {
         this.isResponseSilent = isResponseSilent;
-        return this;
+        return (T) this;
     }
 
     public boolean isRunning() {
         return isRunning;
     }
 
-    public APIBase setAPIListener(KKAPIListener listener) {
+    public T setAPIListener(KKAPIListener listener) {
         apiListener = listener;
-        return this;
+        return (T) this;
     }
 
     protected void onAPINetworkError() {
