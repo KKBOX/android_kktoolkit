@@ -43,6 +43,10 @@ public class KKAPIRequest extends APIRequest {
 		super(url, cipher, socketTimeout);
 	}
 
+	public KKAPIRequest(String url, Cipher cipher, int socketTimeout, long reloadPeriod, Context context) {
+		super(url, cipher, socketTimeout, reloadPeriod, context);
+	}
+
 	@Override
 	public Void doInBackground(Object... params) {
 		requestListener = (KKAPIRequestListener) params[0];
