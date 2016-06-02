@@ -21,7 +21,7 @@ import android.net.NetworkInfo;
 import com.kkbox.toolkit.api.KKAPIListener;
 import com.kkbox.toolkit.utils.KKDebug;
 
-public abstract class APIBase<T> {
+public abstract class APIBase<T extends APIBase> {
 
     protected int errorCode;
     protected boolean isRunning = false;
