@@ -323,7 +323,11 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 						byteArrayOutputStream.write(buffer, 0, readLength);
 					}
 					byteArrayOutputStream.flush();
-					errorMessage = byteArrayOutputStream.toString();
+					if (cipher != null && ((httpStatusCode / 100) != 5)) {
+						errorMessage = new String(cipher.doFinal(byteArrayOutputStream.toByteArray()));
+					} else {
+						errorMessage = byteArrayOutputStream.toString();
+					}
 				}
 			} catch (IOException e) {
 				isNetworkError = true;

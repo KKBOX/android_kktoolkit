@@ -69,19 +69,19 @@ public abstract class APIBase implements UnlockListener {
 	}
 
 	protected void onAPINetworkError() {
-		KKDebug.i(getClass().getSimpleName() + " completed with network error");
+		KKDebug.e(getClass().getSimpleName() + " completed with network error");
 		if (apiListener != null) {
 			apiListener.onAPIError(ErrorCode.NETWORK_NOT_AVAILABLE);
 		}
 	}
 
 	protected void onAPINetworkError(String content) {
-		KKDebug.i(getClass().getSimpleName() + " completed with network error content = " + content);
+		KKDebug.e(getClass().getSimpleName() + " completed with network error content = " + content);
 		onAPINetworkError();
 	}
 
 	protected void onAPIError(int errorCode) {
-		KKDebug.i(getClass().getSimpleName() + " completed with errorCode: " + errorCode);
+		KKDebug.e(getClass().getSimpleName() + " completed with errorCode: " + errorCode);
 		this.errorCode = errorCode;
 		onApiCallback();
 	}
@@ -101,7 +101,7 @@ public abstract class APIBase implements UnlockListener {
 	}
 
 	protected void onAPIHttpStatusError(int statusCode, String content) {
-		KKDebug.i(getClass().getSimpleName() + " completed with http status error statusCode = " + statusCode + ", content = " + content);
+		KKDebug.e(getClass().getSimpleName() + " completed with http status error statusCode = " + statusCode + ", content = " + content);
 		onAPIError(ErrorCode.UNKNOWN_SERVER_ERROR);
 	}
 
