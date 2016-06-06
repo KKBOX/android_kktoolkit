@@ -66,6 +66,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private boolean isNetworkError = false;
 	private boolean isHttpStatusError = false;
 	private String errorMessage = "";
+	private String cacheFileKey = null;
 	private int httpStatusCode = 0;
 	private Request.Builder requestBuilder;
 	private FormEncodingBuilder requestBodyBuilder;
@@ -201,6 +202,10 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		this.method = method;
 	}
 
+	public void setCacheFileKey(String cacheFileKey) {
+		this.cacheFileKey = cacheFileKey;
+	}
+
 	protected abstract void parseInputStream(InputStream inputStream, Cipher cipher) throws IOException, BadPaddingException, IllegalBlockSizeException;
 
 	@Override
@@ -216,7 +221,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			if (!cacheDir.exists()) {
 				cacheDir.mkdir();
 			}
-			cacheFile = new File(cacheDir.getAbsolutePath() + File.separator + StringUtils.getMd5Hash(url + getParams));
+			cacheFile = new File(cacheDir.getAbsolutePath() + File.separator + StringUtils.getMd5Hash(url + (cacheFileKey == null ? getParams : cacheFileKey)));
 			connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
 		}
 
