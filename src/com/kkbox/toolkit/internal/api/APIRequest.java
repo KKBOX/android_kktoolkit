@@ -80,6 +80,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private Call call;
 	private int retryLimit = DEFAULT_RETRY_LIMIT;
 	private int method;
+	private boolean isFromCache = false;
 
 	public APIRequest(String url, Cipher cipher, long cacheTimeOut, Context context) {
 		this(url, cipher, 10000, cacheTimeOut, context);
@@ -229,6 +230,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 				&& ((System.currentTimeMillis() - cacheFile.lastModified() < cacheTimeOut)
 				|| connectivityManager.getActiveNetworkInfo() == null)) {
 			try {
+				isFromCache = true;
 				parseInputStream(new FileInputStream(cacheFile), cipher);
 			} catch (IOException e) {
 				isNetworkError = true;
@@ -341,6 +343,10 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			}
 		}
 		return null;
+	}
+
+	public boolean isFromCache(){
+		return isFromCache;
 	}
 
 	public void onPostExecute(Void v) {
