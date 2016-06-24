@@ -43,17 +43,14 @@ public abstract class APIBase implements UnlockListener {
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-		if (networkInfo != null) {
-			return networkInfo.isAvailable();
-		} else {
-			return false;
-		}
+		return networkInfo != null && networkInfo.isAvailable();
 	}
 
 	public void cancel() {
 		if (request != null) {
 			request.cancel();
 		}
+		isRunning = false;
 	}
 
 	public void setResponseSilent(boolean isResponseSilent) {
@@ -92,7 +89,7 @@ public abstract class APIBase implements UnlockListener {
 		onApiCallback();
 	}
 
-	private void onApiCallback(){
+	private void onApiCallback() {
 		if (callbackLocker != null) {
 			callbackLocker.triggerToUnlock(this);
 		} else {
