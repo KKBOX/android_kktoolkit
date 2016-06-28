@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import com.kkbox.toolkit.utils.KKDebug;
 import com.kkbox.toolkit.utils.StringUtils;
 import com.kkbox.toolkit.utils.UserTask;
+import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.MediaType;
@@ -109,6 +110,11 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
         } else if (httpMethod == HttpMethod.DELETE) {
             requestBuilder.delete();
         }
+    }
+
+    static public void setCache(File directory, long size) {
+        Cache cache = new Cache(directory, size);
+        httpClient.setCache(cache);
     }
 
     public void addGetParam(String key, String value) {
@@ -269,8 +275,15 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
                     } else {
                         requestBuilder.url(url + getParams);
                     }
-                    call = httpClient.newCall(requestBuilder.build());
+
+                    Request request = requestBuilder.build();
+                    KKDebug.w("api header", "request:\n" + request.headers().toString());
+
+                    call = httpClient.newCall(request);
                     response = call.execute();
+
+                    KKDebug.e("api header", "response:\n" + response.headers().toString());
+
                     httpStatusCode = response.code();
                     int httpStatusType = httpStatusCode / 100;
                     switch (httpStatusType) {
