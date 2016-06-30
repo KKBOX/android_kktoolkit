@@ -277,12 +277,9 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
                     }
 
                     Request request = requestBuilder.build();
-                    KKDebug.w("api header", "request:\n" + request.headers().toString());
 
                     call = httpClient.newCall(request);
                     response = call.execute();
-
-                    KKDebug.e("api header", "response:\n" + response.headers().toString());
 
                     httpStatusCode = response.code();
                     int httpStatusType = httpStatusCode / 100;
