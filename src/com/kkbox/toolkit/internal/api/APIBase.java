@@ -124,6 +124,7 @@ public abstract class APIBase implements UnlockListener {
 	@Override
 	public void onUnlock() {
 		onCompleteCallback();
+		callbackLocker = null;
 	}
 
 	private void onCompleteCallback() {
