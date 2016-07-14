@@ -41,6 +41,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.crypto.BadPaddingException;
@@ -75,6 +76,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private Cipher cipher = null;
 	private Context context = null;
 	private long cacheTimeOut = -1;
+	private long cacheLastModify = 0;
 	private InputStream is = null;
 	private Response response;
 	private Call call;
@@ -224,6 +226,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			}
 			cacheFile = new File(cacheDir.getAbsolutePath() + File.separator + StringUtils.getMd5Hash(url + (cacheFileKey == null ? getParams : cacheFileKey)));
 			connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+			cacheLastModify = cacheFile.lastModified();
 		}
 
 		if (context != null && cacheTimeOut > 0 && cacheFile.exists()
@@ -320,6 +323,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 							fileOutputStream.write(buffer, 0, readLength);
 						}
 						fileOutputStream.close();
+						cacheLastModify = new Date().getTime();
 						parseInputStream(new FileInputStream(cacheFile), cipher);
 					} else {
 						parseInputStream(is, cipher);
@@ -345,8 +349,12 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		return null;
 	}
 
-	public boolean isFromCache(){
+	public boolean isFromCache() {
 		return isFromCache;
+	}
+
+	public long getCachedTime() {
+		return cacheLastModify;
 	}
 
 	public void onPostExecute(Void v) {
