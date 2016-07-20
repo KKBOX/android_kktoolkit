@@ -73,6 +73,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 	private FormEncodingBuilder requestBodyBuilder;
 	private RequestBody requestBody;
 	private MultipartBuilder multipartBuilder;
+	private File cacheFile = null;
 	private Cipher cipher = null;
 	private Context context = null;
 	private long cacheTimeOut = -1;
@@ -217,7 +218,6 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 		final byte[] buffer = new byte[128];
 		listener = (APIRequestListener) params[0];
 		int retryTimes = 0;
-		File cacheFile = null;
 		ConnectivityManager connectivityManager = null;
 		if (context != null) {
 			final File cacheDir = new File(context.getCacheDir().getAbsolutePath() + File.separator + "api");
@@ -328,16 +328,19 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 					} else {
 						parseInputStream(is, cipher);
 					}
-				} else if (isHttpStatusError) {
-					ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-					while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
-						byteArrayOutputStream.write(buffer, 0, readLength);
-					}
-					byteArrayOutputStream.flush();
-					if (cipher != null && ((httpStatusCode / 100) != 5)) {
-						errorMessage = new String(cipher.doFinal(byteArrayOutputStream.toByteArray()));
-					} else {
-						errorMessage = byteArrayOutputStream.toString();
+				} else {
+					deleteCacheIfExist();
+					if (isHttpStatusError) {
+						ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+						while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
+							byteArrayOutputStream.write(buffer, 0, readLength);
+						}
+						byteArrayOutputStream.flush();
+						if (cipher != null && ((httpStatusCode / 100) != 5)) {
+							errorMessage = new String(cipher.doFinal(byteArrayOutputStream.toByteArray()));
+						} else {
+							errorMessage = byteArrayOutputStream.toString();
+						}
 					}
 				}
 			} catch (IOException e) {
@@ -347,6 +350,12 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 			}
 		}
 		return null;
+	}
+
+	public void deleteCacheIfExist() {
+		if(cacheTimeOut > 0 && cacheFile != null && cacheFile.delete()){
+			KKDebug.e("Remove cached file success when request error.");
+		}
 	}
 
 	public boolean isFromCache() {
