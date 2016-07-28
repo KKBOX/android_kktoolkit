@@ -79,7 +79,9 @@ public abstract class APIBase implements UnlockListener {
 
 	protected void onAPIError(int errorCode) {
 		KKDebug.e(getClass().getSimpleName() + " completed with errorCode: " + errorCode);
-		request.deleteCacheIfExist();
+		if (request != null) {
+			request.deleteCacheIfExist();
+		}
 		this.errorCode = errorCode;
 		onApiCallback();
 	}
