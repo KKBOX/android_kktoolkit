@@ -160,7 +160,9 @@ public class KKActivityDelegate {
 	}
 
 	public void activateSubFragment(KKFragment fragment) {
-		activeSubFragments.add(fragment);
+		if (!activeSubFragments.contains(fragment)) {
+			activeSubFragments.add(fragment);
+		}
 	}
 
 	public void deactivateSubFragment(KKFragment fragment) {
