@@ -199,7 +199,7 @@ public abstract class KKFragment extends Fragment {
 		KKFragment.setAnimation(KKFragment.AnimationType.PUSH);
 		fragmentTransaction.replace(R.id.sub_fragment, fragment);
 		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
+		fragmentTransaction.commitAllowingStateLoss();
 		fragmentManager.executePendingTransactions();
 	}
 
