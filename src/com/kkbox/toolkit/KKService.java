@@ -22,34 +22,41 @@ import com.kkbox.toolkit.dialog.KKDialogManager;
 import com.kkbox.toolkit.utils.KKEventQueue;
 import com.kkbox.toolkit.utils.KKEventQueueListener;
 
+import java.util.ArrayList;
+
 public abstract class KKService extends Service {
 	private static KKDialogManager dialogNotificationManager;
-	private static KKServiceListener listener;
+	private static ArrayList<KKServiceListener> listeners = new ArrayList<>();
 	private static boolean isRunning = false;
 	private KKEventQueue eventQueue = new KKEventQueue();
 	private static int runningFlag = -1;
 
-	private final KKEventQueueListener eventQueuelistener = new KKEventQueueListener() {
+	private final KKEventQueueListener eventQueueListener = new KKEventQueueListener() {
 		@Override
 		public void onQueueCompleted() {
 			isRunning = true;
-			if (listener != null) {
-				listener.onRunning(runningFlag);
+			for (int i = 0; i < listeners.size(); i++) {
+				KKServiceListener listener = listeners.get(i);
+				if (listener != null) {
+					listener.onRunning(runningFlag);
+				}
 			}
 			onPostCreate(runningFlag);
 		}
 	};
 
-	public static void attachListener(KKServiceListener serviceListener) {
-		listener = serviceListener;
-		if (isRunning) {
-			listener.onRunning(runningFlag);
+	public static void registerListener(KKServiceListener serviceListener) {
+		if (serviceListener != null && !listeners.contains(serviceListener)) {
+			listeners.add(serviceListener);
+			if (isRunning) {
+				serviceListener.onRunning(runningFlag);
+			}
 		}
 	}
 
-	public static void detachListener(KKServiceListener serviceListener) {
-		if (listener == serviceListener) {
-			listener = null;
+	public static void unregisterListener(KKServiceListener serviceListener) {
+		if (serviceListener != null && listeners.contains(serviceListener)) {
+			listeners.remove(serviceListener);
 		}
 	}
 
@@ -58,8 +65,11 @@ public abstract class KKService extends Service {
 	}
 
 	public static void notifyProgress(int flag) {
-		if (listener != null) {
-			listener.onProgress(flag);
+		for (int i = 0; i < listeners.size(); i++) {
+			KKServiceListener listener = listeners.get(i);
+			if (listener != null) {
+				listener.onProgress(flag);
+			}
 		}
 	}
 	
@@ -85,8 +95,18 @@ public abstract class KKService extends Service {
 		super.onCreate();
 		dialogNotificationManager = new KKDialogManager();
 		initServiceComponent(eventQueue);
-		eventQueue.setListener(eventQueuelistener);
+		eventQueue.setListener(eventQueueListener);
 		eventQueue.start();
+	}
+
+	@Override
+	public void onDestroy() {
+		for (int i = 0; i < listeners.size(); i++) {
+			KKServiceListener listener = listeners.get(i);
+			if (listener != null) {
+				listener.onDestroy();
+			}
+		}
 	}
 
 	public void reInitServiceComponent() {

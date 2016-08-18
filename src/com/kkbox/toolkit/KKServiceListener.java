@@ -15,7 +15,9 @@
 package com.kkbox.toolkit;
 
 public abstract class KKServiceListener {
-	public void onRunning(int flag) {};
+	public void onRunning(int flag) {}
 	
-	public void onProgress(int flag) {};
+	public void onProgress(int flag) {}
+
+	public void onDestroy() {}
 }

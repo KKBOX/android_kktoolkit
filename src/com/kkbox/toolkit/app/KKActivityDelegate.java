@@ -127,14 +127,14 @@ public class KKActivityDelegate {
 			serviceLoadingDialog.setCancelable(false);
 			serviceLoadingDialog.show();
 		}
-		KKService.attachListener(serviceListener);
+		KKService.registerListener(serviceListener);
 	}
 
 	public void onPause() {
 		if (serviceLoadingDialog != null && serviceLoadingDialog.isShowing()) {
 			serviceLoadingDialog.dismiss();
 		}
-		KKService.detachListener(serviceListener);
+		KKService.unregisterListener(serviceListener);
 		if (KKService.isRunning()) {
 			KKService.getDialogNotificationManager().removeListener();
 		}
