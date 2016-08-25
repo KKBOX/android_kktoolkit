@@ -74,6 +74,9 @@ public class KKEventQueue {
 	}
 
 	public void unlockEvent(int lockId) {
+		if (!isRunning) {
+			return;
+		}
 		synchronized (threadLock) {
 			threadUnlockId.add(lockId);
 			threadLock.notifyAll();
@@ -82,6 +85,9 @@ public class KKEventQueue {
 	}
 
 	public void unlockAllEvents() {
+		if (!isRunning) {
+			return;
+		}
 		synchronized (threadLock) {
 			threadUnlockFlag = true;
 			threadLock.notifyAll();
