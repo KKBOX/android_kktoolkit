@@ -220,6 +220,7 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
                 }
             }
         });
+
         this.cancel(true);
     }
 
@@ -339,10 +340,17 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
                     byteArrayOutputStream.flush();
                     errorMessage = byteArrayOutputStream.toString();
                 }
+
+                is.close();
             } catch (IOException e) {
                 isNetworkError = true;
             } catch (Exception e) {
+            } finally {
+                if(response != null) {
+                    response.close();
+                }
             }
+
         }
         return null;
     }
