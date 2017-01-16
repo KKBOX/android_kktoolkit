@@ -91,6 +91,10 @@ public abstract class KKFragment extends Fragment {
 		dataFetchedStatus = DataFetchStatus.NONE;
 	}
 
+	protected boolean isDataLoaded() {
+		return dataFetchedStatus == DataFetchStatus.SUCCESS;
+	}
+
 	protected void startFetchData() {
 		if (viewMessage != null) {
 			if (customLoadingView != null) {
