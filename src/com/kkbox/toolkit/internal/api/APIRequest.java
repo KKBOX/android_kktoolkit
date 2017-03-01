@@ -237,8 +237,10 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 				parseInputStream(new FileInputStream(cacheFile), cipher);
 			} catch (IOException e) {
 				isNetworkError = true;
+				KKDebug.e(Log.getStackTraceString(e));
 			} catch (Exception e) {
-				e.printStackTrace();
+				isNetworkError = true;
+				KKDebug.e(Log.getStackTraceString(e));
 			}
 		} else {
 			do {
@@ -345,7 +347,9 @@ public abstract class APIRequest extends UserTask<Object, Void, Void> {
 				}
 			} catch (IOException e) {
 				isNetworkError = true;
+				KKDebug.e(Log.getStackTraceString(e));
 			} catch (Exception e) {
+				isNetworkError = true;
 				KKDebug.e(Log.getStackTraceString(e));
 			}
 		}
