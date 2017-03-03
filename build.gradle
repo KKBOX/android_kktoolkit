@@ -1,5 +1,7 @@
 apply plugin: 'android-library'
 
+def supportLibVersion = project.hasProperty('ANDROID_SUPPORT_LIBRARY_VERSION') ? project.getProperty('ANDROID_SUPPORT_LIBRARY_VERSION') : '25.2.0';
+
 android {
     compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
     buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
@@ -37,7 +39,7 @@ android {
 
 dependencies {
     compile files('libs/httpmime-4.3.1.jar')
-    compile 'com.android.support:support-v4:24.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile "com.android.support:support-v4:$supportLibVersion"
+    compile "com.android.support:appcompat-v7:$supportLibVersion"
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
 }
