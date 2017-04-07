@@ -149,6 +149,7 @@ public class KKEventQueue {
 				}
 			}.execute();
 		} else if (event.threadType == ThreadType.CALLER_THREAD) {
+			threadUnlockFlag = false;
 			event.runnable.run();
 			queue.remove(event);
 			run();
