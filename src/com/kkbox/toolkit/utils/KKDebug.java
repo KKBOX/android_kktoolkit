@@ -31,7 +31,7 @@ public class KKDebug {
 	private static DataOutputStream logStream;
 	private static long runningTimestamp = 0;
 
-	public static void setDebugEnabled(boolean enabled) {
+	public static void setEnablePrintLog(boolean enabled) {
 		debugEnabled = enabled;
 	}
 
@@ -39,7 +39,7 @@ public class KKDebug {
 		debugLogPath = path;
 	}
 
-	public static boolean isDebugEnabled() {
+	public static boolean enabledPrintLog() {
 		return debugEnabled;
 	}
 
