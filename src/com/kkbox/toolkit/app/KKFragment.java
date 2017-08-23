@@ -119,6 +119,10 @@ public abstract class KKFragment extends Fragment {
 	}
 
 	protected void finishFetchData() {
+		if (!isAdded()) {
+			KKDebug.i(getClass().getSimpleName()+" is detach with activity");
+			return;
+		}
 		uiLoaded = false;
 		dataFetchedStatus = DataFetchStatus.SUCCESS;
 		if (animationEnded) {
