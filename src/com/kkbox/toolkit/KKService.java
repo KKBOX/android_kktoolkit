@@ -28,6 +28,7 @@ public abstract class KKService extends Service {
 	private static KKDialogManager dialogNotificationManager;
 	private static ArrayList<KKServiceListener> listeners = new ArrayList<>();
 	private static boolean isRunning = false;
+	private static boolean inLoading = false;
 	private KKEventQueue eventQueue = new KKEventQueue();
 	private static int runningFlag = -1;
 
@@ -35,6 +36,7 @@ public abstract class KKService extends Service {
 		@Override
 		public void onQueueCompleted() {
 			isRunning = true;
+			inLoading = false;
 			for (int i = 0; i < listeners.size(); i++) {
 				KKServiceListener listener = listeners.get(i);
 				if (listener != null) {
@@ -48,7 +50,7 @@ public abstract class KKService extends Service {
 	public static void registerListener(KKServiceListener serviceListener) {
 		if (serviceListener != null && !listeners.contains(serviceListener)) {
 			listeners.add(serviceListener);
-			if (isRunning) {
+			if (isRunning && !inLoading) {
 				serviceListener.onRunning(runningFlag);
 			}
 		}
@@ -94,6 +96,7 @@ public abstract class KKService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		dialogNotificationManager = new KKDialogManager();
+		inLoading = true;
 		initServiceComponent(eventQueue);
 		eventQueue.setListener(eventQueueListener);
 		eventQueue.start();
@@ -110,6 +113,7 @@ public abstract class KKService extends Service {
 	}
 
 	public void reInitServiceComponent() {
+		inLoading = true;
 		initServiceComponent(eventQueue);
 		eventQueue.start();
 	}
