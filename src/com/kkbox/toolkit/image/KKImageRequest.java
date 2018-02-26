@@ -23,10 +23,6 @@ import com.kkbox.toolkit.image.KKImageManager.OnBitmapReceivedListener;
 import com.kkbox.toolkit.image.KKImageManager.OnImageDownloadedListener;
 import com.kkbox.toolkit.internal.image.KKImageRequestListener;
 import com.kkbox.toolkit.utils.UserTask;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,10 +36,17 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.crypto.Cipher;
 
+import okhttp3.Call;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class KKImageRequest extends UserTask<Object, Headers, Bitmap> {
 	private final int BUFFER_SIZE = 1024;
 	private byte[] buffer = new byte[BUFFER_SIZE];
-	private OkHttpClient httpClient = new OkHttpClient();
+	private OkHttpClient httpClient;
+    private Call call;
 	private Response response;
 	private KKImageRequestListener listener;
 	private Headers headers;
@@ -98,8 +101,10 @@ public class KKImageRequest extends UserTask<Object, Headers, Bitmap> {
 	}
 
 	private void init(Context context, String url, String localPath, Cipher cipher, KKImageRequestListener imageRequestListener) {
-		httpClient.setConnectTimeout(10000, TimeUnit.MILLISECONDS);
-		httpClient.setReadTimeout(10000, TimeUnit.MILLISECONDS);
+        httpClient = new OkHttpClient().newBuilder().
+                connectTimeout(10000, TimeUnit.MILLISECONDS).
+                readTimeout(10000, TimeUnit.MILLISECONDS).
+                build();
 		this.url = url;
 		this.localPath = localPath;
 		this.context = context;
@@ -191,7 +196,8 @@ public class KKImageRequest extends UserTask<Object, Headers, Bitmap> {
 			if (!KKImageManager.networkEnabled) {
 				return null;
 			}
-			response = httpClient.newCall(new Request.Builder().url(url).build()).execute();
+            call = httpClient.newCall(new Request.Builder().url(url).build());
+            response = call.execute();
 			if (!response.isSuccessful()) {
 				throw new Exception("Unexpected code " + response);
 			}
@@ -202,6 +208,7 @@ public class KKImageRequest extends UserTask<Object, Headers, Bitmap> {
 				RandomAccessFile tempFile = new RandomAccessFile(tempFilePath, "rw");
 				while ((readLength = is.read(buffer, 0, buffer.length)) != -1) {
 					if (interuptFlag) {
+					    call.cancel();
 						return null;
 					}
 					if (cipher != null) {
